@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Sistema de Préstamos Profesional</title>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
+        /* Todos los estilos previos se mantienen, solo agrego algunos para nuevos elementos */
         * {
             margin: 0;
             padding: 0;
@@ -42,8 +45,11 @@
 
         body.dark-mode .stat-card,
         body.dark-mode .loan-card,
+        body.dark-mode .client-card,
         body.dark-mode form,
-        body.dark-mode .modal-content {
+        body.dark-mode .modal-content,
+        body.dark-mode .amortization-table,
+        body.dark-mode .summary-card {
             background: #1a202c;
             color: #e2e8f0;
         }
@@ -63,7 +69,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Header */
         .header {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
@@ -94,7 +99,7 @@
         .header h1 { font-size: 2em; margin-bottom: 10px; }
         .header p { opacity: 0.9; font-size: 1.1em; }
 
-        /* Stats Cards */
+        /* Stats */
         .stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -103,9 +108,7 @@
             background: #f8f9fa;
         }
 
-        body.dark-mode .stats {
-            background: #2d3748;
-        }
+        body.dark-mode .stats { background: #2d3748; }
 
         .stat-card {
             background: white;
@@ -120,6 +123,18 @@
         .stat-card:hover { transform: translateY(-5px); }
         .stat-card h3 { color: var(--gray); font-size: 0.9em; margin-bottom: 10px; text-transform: uppercase; }
         .stat-card .value { font-size: 2em; font-weight: bold; color: var(--primary); }
+
+        /* Alert cards */
+        .alert-card {
+            background: #fff3cd;
+            border-left: 4px solid var(--warning);
+        }
+        .alert-card .value { color: var(--warning); }
+        .danger-card {
+            background: #f8d7da;
+            border-left: 4px solid var(--danger);
+        }
+        .danger-card .value { color: var(--danger); }
 
         /* Tabs */
         .tabs {
@@ -175,9 +190,7 @@
             margin-bottom: 20px;
         }
 
-        body.dark-mode form {
-            background: #1a202c;
-        }
+        body.dark-mode form { background: #1a202c; }
 
         .form-group { margin-bottom: 20px; }
         label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--dark); }
@@ -224,31 +237,17 @@
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
 
-        .btn-danger {
-            background: linear-gradient(135deg, var(--danger) 0%, #c53030 100%);
-        }
+        .btn-danger { background: linear-gradient(135deg, var(--danger) 0%, #c53030 100%); }
+        .btn-success { background: linear-gradient(135deg, var(--success) 0%, #2f855a 100%); }
+        .btn-warning { background: linear-gradient(135deg, var(--warning) 0%, #dd6b20 100%); }
+        .btn-sm { padding: 5px 10px; font-size: 0.85em; }
 
-        .btn-success {
-            background: linear-gradient(135deg, var(--success) 0%, #2f855a 100%);
-        }
-
-        .btn-warning {
-            background: linear-gradient(135deg, var(--warning) 0%, #dd6b20 100%);
-        }
-
-        .btn-sm {
-            padding: 5px 10px;
-            font-size: 0.85em;
-        }
-
-        /* Search */
         .search-box {
             margin-bottom: 20px;
             position: relative;
         }
 
         .search-box input { padding-left: 40px; }
-
         .search-box::before {
             content: '🔍';
             position: absolute;
@@ -263,15 +262,20 @@
             gap: 10px;
             margin-bottom: 20px;
             flex-wrap: wrap;
+            align-items: center;
         }
 
-        /* Loans List */
-        .loans-list {
+        .filter-group input, .filter-group select {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .loans-list, .clients-list {
             max-height: 600px;
             overflow-y: auto;
         }
 
-        .loan-card {
+        .loan-card, .client-card {
             background: white;
             border: 1px solid #e0e0e0;
             border-radius: 12px;
@@ -281,7 +285,8 @@
             animation: slideIn 0.3s ease-out;
         }
 
-        body.dark-mode .loan-card {
+        body.dark-mode .loan-card,
+        body.dark-mode .client-card {
             background: #1a202c;
             border-color: #4a5568;
         }
@@ -291,12 +296,12 @@
             to { opacity: 1; transform: translateX(0); }
         }
 
-        .loan-card:hover {
+        .loan-card:hover, .client-card:hover {
             box-shadow: 0 5px 20px rgba(0,0,0,0.1);
             transform: translateX(5px);
         }
 
-        .loan-header {
+        .loan-header, .client-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -304,15 +309,18 @@
             flex-wrap: wrap;
         }
 
-        .loan-client {
+        .loan-client, .client-name {
             font-size: 1.2em;
             font-weight: bold;
             color: var(--dark);
         }
 
-        body.dark-mode .loan-client { color: #e2e8f0; }
+        body.dark-mode .loan-client,
+        body.dark-mode .client-name {
+            color: #e2e8f0;
+        }
 
-        .loan-actions button {
+        .loan-actions button, .client-actions button {
             padding: 5px 10px;
             margin-left: 5px;
             font-size: 0.85em;
@@ -328,7 +336,10 @@
 
         .badge.pagado { background: #d4edda; color: #155724; }
         .badge.pendiente { background: #f8d7da; color: #721c24; }
-        .badge.activo { background: #d1ecf1; color: #0c5460; }
+        .badge.vencido { background: #f8d7da; color: #dc3545; }
+        .badge.proximo { background: #fff3cd; color: #856404; }
+        .badge.frances { background: #cce5ff; color: #004085; }
+        .badge.aleman { background: #d4edda; color: #155724; }
 
         .loan-details {
             display: grid;
@@ -362,7 +373,72 @@
             transition: width 0.5s ease;
         }
 
-        /* Modal */
+        .amortization-table {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+
+        .amortization-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .amortization-table th, .amortization-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .amortization-table th {
+            background: var(--primary);
+            color: white;
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-left: 4px solid var(--primary);
+        }
+
+        .summary-card h3 {
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .summary-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .summary-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .summary-label {
+            font-size: 0.85em;
+            color: var(--gray);
+            margin-bottom: 5px;
+        }
+
+        .summary-value {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: var(--dark);
+        }
+
+        .summary-value.total {
+            color: var(--success);
+            font-size: 1.5em;
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -380,15 +456,12 @@
             margin: 50px auto;
             padding: 30px;
             border-radius: 15px;
-            max-width: 500px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
             animation: slideIn 0.3s;
         }
 
-        body.dark-mode .modal-content {
-            background: #2d3748;
-        }
-
-        /* Chart Container */
         .chart-container {
             padding: 20px;
             background: white;
@@ -396,15 +469,10 @@
             margin-bottom: 20px;
         }
 
-        body.dark-mode .chart-container {
-            background: #1a202c;
-        }
+        body.dark-mode .chart-container { background: #1a202c; }
 
-        canvas {
-            max-height: 300px;
-        }
+        canvas { max-height: 300px; }
 
-        /* Toast Notifications */
         .toast {
             position: fixed;
             bottom: 20px;
@@ -426,14 +494,14 @@
         .toast.error { border-left: 4px solid var(--danger); }
         .toast.warning { border-left: 4px solid var(--warning); }
 
-        /* Responsive */
         @media (max-width: 768px) {
             .tabs { padding: 0 15px; }
             .tab { padding: 12px 15px; font-size: 0.85em; }
             .form-section { padding: 20px; }
             .stats { padding: 20px; }
-            .loan-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .loan-header, .client-header { flex-direction: column; align-items: flex-start; gap: 10px; }
             .modal-content { margin: 20px; padding: 20px; }
+            .summary-details { grid-template-columns: 1fr; }
         }
 
         .empty-state {
@@ -449,16 +517,16 @@
             margin-bottom: 10px;
         }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
             <h1>💰 Sistema de Gestión de Préstamos Profesional</h1>
-            <p>Administra tus préstamos con todas las herramientas profesionales</p>
+            <p>Amortización Francesa y Alemana | Interés anual o mensual</p>
         </div>
 
+        <!-- Stats generales y alertas -->
         <div class="stats">
             <div class="stat-card" onclick="cambiarTab('lista')">
                 <h3>Total Prestado</h3>
@@ -472,9 +540,13 @@
                 <h3>Saldo Pendiente</h3>
                 <div class="value" id="saldoPendiente">$0</div>
             </div>
-            <div class="stat-card" onclick="cambiarTab('lista')">
-                <h3>Préstamos Activos</h3>
-                <div class="value" id="prestamosActivos">0</div>
+            <div class="stat-card alert-card" onclick="cambiarTab('lista')">
+                <h3>⏰ Préstamos por vencer (7 días)</h3>
+                <div class="value" id="porVencer">0</div>
+            </div>
+            <div class="stat-card danger-card" onclick="cambiarTab('lista')">
+                <h3>⚠️ Préstamos vencidos</h3>
+                <div class="value" id="vencidos">0</div>
             </div>
         </div>
 
@@ -483,6 +555,7 @@
             <button class="tab" onclick="cambiarTab('prestamo')">📝 Nuevo Préstamo</button>
             <button class="tab" onclick="cambiarTab('pago')">💵 Registrar Pago</button>
             <button class="tab" onclick="cambiarTab('lista')">📊 Lista de Préstamos</button>
+            <button class="tab" onclick="cambiarTab('clientes')">👥 Clientes</button>
             <button class="tab" onclick="cambiarTab('graficos')">📈 Gráficos</button>
             <button class="tab" onclick="cambiarTab('reportes')">📄 Reportes</button>
         </div>
@@ -515,22 +588,70 @@
             <form id="formPrestamo">
                 <div class="form-group">
                     <label>👤 Cliente:</label>
-                    <input type="text" id="clientePrestamo" placeholder="Nombre del cliente" required>
+                    <input type="text" id="clientePrestamo" placeholder="Nombre del cliente" list="listaClientesNombres" required>
                 </div>
                 <div class="form-group">
-                    <label>💰 Monto:</label>
+                    <label>💰 Monto del préstamo:</label>
                     <input type="number" id="monto" step="0.01" placeholder="0.00" required>
                 </div>
                 <div class="form-group">
-                    <label>📈 Interés (%):</label>
+                    <label>📈 Tipo de interés:</label>
+                    <select id="tipoInteres">
+                        <option value="anual">Anual (%)</option>
+                        <option value="mensual">Mensual (%)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>📈 Interés:</label>
                     <input type="number" id="interes" step="0.01" placeholder="0.00" required>
                 </div>
                 <div class="form-group">
-                    <label>📅 Plazo (días):</label>
-                    <input type="number" id="plazo" placeholder="30" value="30">
+                    <label>📆 Número de cuotas (meses):</label>
+                    <input type="number" id="numCuotas" min="1" max="60" value="12" required>
+                </div>
+                <div class="form-group">
+                    <label>📅 Método de amortización:</label>
+                    <select id="metodoAmortizacion">
+                        <option value="frances">🇫🇷 Francés (cuota fija)</option>
+                        <option value="aleman">🇩🇪 Alemán (cuota decreciente)</option>
+                    </select>
                 </div>
                 <button type="button" onclick="guardarPrestamo()">Registrar Préstamo</button>
             </form>
+
+            <!-- Panel de resumen -->
+            <div id="summaryPanel" class="summary-card" style="display: none;">
+                <h3>📋 Resumen del préstamo</h3>
+                <div class="summary-details">
+                    <div class="summary-item">
+                        <span class="summary-label">💰 Monto prestado</span>
+                        <span class="summary-value" id="resumenMonto">$0.00</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">📈 Interés</span>
+                        <span class="summary-value" id="resumenInteres">0%</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">📅 Método</span>
+                        <span class="summary-value" id="resumenMetodo">Francés</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">💰 Total a pagar</span>
+                        <span class="summary-value total" id="resumenTotalPagar">$0.00</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">💸 Interés total</span>
+                        <span class="summary-value" id="resumenInteresTotal">$0.00</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label" id="resumenCuotaLabel">Cuota mensual</span>
+                        <span class="summary-value" id="resumenCuota">$0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla de amortización -->
+            <div id="amortizacionPreview" class="amortization-table" style="display:none;"></div>
         </div>
 
         <!-- Registrar Pago -->
@@ -538,7 +659,7 @@
             <form id="formPago">
                 <div class="form-group">
                     <label>👤 Cliente:</label>
-                    <input type="text" id="clientePago" placeholder="Nombre del cliente" required>
+                    <input type="text" id="clientePago" placeholder="Nombre del cliente" list="listaClientesNombres" required>
                 </div>
                 <div class="form-group">
                     <label>💵 Monto a pagar:</label>
@@ -551,25 +672,31 @@
         <!-- Lista de Préstamos -->
         <div id="tab-lista" class="form-section">
             <div class="filter-group">
-                <div class="search-box" style="flex: 1;">
-                    <input type="text" id="searchCliente" placeholder="Buscar por cliente..." onkeyup="filtrarPrestamos()">
+                <div class="search-box" style="flex: 2;">
+                    <input type="text" id="searchCliente" placeholder="Buscar por cliente o cédula..." onkeyup="filtrarPrestamos()">
                 </div>
+                <input type="number" id="filtroMontoMin" placeholder="Monto mínimo" step="0.01" onchange="filtrarPrestamos()">
+                <input type="number" id="filtroMontoMax" placeholder="Monto máximo" step="0.01" onchange="filtrarPrestamos()">
+                <input type="date" id="filtroFechaInicio" onchange="filtrarPrestamos()">
+                <input type="date" id="filtroFechaFin" onchange="filtrarPrestamos()">
                 <select id="filterEstado" onchange="filtrarPrestamos()">
                     <option value="todos">Todos los estados</option>
                     <option value="pendiente">Pendientes</option>
                     <option value="pagado">Pagados</option>
                 </select>
-                <select id="filterFecha" onchange="filtrarPrestamos()">
-                    <option value="todos">Todas las fechas</option>
-                    <option value="hoy">Hoy</option>
-                    <option value="semana">Esta semana</option>
-                    <option value="mes">Este mes</option>
-                </select>
                 <button onclick="exportarExcel()" class="btn-success">📊 Exportar Excel</button>
-                <button onclick="exportarPDF()" class="btn-warning">📑 Exportar PDF</button>
+                <button onclick="recargarLista()" class="btn">🔄 Actualizar</button>
                 <button onclick="imprimirLista()" class="btn">🖨️ Imprimir</button>
             </div>
             <div id="lista" class="loans-list"></div>
+        </div>
+
+        <!-- Clientes -->
+        <div id="tab-clientes" class="form-section">
+            <div class="search-box">
+                <input type="text" id="searchClienteLista" placeholder="Buscar cliente (nombre o cédula)..." onkeyup="filtrarClientes()">
+            </div>
+            <div id="listaClientes" class="clients-list"></div>
         </div>
 
         <!-- Gráficos -->
@@ -593,9 +720,29 @@
         </div>
     </div>
 
+    <!-- Modal para historial de pagos -->
+    <div id="modalHistorial" class="modal">
+        <div class="modal-content">
+            <h3>📜 Historial de Pagos</h3>
+            <div id="historialContenido"></div>
+            <button onclick="cerrarModal()">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- Modal para tabla de amortización -->
+    <div id="modalAmortizacion" class="modal">
+        <div class="modal-content">
+            <h3>📊 Tabla de Amortización</h3>
+            <div id="amortizacionContenido"></div>
+            <button onclick="cerrarModal()">Cerrar</button>
+        </div>
+    </div>
+
+    <datalist id="listaClientesNombres"></datalist>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, push, set, get, update, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, push, set, get, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCPPT7vBogvJvJpnC1TTG3Yx-N30xJit3o",
@@ -611,24 +758,16 @@
         const db = getDatabase(app);
 
         let todosLosPrestamos = [];
-        let auditLog = [];
+        let todosLosClientes = [];
         let chartPagos, chartClientes;
 
+        // Funciones auxiliares
         function mostrarToast(mensaje, tipo = "success") {
             const toast = document.createElement('div');
             toast.className = `toast ${tipo}`;
             toast.innerHTML = mensaje;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
-        }
-
-        function registrarAuditoria(accion, datos) {
-            auditLog.unshift({
-                fecha: new Date().toISOString(),
-                accion: accion,
-                datos: datos
-            });
-            localStorage.setItem('auditLog', JSON.stringify(auditLog.slice(0, 100)));
         }
 
         function escapeHtml(str) {
@@ -657,115 +796,228 @@
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
             
-            const tabs = { cliente: 0, prestamo: 1, pago: 2, lista: 3, graficos: 4, reportes: 5 };
+            const tabs = { cliente: 0, prestamo: 1, pago: 2, lista: 3, clientes: 4, graficos: 5, reportes: 6 };
             document.querySelectorAll('.tab')[tabs[tab]].classList.add('active');
             document.getElementById(`tab-${tab}`).classList.add('active');
             
             if (tab === 'lista') mostrarPrestamos();
             if (tab === 'graficos') actualizarGraficos();
+            if (tab === 'clientes') cargarClientes();
         };
 
+        // Obtener tasa mensual según tipo de interés
+        function getTasaMensual(interes, tipo) {
+            let tasa = interes / 100;
+            if (tipo === 'anual') tasa = tasa / 12;
+            return tasa;
+        }
+
+        // Cálculo de amortización según método
+        function calcularAmortizacion(monto, interes, numCuotas, metodo, tipoInteres) {
+            const tasaMensual = getTasaMensual(interes, tipoInteres);
+            let amortizacion = [];
+            if (metodo === 'frances') {
+                // Cuota fija (francés)
+                const cuota = monto * tasaMensual * Math.pow(1 + tasaMensual, numCuotas) / (Math.pow(1 + tasaMensual, numCuotas) - 1);
+                let saldo = monto;
+                for (let i = 1; i <= numCuotas; i++) {
+                    const interesCuota = saldo * tasaMensual;
+                    const capital = cuota - interesCuota;
+                    saldo -= capital;
+                    amortizacion.push({
+                        cuota: i,
+                        pago: cuota,
+                        interes: interesCuota,
+                        capital: capital,
+                        saldo: Math.max(0, saldo)
+                    });
+                }
+            } else if (metodo === 'aleman') {
+                // Sistema alemán: capital constante
+                const capitalConstante = monto / numCuotas;
+                let saldo = monto;
+                for (let i = 1; i <= numCuotas; i++) {
+                    const interesCuota = saldo * tasaMensual;
+                    const pago = capitalConstante + interesCuota;
+                    saldo -= capitalConstante;
+                    amortizacion.push({
+                        cuota: i,
+                        pago: pago,
+                        interes: interesCuota,
+                        capital: capitalConstante,
+                        saldo: Math.max(0, saldo)
+                    });
+                }
+            }
+            return amortizacion;
+        }
+
+        // Función para actualizar el resumen y la vista previa de amortización
+        function actualizarResumenYAmortizacion() {
+            const monto = parseFloat(document.getElementById("monto").value);
+            const interes = parseFloat(document.getElementById("interes").value);
+            const numCuotas = parseInt(document.getElementById("numCuotas").value);
+            const metodo = document.getElementById("metodoAmortizacion").value;
+            const tipoInteres = document.getElementById("tipoInteres").value;
+
+            if (isNaN(monto) || isNaN(interes) || isNaN(numCuotas) || monto <= 0 || interes < 0 || numCuotas <= 0) {
+                document.getElementById("summaryPanel").style.display = "none";
+                document.getElementById("amortizacionPreview").style.display = "none";
+                return;
+            }
+
+            const amortizacion = calcularAmortizacion(monto, interes, numCuotas, metodo, tipoInteres);
+            if (!amortizacion.length) return;
+
+            const totalPagar = amortizacion.reduce((sum, c) => sum + c.pago, 0);
+            const interesTotal = totalPagar - monto;
+
+            let cuotaTexto = "";
+            if (metodo === 'frances') {
+                cuotaTexto = `$${amortizacion[0].pago.toFixed(2)} (fija)`;
+            } else {
+                const primeraCuota = amortizacion[0].pago;
+                const ultimaCuota = amortizacion[amortizacion.length-1].pago;
+                cuotaTexto = `$${primeraCuota.toFixed(2)} → $${ultimaCuota.toFixed(2)} (decreciente)`;
+            }
+
+            // Mostrar resumen
+            document.getElementById("resumenMonto").textContent = `$${monto.toFixed(2)}`;
+            let interesTexto = `${interes}% ` + (tipoInteres === 'anual' ? 'anual' : 'mensual');
+            document.getElementById("resumenInteres").textContent = interesTexto;
+            document.getElementById("resumenMetodo").textContent = metodo === 'frances' ? 'Francés (cuota fija)' : 'Alemán (cuota decreciente)';
+            document.getElementById("resumenTotalPagar").textContent = `$${totalPagar.toFixed(2)}`;
+            document.getElementById("resumenInteresTotal").textContent = `$${interesTotal.toFixed(2)}`;
+            document.getElementById("resumenCuota").textContent = cuotaTexto;
+            document.getElementById("summaryPanel").style.display = "block";
+
+            // Mostrar tabla de amortización
+            let tabla = `<h4>📊 Tabla de amortización (${metodo === 'frances' ? 'Francés' : 'Alemán'})</h4>
+            <table>
+                <thead>
+                    <tr><th>Cuota</th><th>Pago</th><th>Interés</th><th>Capital</th><th>Saldo</th></tr>
+                </thead>
+                <tbody>`;
+            amortizacion.forEach(c => {
+                tabla += `<tr>
+                    <td>${c.cuota}</td>
+                    <td>$${c.pago.toFixed(2)}</td>
+                    <td>$${c.interes.toFixed(2)}</td>
+                    <td>$${c.capital.toFixed(2)}</td>
+                    <td>$${c.saldo.toFixed(2)}</td>
+                </tr>`;
+            });
+            tabla += `</tbody></table>`;
+            const previewDiv = document.getElementById("amortizacionPreview");
+            previewDiv.innerHTML = tabla;
+            previewDiv.style.display = "block";
+        }
+
+        // Guardar cliente
         window.guardarCliente = async function() {
             const nombre = document.getElementById("nombre").value.trim();
             const cedula = document.getElementById("cedula").value.trim();
             const telefono = document.getElementById("telefono").value.trim();
             const direccion = document.getElementById("direccion").value.trim();
-            
-            if (!nombre || !cedula) {
-                mostrarToast("Por favor ingrese nombre y cédula.", "error");
-                return;
-            }
-            
+            if (!nombre || !cedula) { mostrarToast("Por favor ingrese nombre y cédula.", "error"); return; }
             try {
                 const snapshot = await get(ref(db, 'clientes'));
                 const clientes = snapshot.val();
-                
-                if (clientes) {
-                    const existe = Object.values(clientes).some(c => c.cedula === cedula);
-                    if (existe) {
-                        mostrarToast("Ya existe un cliente con esa cédula.", "error");
-                        return;
-                    }
+                if (clientes && Object.values(clientes).some(c => c.cedula === cedula)) {
+                    mostrarToast("Ya existe un cliente con esa cédula.", "error"); return;
                 }
-                
                 const clientesRef = ref(db, 'clientes');
                 const nuevoClienteRef = push(clientesRef);
                 await set(nuevoClienteRef, { nombre, cedula, telefono, direccion, fecha: new Date().toISOString() });
-                
-                registrarAuditoria("Cliente registrado", { nombre, cedula });
                 mostrarToast("✅ Cliente guardado correctamente", "success");
                 document.getElementById("nombre").value = "";
                 document.getElementById("cedula").value = "";
                 document.getElementById("telefono").value = "";
                 document.getElementById("direccion").value = "";
-            } catch (error) {
-                console.error("Error:", error);
-                mostrarToast("Error al guardar cliente: " + error.message, "error");
-            }
+                cargarClientes();
+            } catch (error) { mostrarToast("Error: " + error.message, "error"); }
         };
 
+        // Guardar préstamo
         window.guardarPrestamo = async function() {
             const cliente = document.getElementById("clientePrestamo").value.trim();
             const monto = parseFloat(document.getElementById("monto").value);
             const interes = parseFloat(document.getElementById("interes").value);
-            const plazo = parseInt(document.getElementById("plazo").value);
-            
-            if (!cliente || isNaN(monto) || isNaN(interes) || monto <= 0 || interes < 0) {
+            const numCuotas = parseInt(document.getElementById("numCuotas").value);
+            const metodo = document.getElementById("metodoAmortizacion").value;
+            const tipoInteres = document.getElementById("tipoInteres").value;
+
+            if (!cliente || isNaN(monto) || isNaN(interes) || isNaN(numCuotas) || monto <= 0 || interes < 0 || numCuotas <= 0) {
                 mostrarToast("Todos los campos son obligatorios y deben ser números válidos.", "error");
                 return;
             }
-            
-            const total = monto + (monto * interes / 100);
+
             const id = Date.now().toString();
+            const fecha = new Date().toISOString();
+            const amortizacion = calcularAmortizacion(monto, interes, numCuotas, metodo, tipoInteres);
+            if (!amortizacion.length) {
+                mostrarToast("Error al calcular la amortización. Verifique los datos.", "error");
+                return;
+            }
+
+            const totalPagar = amortizacion.reduce((sum, c) => sum + c.pago, 0);
+            const saldo = totalPagar;
+
             const fechaVencimiento = new Date();
-            fechaVencimiento.setDate(fechaVencimiento.getDate() + plazo);
-            
+            fechaVencimiento.setMonth(fechaVencimiento.getMonth() + numCuotas);
+
             try {
-                await set(ref(db, `prestamos/${id}`), {
-                    cliente, monto, interes, total, saldo: total,
-                    fecha: new Date().toISOString(),
+                const prestamoData = {
+                    cliente,
+                    monto,
+                    interes,
+                    tipoInteres,
+                    total: totalPagar,
+                    saldo,
+                    fecha,
                     fechaVencimiento: fechaVencimiento.toISOString(),
-                    plazo, estado: "activo"
-                });
-                
-                registrarAuditoria("Préstamo registrado", { cliente, monto, interes });
+                    metodoAmortizacion: metodo,
+                    amortizacion,
+                    estado: "activo",
+                    tipoPago: "cuotas"
+                };
+                await set(ref(db, `prestamos/${id}`), prestamoData);
                 mostrarToast("✅ Préstamo registrado correctamente", "success");
+                // Limpiar campos
                 document.getElementById("clientePrestamo").value = "";
                 document.getElementById("monto").value = "";
                 document.getElementById("interes").value = "";
+                document.getElementById("numCuotas").value = "12";
+                document.getElementById("tipoInteres").value = "anual";
+                document.getElementById("metodoAmortizacion").value = "frances";
+                document.getElementById("summaryPanel").style.display = "none";
+                document.getElementById("amortizacionPreview").style.display = "none";
                 mostrarPrestamos();
                 actualizarEstadisticas();
-            } catch (error) {
-                mostrarToast("Error al guardar préstamo: " + error.message, "error");
-            }
+                cargarClientes(); // para actualizar totales por cliente
+            } catch (error) { mostrarToast("Error: " + error.message, "error"); }
         };
 
+        // Registrar pago
         window.registrarPago = async function() {
             const cliente = document.getElementById("clientePago").value.trim();
             const pago = parseFloat(document.getElementById("pago").value);
-            
             if (!cliente || isNaN(pago) || pago <= 0) {
-                mostrarToast("Ingrese un cliente válido y un monto positivo.", "error");
-                return;
+                mostrarToast("Ingrese un cliente válido y un monto positivo.", "error"); return;
             }
-            
             try {
                 const snapshot = await get(ref(db, 'prestamos'));
                 const prestamos = snapshot.val();
                 if (!prestamos) { mostrarToast("No hay préstamos registrados.", "error"); return; }
-                
                 const prestamosPendientes = [];
                 for (const [id, prestamo] of Object.entries(prestamos)) {
                     if (prestamo.cliente === cliente && prestamo.saldo > 0) {
                         prestamosPendientes.push({id, ...prestamo});
                     }
                 }
-                
                 if (prestamosPendientes.length === 0) {
-                    mostrarToast("No hay préstamos pendientes para este cliente.", "error");
-                    return;
+                    mostrarToast("No hay préstamos pendientes para este cliente.", "error"); return;
                 }
-                
                 let prestamoSeleccionado = prestamosPendientes[0];
                 if (prestamosPendientes.length > 1) {
                     let mensaje = "Selecciona el préstamo a pagar:\n\n";
@@ -778,60 +1030,121 @@
                     if (isNaN(indice) || indice < 0 || indice >= prestamosPendientes.length) return;
                     prestamoSeleccionado = prestamosPendientes[indice];
                 }
-                
                 const newSaldo = prestamoSeleccionado.saldo - pago;
                 if (newSaldo < 0) {
                     mostrarToast(`El pago excede el saldo pendiente ($${prestamoSeleccionado.saldo}).`, "error");
                     return;
                 }
-                
+                // Guardar historial de pago
+                const historialRef = ref(db, `prestamos/${prestamoSeleccionado.id}/historialPagos`);
+                const nuevoPagoRef = push(historialRef);
+                await set(nuevoPagoRef, {
+                    monto: pago,
+                    fecha: new Date().toISOString(),
+                    saldoAnterior: prestamoSeleccionado.saldo,
+                    saldoNuevo: newSaldo
+                });
                 await update(ref(db, `prestamos/${prestamoSeleccionado.id}`), {
                     saldo: newSaldo,
                     ultimoPago: pago,
                     fechaUltimoPago: new Date().toISOString()
                 });
-                
-                registrarAuditoria("Pago registrado", { cliente, monto: pago, prestamoId: prestamoSeleccionado.id });
                 mostrarToast(`✅ Pago de $${pago} registrado. Nuevo saldo: $${newSaldo}`, "success");
                 document.getElementById("clientePago").value = "";
                 document.getElementById("pago").value = "";
                 mostrarPrestamos();
                 actualizarEstadisticas();
-            } catch (error) {
-                mostrarToast("Error al registrar pago: " + error.message, "error");
-            }
+                cargarClientes();
+            } catch (error) { mostrarToast("Error: " + error.message, "error"); }
         };
 
+        // Ver historial de pagos
+        window.verHistorial = async function(id) {
+            const snapshot = await get(ref(db, `prestamos/${id}/historialPagos`));
+            const historial = snapshot.val();
+            const modal = document.getElementById("modalHistorial");
+            const contenido = document.getElementById("historialContenido");
+            if (!historial || Object.keys(historial).length === 0) {
+                contenido.innerHTML = "<p>No hay pagos registrados.</p>";
+            } else {
+                contenido.innerHTML = Object.values(historial).sort((a,b) => new Date(b.fecha) - new Date(a.fecha))
+                    .map(p => `
+                        <div class="loan-card" style="margin-bottom:10px;">
+                            <div><strong>${new Date(p.fecha).toLocaleString()}</strong></div>
+                            <div>Monto: $${p.monto.toFixed(2)}</div>
+                            <div>Saldo anterior: $${p.saldoAnterior.toFixed(2)} → Nuevo saldo: $${p.saldoNuevo.toFixed(2)}</div>
+                        </div>
+                    `).join('');
+            }
+            modal.style.display = "block";
+        };
+
+        // Ver tabla de amortización
+        window.verAmortizacion = async function(id) {
+            const snapshot = await get(ref(db, `prestamos/${id}`));
+            const prestamo = snapshot.val();
+            const modal = document.getElementById("modalAmortizacion");
+            const contenido = document.getElementById("amortizacionContenido");
+            if (!prestamo.amortizacion) {
+                contenido.innerHTML = "<p>Este préstamo no tiene tabla de amortización.</p>";
+            } else {
+                let html = `<h4>Método: ${prestamo.metodoAmortizacion === 'frances' ? 'Francés (cuota fija)' : 'Alemán (cuota decreciente)'}</h4>
+                <table><thead><tr><th>Cuota</th><th>Pago</th><th>Interés</th><th>Capital</th><th>Saldo</th></tr></thead><tbody>`;
+                prestamo.amortizacion.forEach(c => {
+                    html += `<tr>
+                        <td>${c.cuota}</td>
+                        <td>$${c.pago.toFixed(2)}</td>
+                        <td>$${c.interes.toFixed(2)}</td>
+                        <td>$${c.capital.toFixed(2)}</td>
+                        <td>$${c.saldo.toFixed(2)}</td>
+                    </tr>`;
+                });
+                html += `</tbody></table>`;
+                contenido.innerHTML = html;
+            }
+            modal.style.display = "block";
+        };
+
+        function cerrarModal() {
+            document.getElementById("modalHistorial").style.display = "none";
+            document.getElementById("modalAmortizacion").style.display = "none";
+        }
+        window.cerrarModal = cerrarModal;
+
+        // Editar, eliminar préstamo
         window.editarPrestamo = async function(id) {
             const snapshot = await get(ref(db, `prestamos/${id}`));
             const prestamo = snapshot.val();
             if (!prestamo) return;
-            
             const nuevoMonto = prompt("Editar monto:", prestamo.monto);
-            const nuevoInteres = prompt("Editar interés:", prestamo.interes);
-            
+            const nuevoInteres = prompt("Editar interés (%):", prestamo.interes);
             if (nuevoMonto && nuevoInteres) {
-                const nuevoTotal = parseFloat(nuevoMonto) + (parseFloat(nuevoMonto) * parseFloat(nuevoInteres) / 100);
+                const numCuotas = prestamo.amortizacion ? prestamo.amortizacion.length : 12;
+                const metodo = prestamo.metodoAmortizacion || 'frances';
+                const tipoInteres = prestamo.tipoInteres || 'anual';
+                const nuevaAmortizacion = calcularAmortizacion(parseFloat(nuevoMonto), parseFloat(nuevoInteres), numCuotas, metodo, tipoInteres);
+                const nuevoTotal = nuevaAmortizacion.reduce((sum, c) => sum + c.pago, 0);
                 await update(ref(db, `prestamos/${id}`), {
                     monto: parseFloat(nuevoMonto),
                     interes: parseFloat(nuevoInteres),
                     total: nuevoTotal,
-                    saldo: nuevoTotal
+                    saldo: nuevoTotal,
+                    amortizacion: nuevaAmortizacion
                 });
-                registrarAuditoria("Préstamo editado", { id, nuevoMonto, nuevoInteres });
                 mostrarToast("✅ Préstamo actualizado", "success");
                 mostrarPrestamos();
                 actualizarEstadisticas();
+                cargarClientes();
             }
         };
 
         window.eliminarPrestamo = async function(id) {
-            if (confirm("⚠️ ¿Estás seguro de eliminar este préstamo? Esta acción no se puede deshacer.")) {
+            if (confirm("⚠️ ¿Estás seguro de eliminar este préstamo?")) {
                 await set(ref(db, `prestamos/${id}`), null);
-                registrarAuditoria("Préstamo eliminado", { id });
                 mostrarToast("✅ Préstamo eliminado", "success");
                 mostrarPrestamos();
                 actualizarEstadisticas();
+                cargarClientes();
             }
         };
 
@@ -841,98 +1154,106 @@
                 const prestamo = snapshot.val();
                 if (prestamo && prestamo.ultimoPago) {
                     const newSaldo = prestamo.saldo + prestamo.ultimoPago;
+                    const historialSnapshot = await get(ref(db, `prestamos/${id}/historialPagos`));
+                    const historial = historialSnapshot.val();
+                    if (historial) {
+                        const ultimoId = Object.keys(historial).sort((a,b) => new Date(historial[b].fecha) - new Date(historial[a].fecha))[0];
+                        await set(ref(db, `prestamos/${id}/historialPagos/${ultimoId}`), null);
+                    }
                     await update(ref(db, `prestamos/${id}`), {
                         saldo: newSaldo,
                         ultimoPago: null,
                         fechaUltimoPago: null
                     });
-                    registrarAuditoria("Pago revertido", { id, monto: prestamo.ultimoPago });
                     mostrarToast("✅ Pago revertido", "success");
                     mostrarPrestamos();
                     actualizarEstadisticas();
+                    cargarClientes();
                 }
             }
         };
 
+        // Mostrar lista de préstamos
         async function mostrarPrestamos() {
             const lista = document.getElementById("lista");
             lista.innerHTML = '<div class="empty-state">Cargando préstamos...</div>';
-            
             try {
                 const snapshot = await get(ref(db, 'prestamos'));
                 const prestamos = snapshot.val();
-                
                 if (!prestamos || Object.keys(prestamos).length === 0) {
                     lista.innerHTML = '<div class="empty-state">No hay préstamos registrados</div>';
                     return;
                 }
-                
                 todosLosPrestamos = Object.entries(prestamos).map(([id, prestamo]) => ({ id, ...prestamo }))
                     .sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-                
                 renderizarLista(todosLosPrestamos);
                 actualizarEstadisticas();
                 actualizarGraficos();
             } catch (error) {
-                console.error("Error:", error);
-                lista.innerHTML = `<div class="empty-state">❌ Error al cargar: ${error.message}</div>`;
+                lista.innerHTML = `<div class="empty-state">❌ Error: ${error.message}</div>`;
             }
         }
 
         function renderizarLista(prestamos) {
             const lista = document.getElementById("lista");
             const searchText = document.getElementById("searchCliente")?.value.toLowerCase() || "";
+            const montoMin = parseFloat(document.getElementById("filtroMontoMin")?.value) || 0;
+            const montoMax = parseFloat(document.getElementById("filtroMontoMax")?.value) || Infinity;
+            const fechaInicio = document.getElementById("filtroFechaInicio")?.value;
+            const fechaFin = document.getElementById("filtroFechaFin")?.value;
             const estadoFiltro = document.getElementById("filterEstado")?.value || "todos";
-            const fechaFiltro = document.getElementById("filterFecha")?.value || "todos";
-            
-            let filtrados = prestamos.filter(p => p.cliente.toLowerCase().includes(searchText));
-            
+
+            let filtrados = prestamos.filter(p => {
+                // Buscar por nombre o cédula
+                const clienteData = todosLosClientes.find(c => c.nombre === p.cliente);
+                const cedula = clienteData ? clienteData.cedula : '';
+                return p.cliente.toLowerCase().includes(searchText) || cedula.includes(searchText);
+            });
+            filtrados = filtrados.filter(p => p.monto >= montoMin && p.monto <= montoMax);
             if (estadoFiltro !== "todos") {
                 filtrados = filtrados.filter(p => estadoFiltro === "pagado" ? p.saldo <= 0 : p.saldo > 0);
             }
-            
-            if (fechaFiltro !== "todos") {
-                const hoy = new Date();
-                filtrados = filtrados.filter(p => {
-                    const fecha = new Date(p.fecha);
-                    if (fechaFiltro === "hoy") return fecha.toDateString() === hoy.toDateString();
-                    if (fechaFiltro === "semana") {
-                        const semanaAtras = new Date(hoy.setDate(hoy.getDate() - 7));
-                        return fecha >= semanaAtras;
-                    }
-                    if (fechaFiltro === "mes") {
-                        const mesAtras = new Date(hoy.setMonth(hoy.getMonth() - 1));
-                        return fecha >= mesAtras;
-                    }
-                    return true;
-                });
+            if (fechaInicio) {
+                const inicio = new Date(fechaInicio);
+                filtrados = filtrados.filter(p => new Date(p.fecha) >= inicio);
             }
-            
-            if (filtrados.length === 0) {
-                lista.innerHTML = '<div class="empty-state">No se encontraron préstamos</div>';
-                return;
+            if (fechaFin) {
+                const fin = new Date(fechaFin);
+                fin.setHours(23,59,59,999);
+                filtrados = filtrados.filter(p => new Date(p.fecha) <= fin);
             }
-            
+
+            if (filtrados.length === 0) { lista.innerHTML = '<div class="empty-state">No se encontraron préstamos</div>'; return; }
             lista.innerHTML = filtrados.map(prestamo => {
                 const porcentajePagado = ((prestamo.total - prestamo.saldo) / prestamo.total * 100).toFixed(1);
                 const estado = prestamo.saldo <= 0 ? 'pagado' : 'pendiente';
                 const fecha = new Date(prestamo.fecha).toLocaleDateString('es-ES');
                 const vencimiento = prestamo.fechaVencimiento ? new Date(prestamo.fechaVencimiento).toLocaleDateString('es-ES') : 'No especificado';
-                
+                const hoy = new Date();
+                const venc = new Date(prestamo.fechaVencimiento);
+                const diasRestantes = Math.ceil((venc - hoy) / (1000 * 60 * 60 * 24));
+                let estadoBadge = `<span class="badge ${estado}">${estado === 'pagado' ? '✅ Pagado' : '⏳ Pendiente'}</span>`;
+                if (prestamo.saldo > 0 && diasRestantes < 0) estadoBadge = `<span class="badge vencido">⚠️ Vencido</span>`;
+                else if (prestamo.saldo > 0 && diasRestantes <= 7) estadoBadge = `<span class="badge proximo">⏰ Próximo a vencer</span>`;
+                const metodoBadge = prestamo.metodoAmortizacion === 'frances' ? 
+                    '<span class="badge frances">🇫🇷 Francés</span>' : 
+                    '<span class="badge aleman">🇩🇪 Alemán</span>';
                 return `
                     <div class="loan-card">
                         <div class="loan-header">
                             <span class="loan-client">👤 ${escapeHtml(prestamo.cliente)}</span>
                             <div class="loan-actions">
-                                <span class="badge ${estado}">${estado === 'pagado' ? '✅ Pagado' : '⏳ Pendiente'}</span>
+                                ${estadoBadge} ${metodoBadge}
                                 <button onclick="editarPrestamo('${prestamo.id}')" class="btn-sm">✏️</button>
                                 <button onclick="eliminarPrestamo('${prestamo.id}')" class="btn-sm btn-danger">🗑️</button>
+                                <button onclick="verHistorial('${prestamo.id}')" class="btn-sm">📜</button>
+                                <button onclick="verAmortizacion('${prestamo.id}')" class="btn-sm">📊</button>
                                 ${prestamo.ultimoPago ? `<button onclick="revertirPago('${prestamo.id}')" class="btn-sm btn-warning">↩️</button>` : ''}
                             </div>
                         </div>
                         <div class="loan-details">
                             <div class="detail-item"><span class="detail-label">💰 Monto</span><span class="detail-value monto">$${prestamo.monto.toFixed(2)}</span></div>
-                            <div class="detail-item"><span class="detail-label">📈 Interés</span><span class="detail-value">${prestamo.interes}%</span></div>
+                            <div class="detail-item"><span class="detail-label">📈 Interés</span><span class="detail-value">${prestamo.interes}% ${prestamo.tipoInteres === 'anual' ? 'anual' : 'mensual'}</span></div>
                             <div class="detail-item"><span class="detail-label">💵 Total</span><span class="detail-value">$${prestamo.total.toFixed(2)}</span></div>
                             <div class="detail-item"><span class="detail-label">🔻 Saldo</span><span class="detail-value saldo">$${prestamo.saldo.toFixed(2)}</span></div>
                             <div class="detail-item"><span class="detail-label">📅 Fecha</span><span class="detail-value">${fecha}</span></div>
@@ -945,46 +1266,170 @@
         }
 
         window.filtrarPrestamos = function() { renderizarLista(todosLosPrestamos); };
+        window.recargarLista = function() { mostrarPrestamos(); };
 
-        async function actualizarEstadisticas() {
-            try {
-                const snapshot = await get(ref(db, 'prestamos'));
-                const prestamos = snapshot.val();
-                if (!prestamos) return;
-                
-                let totalPrestado = 0, totalPagado = 0, prestamosActivos = 0;
-                Object.values(prestamos).forEach(prestamo => {
-                    totalPrestado += prestamo.total;
-                    totalPagado += prestamo.total - prestamo.saldo;
-                    if (prestamo.saldo > 0) prestamosActivos++;
-                });
-                
-                document.getElementById("totalPrestado").textContent = `$${totalPrestado.toFixed(2)}`;
-                document.getElementById("totalPagado").textContent = `$${totalPagado.toFixed(2)}`;
-                document.getElementById("saldoPendiente").textContent = `$${(totalPrestado - totalPagado).toFixed(2)}`;
-                document.getElementById("prestamosActivos").textContent = prestamosActivos;
-            } catch (error) {
-                console.error("Error:", error);
+        // Clientes con totales pagados
+        async function cargarClientes() {
+            const snapshot = await get(ref(db, 'clientes'));
+            const clientes = snapshot.val();
+            if (!clientes) {
+                document.getElementById("listaClientes").innerHTML = '<div class="empty-state">No hay clientes registrados</div>';
+                return;
             }
+            // Obtener préstamos para calcular totales
+            const prestamosSnapshot = await get(ref(db, 'prestamos'));
+            const prestamos = prestamosSnapshot.val() || {};
+            const clientesConTotales = Object.entries(clientes).map(([id, cliente]) => {
+                let totalPrestado = 0;
+                let totalPagado = 0;
+                let cantidadPrestamos = 0;
+                for (const prestamo of Object.values(prestamos)) {
+                    if (prestamo.cliente === cliente.nombre) {
+                        cantidadPrestamos++;
+                        totalPrestado += prestamo.total;
+                        totalPagado += (prestamo.total - prestamo.saldo);
+                    }
+                }
+                return {
+                    id,
+                    ...cliente,
+                    totalPrestado,
+                    totalPagado,
+                    cantidadPrestamos,
+                    saldoPendiente: totalPrestado - totalPagado
+                };
+            });
+            todosLosClientes = clientesConTotales;
+            renderizarClientes(todosLosClientes);
+            actualizarDatalistClientes();
+        }
+
+        function renderizarClientes(clientes) {
+            const lista = document.getElementById("listaClientes");
+            lista.innerHTML = clientes.map(cliente => `
+                <div class="loan-card client-card">
+                    <div class="loan-header">
+                        <span class="client-name">👤 ${escapeHtml(cliente.nombre)}</span>
+                        <div class="client-actions">
+                            <button onclick="editarCliente('${cliente.id}')" class="btn-sm">✏️</button>
+                            <button onclick="eliminarCliente('${cliente.id}')" class="btn-sm btn-danger">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="loan-details">
+                        <div class="detail-item"><span class="detail-label">🆔 Cédula</span><span class="detail-value">${escapeHtml(cliente.cedula)}</span></div>
+                        <div class="detail-item"><span class="detail-label">📞 Teléfono</span><span class="detail-value">${escapeHtml(cliente.telefono || 'No registrado')}</span></div>
+                        <div class="detail-item"><span class="detail-label">📍 Dirección</span><span class="detail-value">${escapeHtml(cliente.direccion || 'No registrada')}</span></div>
+                        <div class="detail-item"><span class="detail-label">📊 Préstamos</span><span class="detail-value">${cliente.cantidadPrestamos}</span></div>
+                        <div class="detail-item"><span class="detail-label">💰 Total prestado</span><span class="detail-value">$${cliente.totalPrestado.toFixed(2)}</span></div>
+                        <div class="detail-item"><span class="detail-label">💸 Total pagado</span><span class="detail-value">$${cliente.totalPagado.toFixed(2)}</span></div>
+                        <div class="detail-item"><span class="detail-label">🔻 Saldo pendiente</span><span class="detail-value saldo">$${cliente.saldoPendiente.toFixed(2)}</span></div>
+                        <div class="detail-item"><span class="detail-label">📅 Registro</span><span class="detail-value">${new Date(cliente.fecha).toLocaleDateString()}</span></div>
+                    </div>
+                    <button onclick="verPrestamosCliente('${escapeHtml(cliente.nombre)}')" class="btn-sm" style="margin-top:10px;">📊 Ver préstamos</button>
+                </div>
+            `).join('');
+        }
+
+        function actualizarDatalistClientes() {
+            const datalist = document.getElementById("listaClientesNombres");
+            if (!datalist) return;
+            datalist.innerHTML = "";
+            todosLosClientes.forEach(cliente => {
+                const option = document.createElement("option");
+                option.value = cliente.nombre;
+                datalist.appendChild(option);
+            });
+        }
+
+        window.editarCliente = async function(id) {
+            const cliente = todosLosClientes.find(c => c.id === id);
+            if (!cliente) return;
+            const nuevoNombre = prompt("Nuevo nombre:", cliente.nombre);
+            const nuevaCedula = prompt("Nueva cédula:", cliente.cedula);
+            const nuevoTelefono = prompt("Teléfono:", cliente.telefono || '');
+            const nuevaDireccion = prompt("Dirección:", cliente.direccion || '');
+            if (nuevoNombre && nuevaCedula) {
+                await update(ref(db, `clientes/${id}`), {
+                    nombre: nuevoNombre,
+                    cedula: nuevaCedula,
+                    telefono: nuevoTelefono,
+                    direccion: nuevaDireccion
+                });
+                mostrarToast("✅ Cliente actualizado", "success");
+                cargarClientes();
+            }
+        };
+
+        window.eliminarCliente = async function(id) {
+            const cliente = todosLosClientes.find(c => c.id === id);
+            const prestamosSnapshot = await get(ref(db, 'prestamos'));
+            const prestamos = prestamosSnapshot.val();
+            if (prestamos && Object.values(prestamos).some(p => p.cliente === cliente.nombre)) {
+                mostrarToast("❌ No se puede eliminar porque tiene préstamos asociados.", "error");
+                return;
+            }
+            if (confirm(`¿Eliminar al cliente ${cliente.nombre}?`)) {
+                await set(ref(db, `clientes/${id}`), null);
+                mostrarToast("✅ Cliente eliminado", "success");
+                cargarClientes();
+            }
+        };
+
+        window.verPrestamosCliente = function(nombre) {
+            cambiarTab('lista');
+            document.getElementById("searchCliente").value = nombre;
+            filtrarPrestamos();
+        };
+
+        window.filtrarClientes = function() {
+            const texto = document.getElementById("searchClienteLista").value.toLowerCase();
+            const filtrados = todosLosClientes.filter(c => 
+                c.nombre.toLowerCase().includes(texto) || 
+                c.cedula.includes(texto)
+            );
+            renderizarClientes(filtrados);
+        };
+
+        // Estadísticas
+        async function actualizarEstadisticas() {
+            const snapshot = await get(ref(db, 'prestamos'));
+            const prestamos = snapshot.val();
+            if (!prestamos) return;
+            let totalPrestado = 0, totalPagado = 0, prestamosActivos = 0;
+            let porVencer = 0, vencidos = 0;
+            const hoy = new Date();
+            Object.values(prestamos).forEach(prestamo => {
+                totalPrestado += prestamo.total;
+                totalPagado += prestamo.total - prestamo.saldo;
+                if (prestamo.saldo > 0) prestamosActivos++;
+                if (prestamo.saldo > 0 && prestamo.fechaVencimiento) {
+                    const venc = new Date(prestamo.fechaVencimiento);
+                    const dias = Math.ceil((venc - hoy) / (1000 * 60 * 60 * 24));
+                    if (dias < 0) vencidos++;
+                    else if (dias <= 7) porVencer++;
+                }
+            });
+            document.getElementById("totalPrestado").textContent = `$${totalPrestado.toFixed(2)}`;
+            document.getElementById("totalPagado").textContent = `$${totalPagado.toFixed(2)}`;
+            document.getElementById("saldoPendiente").textContent = `$${(totalPrestado - totalPagado).toFixed(2)}`;
+            document.getElementById("prestamosActivos").textContent = prestamosActivos;
+            document.getElementById("porVencer").textContent = porVencer;
+            document.getElementById("vencidos").textContent = vencidos;
         }
 
         async function actualizarGraficos() {
             const snapshot = await get(ref(db, 'prestamos'));
             const prestamos = snapshot.val();
             if (!prestamos) return;
-            
             const pagosPorMes = {};
             const prestamosPorCliente = {};
-            
             Object.values(prestamos).forEach(prestamo => {
                 const mes = new Date(prestamo.fecha).toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
                 pagosPorMes[mes] = (pagosPorMes[mes] || 0) + (prestamo.total - prestamo.saldo);
                 prestamosPorCliente[prestamo.cliente] = (prestamosPorCliente[prestamo.cliente] || 0) + prestamo.total;
             });
-            
             const ctxPagos = document.getElementById('chartPagos')?.getContext('2d');
             const ctxClientes = document.getElementById('chartClientes')?.getContext('2d');
-            
             if (ctxPagos) {
                 if (chartPagos) chartPagos.destroy();
                 chartPagos = new Chart(ctxPagos, {
@@ -993,7 +1438,6 @@
                     options: { responsive: true, maintainAspectRatio: true }
                 });
             }
-            
             if (ctxClientes) {
                 if (chartClientes) chartClientes.destroy();
                 chartClientes = new Chart(ctxClientes, {
@@ -1004,62 +1448,62 @@
             }
         }
 
+        // Exportar Excel
         window.exportarExcel = function() {
-            let csv = "Cliente,Monto,Interés,Total,Saldo,Estado,Fecha,Vencimiento\n";
-            todosLosPrestamos.forEach(p => {
-                const estado = p.saldo <= 0 ? "Pagado" : "Pendiente";
-                const fecha = new Date(p.fecha).toLocaleDateString();
-                const vencimiento = p.fechaVencimiento ? new Date(p.fechaVencimiento).toLocaleDateString() : '';
-                csv += `"${p.cliente}",${p.monto},${p.interes},${p.total},${p.saldo},${estado},"${fecha}","${vencimiento}"\n`;
-            });
-            const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `prestamos_${new Date().toISOString().split('T')[0]}.csv`;
-            link.click();
-            mostrarToast("✅ Reporte exportado a Excel", "success");
+            try {
+                const datos = [["Cliente", "Monto", "Interés (%)", "Tipo interés", "Total", "Pagado", "Saldo", "Estado", "Método", "Fecha", "Vencimiento", "Último Pago", "Progreso (%)"]];
+                todosLosPrestamos.forEach(p => {
+                    const pagado = p.total - p.saldo;
+                    const porcentajePagado = ((pagado / p.total) * 100).toFixed(2);
+                    const estado = p.saldo <= 0 ? "Pagado" : "Pendiente";
+                    const metodo = p.metodoAmortizacion === 'frances' ? 'Francés' : 'Alemán';
+                    const fecha = new Date(p.fecha).toLocaleDateString('es-ES');
+                    const vencimiento = p.fechaVencimiento ? new Date(p.fechaVencimiento).toLocaleDateString('es-ES') : 'No especificado';
+                    const ultimoPago = p.ultimoPago ? `$${p.ultimoPago.toFixed(2)} (${new Date(p.fechaUltimoPago).toLocaleDateString('es-ES')})` : 'Sin pagos';
+                    datos.push([p.cliente, p.monto, p.interes, p.tipoInteres === 'anual' ? 'Anual' : 'Mensual', p.total, pagado, p.saldo, estado, metodo, fecha, vencimiento, ultimoPago, parseFloat(porcentajePagado)]);
+                });
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.aoa_to_sheet(datos);
+                ws['!cols'] = [{wch:25},{wch:12},{wch:12},{wch:12},{wch:12},{wch:12},{wch:12},{wch:12},{wch:12},{wch:15},{wch:15},{wch:25},{wch:12}];
+                XLSX.utils.book_append_sheet(wb, ws, "Préstamos");
+                XLSX.writeFile(wb, `prestamos_${new Date().toISOString().split('T')[0]}.xlsx`);
+                mostrarToast("✅ Exportado a Excel", "success");
+            } catch (error) { mostrarToast("Error: " + error.message, "error"); }
         };
 
-        window.exportarPDF = function() { mostrarToast("📑 Funcionalidad PDF en desarrollo", "warning"); };
         window.imprimirLista = function() { window.print(); mostrarToast("🖨️ Enviando a impresora", "success"); };
-
         window.generarReporte = async function() {
             const inicio = document.getElementById("fechaInicio").value;
             const fin = document.getElementById("fechaFin").value;
             const reporteDiv = document.getElementById("reporteResultado");
-            
-            if (!inicio || !fin) {
-                mostrarToast("Selecciona un rango de fechas", "error");
-                return;
-            }
-            
+            if (!inicio || !fin) { mostrarToast("Selecciona un rango de fechas", "error"); return; }
             const fechaInicio = new Date(inicio);
             const fechaFin = new Date(fin);
-            
-            const prestamosFiltrados = todosLosPrestamos.filter(p => {
-                const fechaPrestamo = new Date(p.fecha);
-                return fechaPrestamo >= fechaInicio && fechaPrestamo <= fechaFin;
+            const filtrados = todosLosPrestamos.filter(p => {
+                const fecha = new Date(p.fecha);
+                return fecha >= fechaInicio && fecha <= fechaFin;
             });
-            
             let total = 0, pagado = 0;
-            prestamosFiltrados.forEach(p => { total += p.total; pagado += p.total - p.saldo; });
-            
-            reporteDiv.innerHTML = `
-                <div class="loan-card">
-                    <h3>📊 Reporte del ${inicio} al ${fin}</h3>
-                    <div class="loan-details">
-                        <div class="detail-item"><span class="detail-label">Total prestado</span><span class="detail-value">$${total.toFixed(2)}</span></div>
-                        <div class="detail-item"><span class="detail-label">Total pagado</span><span class="detail-value">$${pagado.toFixed(2)}</span></div>
-                        <div class="detail-item"><span class="detail-label">Saldo pendiente</span><span class="detail-value">$${(total - pagado).toFixed(2)}</span></div>
-                        <div class="detail-item"><span class="detail-label">N° préstamos</span><span class="detail-value">${prestamosFiltrados.length}</span></div>
-                    </div>
-                </div>
-            `;
+            filtrados.forEach(p => { total += p.total; pagado += p.total - p.saldo; });
+            reporteDiv.innerHTML = `<div class="loan-card"><h3>📊 Reporte del ${inicio} al ${fin}</h3><div class="loan-details">
+                <div class="detail-item"><span class="detail-label">Total prestado</span><span class="detail-value">$${total.toFixed(2)}</span></div>
+                <div class="detail-item"><span class="detail-label">Total pagado</span><span class="detail-value">$${pagado.toFixed(2)}</span></div>
+                <div class="detail-item"><span class="detail-label">Saldo pendiente</span><span class="detail-value">$${(total - pagado).toFixed(2)}</span></div>
+                <div class="detail-item"><span class="detail-label">N° préstamos</span><span class="detail-value">${filtrados.length}</span></div>
+            </div></div>`;
             mostrarToast("✅ Reporte generado", "success");
         };
 
+        // Eventos para actualizar resumen en tiempo real
+        document.getElementById("monto").addEventListener("input", actualizarResumenYAmortizacion);
+        document.getElementById("interes").addEventListener("input", actualizarResumenYAmortizacion);
+        document.getElementById("numCuotas").addEventListener("input", actualizarResumenYAmortizacion);
+        document.getElementById("metodoAmortizacion").addEventListener("change", actualizarResumenYAmortizacion);
+        document.getElementById("tipoInteres").addEventListener("change", actualizarResumenYAmortizacion);
+
+        // Inicialización
         mostrarPrestamos();
-        setInterval(() => { if (document.getElementById('tab-lista').classList.contains('active')) mostrarPrestamos(); }, 10000);
+        cargarClientes();
     </script>
 </body>
 </html>
