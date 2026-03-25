@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Sistema de Préstamos Profesional</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5a67d8;
+            --secondary: #764ba2;
+            --success: #48bb78;
+            --danger: #f56565;
+            --warning: #ed8936;
+            --dark: #2d3748;
+            --light: #f7fafc;
+            --gray: #718096;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            min-height: 100vh;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+        }
+
+        body.dark-mode .container {
+            background: #2d3748;
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .stat-card,
+        body.dark-mode .loan-card,
+        body.dark-mode form,
+        body.dark-mode .modal-content {
+            background: #1a202c;
+            color: #e2e8f0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: all 0.3s;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255,255,255,0.3);
+            transform: rotate(15deg);
+        }
+
+        .header h1 { font-size: 2em; margin-bottom: 10px; }
+        .header p { opacity: 0.9; font-size: 1.1em; }
+
+        /* Stats Cards */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            background: #f8f9fa;
+        }
+
+        body.dark-mode .stats {
+            background: #2d3748;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .stat-card:hover { transform: translateY(-5px); }
+        .stat-card h3 { color: var(--gray); font-size: 0.9em; margin-bottom: 10px; text-transform: uppercase; }
+        .stat-card .value { font-size: 2em; font-weight: bold; color: var(--primary); }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            padding: 0 30px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e0e0e0;
+            flex-wrap: wrap;
+        }
+
+        body.dark-mode .tabs {
+            background: #2d3748;
+            border-bottom-color: #4a5568;
+        }
+
+        .tab {
+            padding: 15px 25px;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            font-size: 1em;
+            font-weight: 500;
+            color: var(--gray);
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .tab:hover { color: var(--primary); }
+        .tab.active { color: var(--primary); }
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary);
+        }
+
+        /* Forms */
+        .form-section {
+            padding: 30px;
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .form-section.active { display: block; }
+
+        form {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        body.dark-mode form {
+            background: #1a202c;
+        }
+
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--dark); }
+        body.dark-mode label { color: #e2e8f0; }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        body.dark-mode input, 
+        body.dark-mode select, 
+        body.dark-mode textarea {
+            background: #2d3748;
+            border-color: #4a5568;
+            color: #e2e8f0;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger) 0%, #c53030 100%);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success) 0%, #2f855a 100%);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning) 0%, #dd6b20 100%);
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.85em;
+        }
+
+        /* Search */
+        .search-box {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .search-box input { padding-left: 40px; }
+
+        .search-box::before {
+            content: '🔍';
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2em;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* Loans List */
+        .loans-list {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .loan-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        body.dark-mode .loan-card {
+            background: #1a202c;
+            border-color: #4a5568;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .loan-card:hover {
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transform: translateX(5px);
+        }
+
+        .loan-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .loan-client {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--dark);
+        }
+
+        body.dark-mode .loan-client { color: #e2e8f0; }
+
+        .loan-actions button {
+            padding: 5px 10px;
+            margin-left: 5px;
+            font-size: 0.85em;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        .badge.pagado { background: #d4edda; color: #155724; }
+        .badge.pendiente { background: #f8d7da; color: #721c24; }
+        .badge.activo { background: #d1ecf1; color: #0c5460; }
+
+        .loan-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        body.dark-mode .loan-details { border-top-color: #4a5568; }
+
+        .detail-item { display: flex; flex-direction: column; }
+        .detail-label { font-size: 0.8em; color: var(--gray); margin-bottom: 5px; }
+        .detail-value { font-size: 1.1em; font-weight: 600; color: var(--dark); }
+        body.dark-mode .detail-value { color: #e2e8f0; }
+        .detail-value.monto { color: var(--success); }
+        .detail-value.saldo { color: var(--danger); }
+
+        .progress-bar {
+            margin-top: 10px;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), #2f855a);
+            transition: width 0.5s ease;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            animation: slideIn 0.3s;
+        }
+
+        body.dark-mode .modal-content {
+            background: #2d3748;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        body.dark-mode .chart-container {
+            background: #1a202c;
+        }
+
+        canvas {
+            max-height: 300px;
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            animation: slideInRight 0.3s;
+            z-index: 2000;
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .toast.success { border-left: 4px solid var(--success); }
+        .toast.error { border-left: 4px solid var(--danger); }
+        .toast.warning { border-left: 4px solid var(--warning); }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .tabs { padding: 0 15px; }
+            .tab { padding: 12px 15px; font-size: 0.85em; }
+            .form-section { padding: 20px; }
+            .stats { padding: 20px; }
+            .loan-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .modal-content { margin: 20px; padding: 20px; }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--gray);
+        }
+
+        .empty-state::before {
+            content: '📋';
+            font-size: 3em;
+            display: block;
+            margin-bottom: 10px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+            <h1>💰 Sistema de Gestión de Préstamos Profesional</h1>
+            <p>Administra tus préstamos con todas las herramientas profesionales</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card" onclick="cambiarTab('lista')">
+                <h3>Total Prestado</h3>
+                <div class="value" id="totalPrestado">$0</div>
+            </div>
+            <div class="stat-card" onclick="cambiarTab('lista')">
+                <h3>Total Pagado</h3>
+                <div class="value" id="totalPagado">$0</div>
+            </div>
+            <div class="stat-card" onclick="cambiarTab('lista')">
+                <h3>Saldo Pendiente</h3>
+                <div class="value" id="saldoPendiente">$0</div>
+            </div>
+            <div class="stat-card" onclick="cambiarTab('lista')">
+                <h3>Préstamos Activos</h3>
+                <div class="value" id="prestamosActivos">0</div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="cambiarTab('cliente')">👤 Registrar Cliente</button>
+            <button class="tab" onclick="cambiarTab('prestamo')">📝 Nuevo Préstamo</button>
+            <button class="tab" onclick="cambiarTab('pago')">💵 Registrar Pago</button>
+            <button class="tab" onclick="cambiarTab('lista')">📊 Lista de Préstamos</button>
+            <button class="tab" onclick="cambiarTab('graficos')">📈 Gráficos</button>
+            <button class="tab" onclick="cambiarTab('reportes')">📄 Reportes</button>
+        </div>
+
+        <!-- Registrar Cliente -->
+        <div id="tab-cliente" class="form-section active">
+            <form id="formCliente">
+                <div class="form-group">
+                    <label>👤 Nombre completo:</label>
+                    <input type="text" id="nombre" placeholder="Ej: Juan Pérez" required>
+                </div>
+                <div class="form-group">
+                    <label>🆔 Cédula:</label>
+                    <input type="text" id="cedula" placeholder="Ej: 1234567890" required>
+                </div>
+                <div class="form-group">
+                    <label>📞 Teléfono:</label>
+                    <input type="tel" id="telefono" placeholder="Ej: 0999123456">
+                </div>
+                <div class="form-group">
+                    <label>📍 Dirección:</label>
+                    <input type="text" id="direccion" placeholder="Dirección del cliente">
+                </div>
+                <button type="button" onclick="guardarCliente()">Guardar Cliente</button>
+            </form>
+        </div>
+
+        <!-- Registrar Préstamo -->
+        <div id="tab-prestamo" class="form-section">
+            <form id="formPrestamo">
+                <div class="form-group">
+                    <label>👤 Cliente:</label>
+                    <input type="text" id="clientePrestamo" placeholder="Nombre del cliente" required>
+                </div>
+                <div class="form-group">
+                    <label>💰 Monto:</label>
+                    <input type="number" id="monto" step="0.01" placeholder="0.00" required>
+                </div>
+                <div class="form-group">
+                    <label>📈 Interés (%):</label>
+                    <input type="number" id="interes" step="0.01" placeholder="0.00" required>
+                </div>
+                <div class="form-group">
+                    <label>📅 Plazo (días):</label>
+                    <input type="number" id="plazo" placeholder="30" value="30">
+                </div>
+                <button type="button" onclick="guardarPrestamo()">Registrar Préstamo</button>
+            </form>
+        </div>
+
+        <!-- Registrar Pago -->
+        <div id="tab-pago" class="form-section">
+            <form id="formPago">
+                <div class="form-group">
+                    <label>👤 Cliente:</label>
+                    <input type="text" id="clientePago" placeholder="Nombre del cliente" required>
+                </div>
+                <div class="form-group">
+                    <label>💵 Monto a pagar:</label>
+                    <input type="number" id="pago" step="0.01" placeholder="0.00" required>
+                </div>
+                <button type="button" onclick="registrarPago()">Registrar Pago</button>
+            </form>
+        </div>
+
+        <!-- Lista de Préstamos -->
+        <div id="tab-lista" class="form-section">
+            <div class="filter-group">
+                <div class="search-box" style="flex: 1;">
+                    <input type="text" id="searchCliente" placeholder="Buscar por cliente..." onkeyup="filtrarPrestamos()">
+                </div>
+                <select id="filterEstado" onchange="filtrarPrestamos()">
+                    <option value="todos">Todos los estados</option>
+                    <option value="pendiente">Pendientes</option>
+                    <option value="pagado">Pagados</option>
+                </select>
+                <select id="filterFecha" onchange="filtrarPrestamos()">
+                    <option value="todos">Todas las fechas</option>
+                    <option value="hoy">Hoy</option>
+                    <option value="semana">Esta semana</option>
+                    <option value="mes">Este mes</option>
+                </select>
+                <button onclick="exportarExcel()" class="btn-success">📊 Exportar Excel</button>
+                <button onclick="exportarPDF()" class="btn-warning">📑 Exportar PDF</button>
+                <button onclick="imprimirLista()" class="btn">🖨️ Imprimir</button>
+            </div>
+            <div id="lista" class="loans-list"></div>
+        </div>
+
+        <!-- Gráficos -->
+        <div id="tab-graficos" class="form-section">
+            <div class="chart-container">
+                <canvas id="chartPagos"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="chartClientes"></canvas>
+            </div>
+        </div>
+
+        <!-- Reportes -->
+        <div id="tab-reportes" class="form-section">
+            <div class="filter-group">
+                <input type="date" id="fechaInicio" placeholder="Fecha inicio">
+                <input type="date" id="fechaFin" placeholder="Fecha fin">
+                <button onclick="generarReporte()" class="btn-success">Generar Reporte</button>
+            </div>
+            <div id="reporteResultado"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, push, set, get, update, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCPPT7vBogvJvJpnC1TTG3Yx-N30xJit3o",
+            authDomain: "sistema-prestamo-f5303.firebaseapp.com",
+            projectId: "sistema-prestamo-f5303",
+            databaseURL: "https://sistema-prestamo-f5303-default-rtdb.firebaseio.com",
+            storageBucket: "sistema-prestamo-f5303.firebasestorage.app",
+            messagingSenderId: "878399930922",
+            appId: "1:878399930922:web:3274ed4b00b46f28b8b953"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        let todosLosPrestamos = [];
+        let auditLog = [];
+        let chartPagos, chartClientes;
+
+        function mostrarToast(mensaje, tipo = "success") {
+            const toast = document.createElement('div');
+            toast.className = `toast ${tipo}`;
+            toast.innerHTML = mensaje;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        function registrarAuditoria(accion, datos) {
+            auditLog.unshift({
+                fecha: new Date().toISOString(),
+                accion: accion,
+                datos: datos
+            });
+            localStorage.setItem('auditLog', JSON.stringify(auditLog.slice(0, 100)));
+        }
+
+        function escapeHtml(str) {
+            if (!str) return "";
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === "&") return "&amp;";
+                if (m === "<") return "&lt;";
+                if (m === ">") return "&gt;";
+                return m;
+            });
+        }
+
+        window.toggleTheme = function() {
+            document.body.classList.toggle('dark-mode');
+            const btn = document.querySelector('.theme-toggle');
+            btn.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        };
+
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+            document.querySelector('.theme-toggle').textContent = '☀️';
+        }
+
+        window.cambiarTab = function(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+            
+            const tabs = { cliente: 0, prestamo: 1, pago: 2, lista: 3, graficos: 4, reportes: 5 };
+            document.querySelectorAll('.tab')[tabs[tab]].classList.add('active');
+            document.getElementById(`tab-${tab}`).classList.add('active');
+            
+            if (tab === 'lista') mostrarPrestamos();
+            if (tab === 'graficos') actualizarGraficos();
+        };
+
+        window.guardarCliente = async function() {
+            const nombre = document.getElementById("nombre").value.trim();
+            const cedula = document.getElementById("cedula").value.trim();
+            const telefono = document.getElementById("telefono").value.trim();
+            const direccion = document.getElementById("direccion").value.trim();
+            
+            if (!nombre || !cedula) {
+                mostrarToast("Por favor ingrese nombre y cédula.", "error");
+                return;
+            }
+            
+            try {
+                const snapshot = await get(ref(db, 'clientes'));
+                const clientes = snapshot.val();
+                
+                if (clientes) {
+                    const existe = Object.values(clientes).some(c => c.cedula === cedula);
+                    if (existe) {
+                        mostrarToast("Ya existe un cliente con esa cédula.", "error");
+                        return;
+                    }
+                }
+                
+                const clientesRef = ref(db, 'clientes');
+                const nuevoClienteRef = push(clientesRef);
+                await set(nuevoClienteRef, { nombre, cedula, telefono, direccion, fecha: new Date().toISOString() });
+                
+                registrarAuditoria("Cliente registrado", { nombre, cedula });
+                mostrarToast("✅ Cliente guardado correctamente", "success");
+                document.getElementById("nombre").value = "";
+                document.getElementById("cedula").value = "";
+                document.getElementById("telefono").value = "";
+                document.getElementById("direccion").value = "";
+            } catch (error) {
+                console.error("Error:", error);
+                mostrarToast("Error al guardar cliente: " + error.message, "error");
+            }
+        };
+
+        window.guardarPrestamo = async function() {
+            const cliente = document.getElementById("clientePrestamo").value.trim();
+            const monto = parseFloat(document.getElementById("monto").value);
+            const interes = parseFloat(document.getElementById("interes").value);
+            const plazo = parseInt(document.getElementById("plazo").value);
+            
+            if (!cliente || isNaN(monto) || isNaN(interes) || monto <= 0 || interes < 0) {
+                mostrarToast("Todos los campos son obligatorios y deben ser números válidos.", "error");
+                return;
+            }
+            
+            const total = monto + (monto * interes / 100);
+            const id = Date.now().toString();
+            const fechaVencimiento = new Date();
+            fechaVencimiento.setDate(fechaVencimiento.getDate() + plazo);
+            
+            try {
+                await set(ref(db, `prestamos/${id}`), {
+                    cliente, monto, interes, total, saldo: total,
+                    fecha: new Date().toISOString(),
+                    fechaVencimiento: fechaVencimiento.toISOString(),
+                    plazo, estado: "activo"
+                });
+                
+                registrarAuditoria("Préstamo registrado", { cliente, monto, interes });
+                mostrarToast("✅ Préstamo registrado correctamente", "success");
+                document.getElementById("clientePrestamo").value = "";
+                document.getElementById("monto").value = "";
+                document.getElementById("interes").value = "";
+                mostrarPrestamos();
+                actualizarEstadisticas();
+            } catch (error) {
+                mostrarToast("Error al guardar préstamo: " + error.message, "error");
+            }
+        };
+
+        window.registrarPago = async function() {
+            const cliente = document.getElementById("clientePago").value.trim();
+            const pago = parseFloat(document.getElementById("pago").value);
+            
+            if (!cliente || isNaN(pago) || pago <= 0) {
+                mostrarToast("Ingrese un cliente válido y un monto positivo.", "error");
+                return;
+            }
+            
+            try {
+                const snapshot = await get(ref(db, 'prestamos'));
+                const prestamos = snapshot.val();
+                if (!prestamos) { mostrarToast("No hay préstamos registrados.", "error"); return; }
+                
+                const prestamosPendientes = [];
+                for (const [id, prestamo] of Object.entries(prestamos)) {
+                    if (prestamo.cliente === cliente && prestamo.saldo > 0) {
+                        prestamosPendientes.push({id, ...prestamo});
+                    }
+                }
+                
+                if (prestamosPendientes.length === 0) {
+                    mostrarToast("No hay préstamos pendientes para este cliente.", "error");
+                    return;
+                }
+                
+                let prestamoSeleccionado = prestamosPendientes[0];
+                if (prestamosPendientes.length > 1) {
+                    let mensaje = "Selecciona el préstamo a pagar:\n\n";
+                    prestamosPendientes.forEach((p, i) => {
+                        const porcentaje = ((p.total - p.saldo) / p.total * 100).toFixed(1);
+                        mensaje += `${i + 1}. $${p.monto} | Saldo: $${p.saldo} | ${porcentaje}%\n`;
+                    });
+                    const opcion = prompt(mensaje + "\nIngresa el número:");
+                    const indice = parseInt(opcion) - 1;
+                    if (isNaN(indice) || indice < 0 || indice >= prestamosPendientes.length) return;
+                    prestamoSeleccionado = prestamosPendientes[indice];
+                }
+                
+                const newSaldo = prestamoSeleccionado.saldo - pago;
+                if (newSaldo < 0) {
+                    mostrarToast(`El pago excede el saldo pendiente ($${prestamoSeleccionado.saldo}).`, "error");
+                    return;
+                }
+                
+                await update(ref(db, `prestamos/${prestamoSeleccionado.id}`), {
+                    saldo: newSaldo,
+                    ultimoPago: pago,
+                    fechaUltimoPago: new Date().toISOString()
+                });
+                
+                registrarAuditoria("Pago registrado", { cliente, monto: pago, prestamoId: prestamoSeleccionado.id });
+                mostrarToast(`✅ Pago de $${pago} registrado. Nuevo saldo: $${newSaldo}`, "success");
+                document.getElementById("clientePago").value = "";
+                document.getElementById("pago").value = "";
+                mostrarPrestamos();
+                actualizarEstadisticas();
+            } catch (error) {
+                mostrarToast("Error al registrar pago: " + error.message, "error");
+            }
+        };
+
+        window.editarPrestamo = async function(id) {
+            const snapshot = await get(ref(db, `prestamos/${id}`));
+            const prestamo = snapshot.val();
+            if (!prestamo) return;
+            
+            const nuevoMonto = prompt("Editar monto:", prestamo.monto);
+            const nuevoInteres = prompt("Editar interés:", prestamo.interes);
+            
+            if (nuevoMonto && nuevoInteres) {
+                const nuevoTotal = parseFloat(nuevoMonto) + (parseFloat(nuevoMonto) * parseFloat(nuevoInteres) / 100);
+                await update(ref(db, `prestamos/${id}`), {
+                    monto: parseFloat(nuevoMonto),
+                    interes: parseFloat(nuevoInteres),
+                    total: nuevoTotal,
+                    saldo: nuevoTotal
+                });
+                registrarAuditoria("Préstamo editado", { id, nuevoMonto, nuevoInteres });
+                mostrarToast("✅ Préstamo actualizado", "success");
+                mostrarPrestamos();
+                actualizarEstadisticas();
+            }
+        };
+
+        window.eliminarPrestamo = async function(id) {
+            if (confirm("⚠️ ¿Estás seguro de eliminar este préstamo? Esta acción no se puede deshacer.")) {
+                await set(ref(db, `prestamos/${id}`), null);
+                registrarAuditoria("Préstamo eliminado", { id });
+                mostrarToast("✅ Préstamo eliminado", "success");
+                mostrarPrestamos();
+                actualizarEstadisticas();
+            }
+        };
+
+        window.revertirPago = async function(id) {
+            if (confirm("⚠️ ¿Revertir el último pago de este préstamo?")) {
+                const snapshot = await get(ref(db, `prestamos/${id}`));
+                const prestamo = snapshot.val();
+                if (prestamo && prestamo.ultimoPago) {
+                    const newSaldo = prestamo.saldo + prestamo.ultimoPago;
+                    await update(ref(db, `prestamos/${id}`), {
+                        saldo: newSaldo,
+                        ultimoPago: null,
+                        fechaUltimoPago: null
+                    });
+                    registrarAuditoria("Pago revertido", { id, monto: prestamo.ultimoPago });
+                    mostrarToast("✅ Pago revertido", "success");
+                    mostrarPrestamos();
+                    actualizarEstadisticas();
+                }
+            }
+        };
+
+        async function mostrarPrestamos() {
+            const lista = document.getElementById("lista");
+            lista.innerHTML = '<div class="empty-state">Cargando préstamos...</div>';
+            
+            try {
+                const snapshot = await get(ref(db, 'prestamos'));
+                const prestamos = snapshot.val();
+                
+                if (!prestamos || Object.keys(prestamos).length === 0) {
+                    lista.innerHTML = '<div class="empty-state">No hay préstamos registrados</div>';
+                    return;
+                }
+                
+                todosLosPrestamos = Object.entries(prestamos).map(([id, prestamo]) => ({ id, ...prestamo }))
+                    .sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+                
+                renderizarLista(todosLosPrestamos);
+                actualizarEstadisticas();
+                actualizarGraficos();
+            } catch (error) {
+                console.error("Error:", error);
+                lista.innerHTML = `<div class="empty-state">❌ Error al cargar: ${error.message}</div>`;
+            }
+        }
+
+        function renderizarLista(prestamos) {
+            const lista = document.getElementById("lista");
+            const searchText = document.getElementById("searchCliente")?.value.toLowerCase() || "";
+            const estadoFiltro = document.getElementById("filterEstado")?.value || "todos";
+            const fechaFiltro = document.getElementById("filterFecha")?.value || "todos";
+            
+            let filtrados = prestamos.filter(p => p.cliente.toLowerCase().includes(searchText));
+            
+            if (estadoFiltro !== "todos") {
+                filtrados = filtrados.filter(p => estadoFiltro === "pagado" ? p.saldo <= 0 : p.saldo > 0);
+            }
+            
+            if (fechaFiltro !== "todos") {
+                const hoy = new Date();
+                filtrados = filtrados.filter(p => {
+                    const fecha = new Date(p.fecha);
+                    if (fechaFiltro === "hoy") return fecha.toDateString() === hoy.toDateString();
+                    if (fechaFiltro === "semana") {
+                        const semanaAtras = new Date(hoy.setDate(hoy.getDate() - 7));
+                        return fecha >= semanaAtras;
+                    }
+                    if (fechaFiltro === "mes") {
+                        const mesAtras = new Date(hoy.setMonth(hoy.getMonth() - 1));
+                        return fecha >= mesAtras;
+                    }
+                    return true;
+                });
+            }
+            
+            if (filtrados.length === 0) {
+                lista.innerHTML = '<div class="empty-state">No se encontraron préstamos</div>';
+                return;
+            }
+            
+            lista.innerHTML = filtrados.map(prestamo => {
+                const porcentajePagado = ((prestamo.total - prestamo.saldo) / prestamo.total * 100).toFixed(1);
+                const estado = prestamo.saldo <= 0 ? 'pagado' : 'pendiente';
+                const fecha = new Date(prestamo.fecha).toLocaleDateString('es-ES');
+                const vencimiento = prestamo.fechaVencimiento ? new Date(prestamo.fechaVencimiento).toLocaleDateString('es-ES') : 'No especificado';
+                
+                return `
+                    <div class="loan-card">
+                        <div class="loan-header">
+                            <span class="loan-client">👤 ${escapeHtml(prestamo.cliente)}</span>
+                            <div class="loan-actions">
+                                <span class="badge ${estado}">${estado === 'pagado' ? '✅ Pagado' : '⏳ Pendiente'}</span>
+                                <button onclick="editarPrestamo('${prestamo.id}')" class="btn-sm">✏️</button>
+                                <button onclick="eliminarPrestamo('${prestamo.id}')" class="btn-sm btn-danger">🗑️</button>
+                                ${prestamo.ultimoPago ? `<button onclick="revertirPago('${prestamo.id}')" class="btn-sm btn-warning">↩️</button>` : ''}
+                            </div>
+                        </div>
+                        <div class="loan-details">
+                            <div class="detail-item"><span class="detail-label">💰 Monto</span><span class="detail-value monto">$${prestamo.monto.toFixed(2)}</span></div>
+                            <div class="detail-item"><span class="detail-label">📈 Interés</span><span class="detail-value">${prestamo.interes}%</span></div>
+                            <div class="detail-item"><span class="detail-label">💵 Total</span><span class="detail-value">$${prestamo.total.toFixed(2)}</span></div>
+                            <div class="detail-item"><span class="detail-label">🔻 Saldo</span><span class="detail-value saldo">$${prestamo.saldo.toFixed(2)}</span></div>
+                            <div class="detail-item"><span class="detail-label">📅 Fecha</span><span class="detail-value">${fecha}</span></div>
+                            <div class="detail-item"><span class="detail-label">⏰ Vence</span><span class="detail-value">${vencimiento}</span></div>
+                        </div>
+                        <div class="progress-bar"><div class="progress-fill" style="width: ${porcentajePagado}%"></div></div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        window.filtrarPrestamos = function() { renderizarLista(todosLosPrestamos); };
+
+        async function actualizarEstadisticas() {
+            try {
+                const snapshot = await get(ref(db, 'prestamos'));
+                const prestamos = snapshot.val();
+                if (!prestamos) return;
+                
+                let totalPrestado = 0, totalPagado = 0, prestamosActivos = 0;
+                Object.values(prestamos).forEach(prestamo => {
+                    totalPrestado += prestamo.total;
+                    totalPagado += prestamo.total - prestamo.saldo;
+                    if (prestamo.saldo > 0) prestamosActivos++;
+                });
+                
+                document.getElementById("totalPrestado").textContent = `$${totalPrestado.toFixed(2)}`;
+                document.getElementById("totalPagado").textContent = `$${totalPagado.toFixed(2)}`;
+                document.getElementById("saldoPendiente").textContent = `$${(totalPrestado - totalPagado).toFixed(2)}`;
+                document.getElementById("prestamosActivos").textContent = prestamosActivos;
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        }
+
+        async function actualizarGraficos() {
+            const snapshot = await get(ref(db, 'prestamos'));
+            const prestamos = snapshot.val();
+            if (!prestamos) return;
+            
+            const pagosPorMes = {};
+            const prestamosPorCliente = {};
+            
+            Object.values(prestamos).forEach(prestamo => {
+                const mes = new Date(prestamo.fecha).toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+                pagosPorMes[mes] = (pagosPorMes[mes] || 0) + (prestamo.total - prestamo.saldo);
+                prestamosPorCliente[prestamo.cliente] = (prestamosPorCliente[prestamo.cliente] || 0) + prestamo.total;
+            });
+            
+            const ctxPagos = document.getElementById('chartPagos')?.getContext('2d');
+            const ctxClientes = document.getElementById('chartClientes')?.getContext('2d');
+            
+            if (ctxPagos) {
+                if (chartPagos) chartPagos.destroy();
+                chartPagos = new Chart(ctxPagos, {
+                    type: 'line',
+                    data: { labels: Object.keys(pagosPorMes), datasets: [{ label: 'Pagos realizados', data: Object.values(pagosPorMes), borderColor: '#48bb78', tension: 0.4 }] },
+                    options: { responsive: true, maintainAspectRatio: true }
+                });
+            }
+            
+            if (ctxClientes) {
+                if (chartClientes) chartClientes.destroy();
+                chartClientes = new Chart(ctxClientes, {
+                    type: 'bar',
+                    data: { labels: Object.keys(prestamosPorCliente), datasets: [{ label: 'Total por cliente', data: Object.values(prestamosPorCliente), backgroundColor: '#667eea' }] },
+                    options: { responsive: true, maintainAspectRatio: true }
+                });
+            }
+        }
+
+        window.exportarExcel = function() {
+            let csv = "Cliente,Monto,Interés,Total,Saldo,Estado,Fecha,Vencimiento\n";
+            todosLosPrestamos.forEach(p => {
+                const estado = p.saldo <= 0 ? "Pagado" : "Pendiente";
+                const fecha = new Date(p.fecha).toLocaleDateString();
+                const vencimiento = p.fechaVencimiento ? new Date(p.fechaVencimiento).toLocaleDateString() : '';
+                csv += `"${p.cliente}",${p.monto},${p.interes},${p.total},${p.saldo},${estado},"${fecha}","${vencimiento}"\n`;
+            });
+            const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `prestamos_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+            mostrarToast("✅ Reporte exportado a Excel", "success");
+        };
+
+        window.exportarPDF = function() { mostrarToast("📑 Funcionalidad PDF en desarrollo", "warning"); };
+        window.imprimirLista = function() { window.print(); mostrarToast("🖨️ Enviando a impresora", "success"); };
+
+        window.generarReporte = async function() {
+            const inicio = document.getElementById("fechaInicio").value;
+            const fin = document.getElementById("fechaFin").value;
+            const reporteDiv = document.getElementById("reporteResultado");
+            
+            if (!inicio || !fin) {
+                mostrarToast("Selecciona un rango de fechas", "error");
+                return;
+            }
+            
+            const fechaInicio = new Date(inicio);
+            const fechaFin = new Date(fin);
+            
+            const prestamosFiltrados = todosLosPrestamos.filter(p => {
+                const fechaPrestamo = new Date(p.fecha);
+                return fechaPrestamo >= fechaInicio && fechaPrestamo <= fechaFin;
+            });
+            
+            let total = 0, pagado = 0;
+            prestamosFiltrados.forEach(p => { total += p.total; pagado += p.total - p.saldo; });
+            
+            reporteDiv.innerHTML = `
+                <div class="loan-card">
+                    <h3>📊 Reporte del ${inicio} al ${fin}</h3>
+                    <div class="loan-details">
+                        <div class="detail-item"><span class="detail-label">Total prestado</span><span class="detail-value">$${total.toFixed(2)}</span></div>
+                        <div class="detail-item"><span class="detail-label">Total pagado</span><span class="detail-value">$${pagado.toFixed(2)}</span></div>
+                        <div class="detail-item"><span class="detail-label">Saldo pendiente</span><span class="detail-value">$${(total - pagado).toFixed(2)}</span></div>
+                        <div class="detail-item"><span class="detail-label">N° préstamos</span><span class="detail-value">${prestamosFiltrados.length}</span></div>
+                    </div>
+                </div>
+            `;
+            mostrarToast("✅ Reporte generado", "success");
+        };
+
+        mostrarPrestamos();
+        setInterval(() => { if (document.getElementById('tab-lista').classList.contains('active')) mostrarPrestamos(); }, 10000);
+    </script>
+</body>
+</html>
