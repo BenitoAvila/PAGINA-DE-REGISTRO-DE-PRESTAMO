@@ -7,7 +7,7 @@
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
-        /* Todos los estilos previos se mantienen, solo agrego algunos para nuevos elementos */
+        /* ... (todos los estilos previos se mantienen) ... */
         * {
             margin: 0;
             padding: 0;
@@ -591,6 +591,10 @@
                     <input type="text" id="clientePrestamo" placeholder="Nombre del cliente" list="listaClientesNombres" required>
                 </div>
                 <div class="form-group">
+                    <label>📅 Fecha del préstamo:</label>
+                    <input type="date" id="fechaPrestamo" value="">
+                </div>
+                <div class="form-group">
                     <label>💰 Monto del préstamo:</label>
                     <input type="number" id="monto" step="0.01" placeholder="0.00" required>
                 </div>
@@ -615,6 +619,10 @@
                         <option value="frances">🇫🇷 Francés (cuota fija)</option>
                         <option value="aleman">🇩🇪 Alemán (cuota decreciente)</option>
                     </select>
+                </div>
+                <div class="form-group">
+                    <label>📝 Motivo / Comentario:</label>
+                    <textarea id="comentario" rows="3" placeholder="Ej: Compra de vehículo, capital de trabajo, etc."></textarea>
                 </div>
                 <button type="button" onclick="guardarPrestamo()">Registrar Préstamo</button>
             </form>
@@ -893,7 +901,7 @@
 
             // Mostrar tabla de amortización
             let tabla = `<h4>📊 Tabla de amortización (${metodo === 'frances' ? 'Francés' : 'Alemán'})</h4>
-            <table>
+             <table>
                 <thead>
                     <tr><th>Cuota</th><th>Pago</th><th>Interés</th><th>Capital</th><th>Saldo</th></tr>
                 </thead>
@@ -946,6 +954,8 @@
             const numCuotas = parseInt(document.getElementById("numCuotas").value);
             const metodo = document.getElementById("metodoAmortizacion").value;
             const tipoInteres = document.getElementById("tipoInteres").value;
+            const fechaPrestamoStr = document.getElementById("fechaPrestamo").value;
+            const comentario = document.getElementById("comentario").value.trim();
 
             if (!cliente || isNaN(monto) || isNaN(interes) || isNaN(numCuotas) || monto <= 0 || interes < 0 || numCuotas <= 0) {
                 mostrarToast("Todos los campos son obligatorios y deben ser números válidos.", "error");
@@ -953,7 +963,7 @@
             }
 
             const id = Date.now().toString();
-            const fecha = new Date().toISOString();
+            const fechaPrestamo = fechaPrestamoStr ? new Date(fechaPrestamoStr).toISOString() : new Date().toISOString();
             const amortizacion = calcularAmortizacion(monto, interes, numCuotas, metodo, tipoInteres);
             if (!amortizacion.length) {
                 mostrarToast("Error al calcular la amortización. Verifique los datos.", "error");
@@ -963,7 +973,7 @@
             const totalPagar = amortizacion.reduce((sum, c) => sum + c.pago, 0);
             const saldo = totalPagar;
 
-            const fechaVencimiento = new Date();
+            const fechaVencimiento = new Date(fechaPrestamo);
             fechaVencimiento.setMonth(fechaVencimiento.getMonth() + numCuotas);
 
             try {
@@ -974,10 +984,11 @@
                     tipoInteres,
                     total: totalPagar,
                     saldo,
-                    fecha,
+                    fecha: fechaPrestamo,
                     fechaVencimiento: fechaVencimiento.toISOString(),
                     metodoAmortizacion: metodo,
                     amortizacion,
+                    comentario,
                     estado: "activo",
                     tipoPago: "cuotas"
                 };
@@ -990,15 +1001,17 @@
                 document.getElementById("numCuotas").value = "12";
                 document.getElementById("tipoInteres").value = "anual";
                 document.getElementById("metodoAmortizacion").value = "frances";
+                document.getElementById("fechaPrestamo").value = "";
+                document.getElementById("comentario").value = "";
                 document.getElementById("summaryPanel").style.display = "none";
                 document.getElementById("amortizacionPreview").style.display = "none";
                 mostrarPrestamos();
                 actualizarEstadisticas();
-                cargarClientes(); // para actualizar totales por cliente
+                cargarClientes();
             } catch (error) { mostrarToast("Error: " + error.message, "error"); }
         };
 
-        // Registrar pago
+        // Registrar pago (sin cambios)
         window.registrarPago = async function() {
             const cliente = document.getElementById("clientePago").value.trim();
             const pago = parseFloat(document.getElementById("pago").value);
@@ -1058,7 +1071,7 @@
             } catch (error) { mostrarToast("Error: " + error.message, "error"); }
         };
 
-        // Ver historial de pagos
+        // Ver historial de pagos (sin cambios)
         window.verHistorial = async function(id) {
             const snapshot = await get(ref(db, `prestamos/${id}/historialPagos`));
             const historial = snapshot.val();
@@ -1079,7 +1092,7 @@
             modal.style.display = "block";
         };
 
-        // Ver tabla de amortización
+        // Ver tabla de amortización (sin cambios)
         window.verAmortizacion = async function(id) {
             const snapshot = await get(ref(db, `prestamos/${id}`));
             const prestamo = snapshot.val();
@@ -1089,7 +1102,7 @@
                 contenido.innerHTML = "<p>Este préstamo no tiene tabla de amortización.</p>";
             } else {
                 let html = `<h4>Método: ${prestamo.metodoAmortizacion === 'frances' ? 'Francés (cuota fija)' : 'Alemán (cuota decreciente)'}</h4>
-                <table><thead><tr><th>Cuota</th><th>Pago</th><th>Interés</th><th>Capital</th><th>Saldo</th></tr></thead><tbody>`;
+                 <table><thead><tr><th>Cuota</th><th>Pago</th><th>Interés</th><th>Capital</th><th>Saldo</th></tr></thead><tbody>`;
                 prestamo.amortizacion.forEach(c => {
                     html += `<tr>
                         <td>${c.cuota}</td>
@@ -1111,25 +1124,33 @@
         }
         window.cerrarModal = cerrarModal;
 
-        // Editar, eliminar préstamo
+        // Editar préstamo (incluyendo fecha y comentario)
         window.editarPrestamo = async function(id) {
             const snapshot = await get(ref(db, `prestamos/${id}`));
             const prestamo = snapshot.val();
             if (!prestamo) return;
             const nuevoMonto = prompt("Editar monto:", prestamo.monto);
             const nuevoInteres = prompt("Editar interés (%):", prestamo.interes);
+            const nuevaFecha = prompt("Editar fecha del préstamo (YYYY-MM-DD):", prestamo.fecha ? prestamo.fecha.slice(0,10) : new Date().toISOString().slice(0,10));
+            const nuevoComentario = prompt("Editar comentario:", prestamo.comentario || '');
             if (nuevoMonto && nuevoInteres) {
                 const numCuotas = prestamo.amortizacion ? prestamo.amortizacion.length : 12;
                 const metodo = prestamo.metodoAmortizacion || 'frances';
                 const tipoInteres = prestamo.tipoInteres || 'anual';
                 const nuevaAmortizacion = calcularAmortizacion(parseFloat(nuevoMonto), parseFloat(nuevoInteres), numCuotas, metodo, tipoInteres);
                 const nuevoTotal = nuevaAmortizacion.reduce((sum, c) => sum + c.pago, 0);
+                const nuevaFechaISO = nuevaFecha ? new Date(nuevaFecha).toISOString() : prestamo.fecha;
+                const fechaVencimiento = new Date(nuevaFechaISO);
+                fechaVencimiento.setMonth(fechaVencimiento.getMonth() + numCuotas);
                 await update(ref(db, `prestamos/${id}`), {
                     monto: parseFloat(nuevoMonto),
                     interes: parseFloat(nuevoInteres),
                     total: nuevoTotal,
                     saldo: nuevoTotal,
-                    amortizacion: nuevaAmortizacion
+                    amortizacion: nuevaAmortizacion,
+                    fecha: nuevaFechaISO,
+                    fechaVencimiento: fechaVencimiento.toISOString(),
+                    comentario: nuevoComentario || ''
                 });
                 mostrarToast("✅ Préstamo actualizado", "success");
                 mostrarPrestamos();
@@ -1204,7 +1225,6 @@
             const estadoFiltro = document.getElementById("filterEstado")?.value || "todos";
 
             let filtrados = prestamos.filter(p => {
-                // Buscar por nombre o cédula
                 const clienteData = todosLosClientes.find(c => c.nombre === p.cliente);
                 const cedula = clienteData ? clienteData.cedula : '';
                 return p.cliente.toLowerCase().includes(searchText) || cedula.includes(searchText);
@@ -1259,6 +1279,7 @@
                             <div class="detail-item"><span class="detail-label">📅 Fecha</span><span class="detail-value">${fecha}</span></div>
                             <div class="detail-item"><span class="detail-label">⏰ Vence</span><span class="detail-value">${vencimiento}</span></div>
                         </div>
+                        ${prestamo.comentario ? `<div style="margin-top: 10px; padding: 8px; background: rgba(0,0,0,0.05); border-radius: 8px;"><span class="detail-label">📝 Motivo:</span> ${escapeHtml(prestamo.comentario)}</div>` : ''}
                         <div class="progress-bar"><div class="progress-fill" style="width: ${porcentajePagado}%"></div></div>
                     </div>
                 `;
@@ -1268,7 +1289,7 @@
         window.filtrarPrestamos = function() { renderizarLista(todosLosPrestamos); };
         window.recargarLista = function() { mostrarPrestamos(); };
 
-        // Clientes con totales pagados
+        // Clientes con totales pagados (sin cambios)
         async function cargarClientes() {
             const snapshot = await get(ref(db, 'clientes'));
             const clientes = snapshot.val();
@@ -1276,7 +1297,6 @@
                 document.getElementById("listaClientes").innerHTML = '<div class="empty-state">No hay clientes registrados</div>';
                 return;
             }
-            // Obtener préstamos para calcular totales
             const prestamosSnapshot = await get(ref(db, 'prestamos'));
             const prestamos = prestamosSnapshot.val() || {};
             const clientesConTotales = Object.entries(clientes).map(([id, cliente]) => {
@@ -1390,7 +1410,7 @@
             renderizarClientes(filtrados);
         };
 
-        // Estadísticas
+        // Estadísticas (sin cambios)
         async function actualizarEstadisticas() {
             const snapshot = await get(ref(db, 'prestamos'));
             const prestamos = snapshot.val();
@@ -1448,10 +1468,10 @@
             }
         }
 
-        // Exportar Excel
+        // Exportar Excel (incluir comentario)
         window.exportarExcel = function() {
             try {
-                const datos = [["Cliente", "Monto", "Interés (%)", "Tipo interés", "Total", "Pagado", "Saldo", "Estado", "Método", "Fecha", "Vencimiento", "Último Pago", "Progreso (%)"]];
+                const datos = [["Cliente", "Monto", "Interés (%)", "Tipo interés", "Total", "Pagado", "Saldo", "Estado", "Método", "Fecha", "Vencimiento", "Último Pago", "Progreso (%)", "Comentario"]];
                 todosLosPrestamos.forEach(p => {
                     const pagado = p.total - p.saldo;
                     const porcentajePagado = ((pagado / p.total) * 100).toFixed(2);
@@ -1460,11 +1480,11 @@
                     const fecha = new Date(p.fecha).toLocaleDateString('es-ES');
                     const vencimiento = p.fechaVencimiento ? new Date(p.fechaVencimiento).toLocaleDateString('es-ES') : 'No especificado';
                     const ultimoPago = p.ultimoPago ? `$${p.ultimoPago.toFixed(2)} (${new Date(p.fechaUltimoPago).toLocaleDateString('es-ES')})` : 'Sin pagos';
-                    datos.push([p.cliente, p.monto, p.interes, p.tipoInteres === 'anual' ? 'Anual' : 'Mensual', p.total, pagado, p.saldo, estado, metodo, fecha, vencimiento, ultimoPago, parseFloat(porcentajePagado)]);
+                    datos.push([p.cliente, p.monto, p.interes, p.tipoInteres === 'anual' ? 'Anual' : 'Mensual', p.total, pagado, p.saldo, estado, metodo, fecha, vencimiento, ultimoPago, parseFloat(porcentajePagado), p.comentario || '']);
                 });
                 const wb = XLSX.utils.book_new();
                 const ws = XLSX.utils.aoa_to_sheet(datos);
-                ws['!cols'] = [{wch:25},{wch:12},{wch:12},{wch:12},{wch:12},{wch:12},{wch:12},{wch:12},{wch:12},{wch:15},{wch:15},{wch:25},{wch:12}];
+                ws['!cols'] = [{wch:25},{wch:12},{wch:12},{wch:12},{wch:12},{wch:12},{wch:12},{wch:12},{wch:12},{wch:15},{wch:15},{wch:25},{wch:12},{wch:30}];
                 XLSX.utils.book_append_sheet(wb, ws, "Préstamos");
                 XLSX.writeFile(wb, `prestamos_${new Date().toISOString().split('T')[0]}.xlsx`);
                 mostrarToast("✅ Exportado a Excel", "success");
