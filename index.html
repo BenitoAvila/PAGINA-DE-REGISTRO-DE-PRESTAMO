@@ -3,17 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Sistema de Préstamos Profesional</title>
+    <title>Sistema de Préstamos | Administración de Usuarios</title>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
-        /* ... (todos los estilos previos se mantienen) ... */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* Estilos (igual que antes, no cambian) */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --primary: #667eea;
             --primary-dark: #5a67d8;
@@ -24,8 +19,13 @@
             --dark: #2d3748;
             --light: #f7fafc;
             --gray: #718096;
+            --bg-light: #f8f9fa;
+            --bg-dark: #1a202c;
+            --card-light: #ffffff;
+            --card-dark: #2d3748;
+            --border-light: #e0e0e0;
+            --border-dark: #4a5568;
         }
-
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
@@ -33,27 +33,7 @@
             padding: 20px;
             transition: all 0.3s ease;
         }
-
-        body.dark-mode {
-            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
-        }
-
-        body.dark-mode .container {
-            background: #2d3748;
-            color: #e2e8f0;
-        }
-
-        body.dark-mode .stat-card,
-        body.dark-mode .loan-card,
-        body.dark-mode .client-card,
-        body.dark-mode form,
-        body.dark-mode .modal-content,
-        body.dark-mode .amortization-table,
-        body.dark-mode .summary-card {
-            background: #1a202c;
-            color: #e2e8f0;
-        }
-
+        body.dark-mode { background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%); }
         .container {
             max-width: 1400px;
             margin: auto;
@@ -63,12 +43,8 @@
             overflow: hidden;
             animation: fadeIn 0.5s ease-in;
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
+        body.dark-mode .container { background: var(--bg-dark); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
         .header {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
@@ -76,7 +52,6 @@
             text-align: center;
             position: relative;
         }
-
         .theme-toggle {
             position: absolute;
             top: 20px;
@@ -90,28 +65,17 @@
             font-size: 1.2em;
             transition: all 0.3s;
         }
-
-        .theme-toggle:hover {
-            background: rgba(255,255,255,0.3);
-            transform: rotate(15deg);
-        }
-
-        .header h1 { font-size: 2em; margin-bottom: 10px; }
-        .header p { opacity: 0.9; font-size: 1.1em; }
-
-        /* Stats */
+        .theme-toggle:hover { background: rgba(255,255,255,0.3); transform: rotate(15deg); }
         .stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
             padding: 30px;
-            background: #f8f9fa;
+            background: var(--bg-light);
         }
-
-        body.dark-mode .stats { background: #2d3748; }
-
+        body.dark-mode .stats { background: var(--bg-dark); }
         .stat-card {
-            background: white;
+            background: var(--card-light);
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
@@ -119,37 +83,18 @@
             transition: transform 0.3s;
             cursor: pointer;
         }
-
+        body.dark-mode .stat-card { background: var(--card-dark); color: #e2e8f0; }
         .stat-card:hover { transform: translateY(-5px); }
         .stat-card h3 { color: var(--gray); font-size: 0.9em; margin-bottom: 10px; text-transform: uppercase; }
         .stat-card .value { font-size: 2em; font-weight: bold; color: var(--primary); }
-
-        /* Alert cards */
-        .alert-card {
-            background: #fff3cd;
-            border-left: 4px solid var(--warning);
-        }
-        .alert-card .value { color: var(--warning); }
-        .danger-card {
-            background: #f8d7da;
-            border-left: 4px solid var(--danger);
-        }
-        .danger-card .value { color: var(--danger); }
-
-        /* Tabs */
         .tabs {
             display: flex;
             padding: 0 30px;
-            background: #f8f9fa;
-            border-bottom: 2px solid #e0e0e0;
+            background: var(--bg-light);
+            border-bottom: 2px solid var(--border-light);
             flex-wrap: wrap;
         }
-
-        body.dark-mode .tabs {
-            background: #2d3748;
-            border-bottom-color: #4a5568;
-        }
-
+        body.dark-mode .tabs { background: var(--bg-dark); border-bottom-color: var(--border-dark); }
         .tab {
             padding: 15px 25px;
             cursor: pointer;
@@ -161,64 +106,31 @@
             transition: all 0.3s;
             position: relative;
         }
-
         .tab:hover { color: var(--primary); }
         .tab.active { color: var(--primary); }
-        .tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: var(--primary);
-        }
-
-        /* Forms */
-        .form-section {
-            padding: 30px;
-            display: none;
-            animation: fadeIn 0.3s ease-in;
-        }
-
+        .tab.active::after { content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 2px; background: var(--primary); }
+        .form-section { padding: 30px; display: none; animation: fadeIn 0.3s ease-in; }
         .form-section.active { display: block; }
-
-        form {
-            background: #f8f9fa;
+        form, .info-panel {
+            background: var(--bg-light);
             padding: 25px;
             border-radius: 15px;
             margin-bottom: 20px;
         }
-
-        body.dark-mode form { background: #1a202c; }
-
+        body.dark-mode form, body.dark-mode .info-panel { background: var(--card-dark); }
         .form-group { margin-bottom: 20px; }
         label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--dark); }
         body.dark-mode label { color: #e2e8f0; }
-
         input, select, textarea {
             width: 100%;
             padding: 12px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid var(--border-light);
             border-radius: 8px;
             font-size: 1em;
             transition: all 0.3s;
         }
-
-        body.dark-mode input, 
-        body.dark-mode select, 
-        body.dark-mode textarea {
-            background: #2d3748;
-            border-color: #4a5568;
-            color: #e2e8f0;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
+        body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background: var(--bg-dark); border-color: var(--border-dark); color: #e2e8f0; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
         button {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
@@ -231,1299 +143,785 @@
             transition: all 0.3s;
             margin: 5px;
         }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
+        button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4); }
         .btn-danger { background: linear-gradient(135deg, var(--danger) 0%, #c53030 100%); }
         .btn-success { background: linear-gradient(135deg, var(--success) 0%, #2f855a 100%); }
         .btn-warning { background: linear-gradient(135deg, var(--warning) 0%, #dd6b20 100%); }
         .btn-sm { padding: 5px 10px; font-size: 0.85em; }
-
-        .search-box {
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        .search-box input { padding-left: 40px; }
-        .search-box::before {
-            content: '🔍';
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 1.2em;
-        }
-
-        .filter-group {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .filter-group input, .filter-group select {
-            flex: 1;
-            min-width: 150px;
-        }
-
-        .loans-list, .clients-list {
-            max-height: 600px;
-            overflow-y: auto;
-        }
-
-        .loan-card, .client-card {
-            background: white;
-            border: 1px solid #e0e0e0;
+        .loans-list, .clients-list, .users-list { max-height: 600px; overflow-y: auto; }
+        .loan-card, .client-card, .user-card {
+            background: var(--card-light);
+            border: 1px solid var(--border-light);
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 15px;
             transition: all 0.3s;
             animation: slideIn 0.3s ease-out;
         }
-
-        body.dark-mode .loan-card,
-        body.dark-mode .client-card {
-            background: #1a202c;
-            border-color: #4a5568;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        .loan-card:hover, .client-card:hover {
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            transform: translateX(5px);
-        }
-
-        .loan-header, .client-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-
-        .loan-client, .client-name {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: var(--dark);
-        }
-
-        body.dark-mode .loan-client,
-        body.dark-mode .client-name {
-            color: #e2e8f0;
-        }
-
-        .loan-actions button, .client-actions button {
-            padding: 5px 10px;
-            margin-left: 5px;
-            font-size: 0.85em;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            font-weight: bold;
-        }
-
+        body.dark-mode .loan-card, body.dark-mode .client-card, body.dark-mode .user-card { background: var(--card-dark); border-color: var(--border-dark); }
+        .loan-header, .client-header, .user-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; }
+        .loan-client, .client-name, .user-email { font-size: 1.2em; font-weight: bold; color: var(--dark); }
+        body.dark-mode .loan-client, body.dark-mode .client-name, body.dark-mode .user-email { color: #e2e8f0; }
+        .badge { display: inline-block; padding: 5px 12px; border-radius: 20px; font-size: 0.85em; font-weight: bold; }
         .badge.pagado { background: #d4edda; color: #155724; }
         .badge.pendiente { background: #f8d7da; color: #721c24; }
-        .badge.vencido { background: #f8d7da; color: #dc3545; }
-        .badge.proximo { background: #fff3cd; color: #856404; }
-        .badge.frances { background: #cce5ff; color: #004085; }
-        .badge.aleman { background: #d4edda; color: #155724; }
-
-        .loan-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid #e0e0e0;
-        }
-
-        body.dark-mode .loan-details { border-top-color: #4a5568; }
-
-        .detail-item { display: flex; flex-direction: column; }
-        .detail-label { font-size: 0.8em; color: var(--gray); margin-bottom: 5px; }
-        .detail-value { font-size: 1.1em; font-weight: 600; color: var(--dark); }
-        body.dark-mode .detail-value { color: #e2e8f0; }
-        .detail-value.monto { color: var(--success); }
-        .detail-value.saldo { color: var(--danger); }
-
-        .progress-bar {
-            margin-top: 10px;
-            height: 8px;
-            background: #e0e0e0;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--success), #2f855a);
-            transition: width 0.5s ease;
-        }
-
-        .amortization-table {
-            background: white;
-            border-radius: 12px;
-            padding: 15px;
-            margin-top: 20px;
-            overflow-x: auto;
-        }
-
-        .amortization-table table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .amortization-table th, .amortization-table td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: center;
-        }
-
-        .amortization-table th {
-            background: var(--primary);
-            color: white;
-        }
-
-        .summary-card {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            border-left: 4px solid var(--primary);
-        }
-
-        .summary-card h3 {
-            margin-bottom: 15px;
-            color: var(--primary);
-        }
-
-        .summary-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        .summary-item {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .summary-label {
-            font-size: 0.85em;
-            color: var(--gray);
-            margin-bottom: 5px;
-        }
-
-        .summary-value {
-            font-size: 1.3em;
-            font-weight: bold;
-            color: var(--dark);
-        }
-
-        .summary-value.total {
-            color: var(--success);
-            font-size: 1.5em;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            animation: fadeIn 0.3s;
-        }
-
-        .modal-content {
-            background: white;
-            margin: 50px auto;
-            padding: 30px;
-            border-radius: 15px;
-            max-width: 600px;
-            max-height: 80vh;
-            overflow-y: auto;
-            animation: slideIn 0.3s;
-        }
-
-        .chart-container {
-            padding: 20px;
-            background: white;
-            border-radius: 15px;
-            margin-bottom: 20px;
-        }
-
-        body.dark-mode .chart-container { background: #1a202c; }
-
+        .badge.admin { background: #cce5ff; color: #004085; }
+        .badge.user { background: #e2e3e5; color: #383d41; }
+        .loan-details, .user-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-light); }
+        .progress-bar { margin-top: 10px; height: 8px; background: #e0e0e0; border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--success), #2f855a); transition: width 0.5s ease; }
+        .amortization-table { background: var(--card-light); border-radius: 12px; padding: 15px; margin-top: 20px; overflow-x: auto; }
+        .scrollable-table { max-height: 400px; overflow-y: auto; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); animation: fadeIn 0.3s; }
+        .modal-content { background: var(--card-light); margin: 50px auto; padding: 30px; border-radius: 15px; max-width: 90%; width: 800px; max-height: 80vh; overflow-y: auto; }
+        .chart-container { padding: 20px; background: var(--card-light); border-radius: 15px; margin-bottom: 20px; }
         canvas { max-height: 300px; }
-
-        .toast {
+        .toast { position: fixed; bottom: 20px; right: 20px; background: white; padding: 15px 25px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); animation: slideInRight 0.3s; z-index: 2000; }
+        .empty-state { text-align: center; padding: 40px; color: var(--gray); }
+        .filter-group { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; align-items: center; }
+        .login-overlay {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        .login-card {
             background: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            animation: slideInRight 0.3s;
-            z-index: 2000;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
         }
-
-        @keyframes slideInRight {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        .toast.success { border-left: 4px solid var(--success); }
-        .toast.error { border-left: 4px solid var(--danger); }
-        .toast.warning { border-left: 4px solid var(--warning); }
-
-        @media (max-width: 768px) {
-            .tabs { padding: 0 15px; }
-            .tab { padding: 12px 15px; font-size: 0.85em; }
-            .form-section { padding: 20px; }
-            .stats { padding: 20px; }
-            .loan-header, .client-header { flex-direction: column; align-items: flex-start; gap: 10px; }
-            .modal-content { margin: 20px; padding: 20px; }
-            .summary-details { grid-template-columns: 1fr; }
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            color: var(--gray);
-        }
-
-        .empty-state::before {
-            content: '📋';
-            font-size: 3em;
-            display: block;
-            margin-bottom: 10px;
-        }
+        body.dark-mode .login-card { background: var(--card-dark); color: white; }
+        @media (max-width: 768px) { .tabs { padding: 0 15px; } .tab { padding: 12px 15px; font-size: 0.85em; } .form-section { padding: 20px; } }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
-            <h1>💰 Sistema de Gestión de Préstamos Profesional</h1>
-            <p>Amortización Francesa y Alemana | Interés anual o mensual</p>
-        </div>
+<div class="container" id="mainApp" style="display: none;">
+    <div class="header">
+        <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+        <h1>💰 <span id="empresaNombre">Sistema de Préstamos</span> | <span id="empresaTelefono"></span></h1>
+        <p>Amortización Francesa y Alemana | Abonos a capital | Gestión de usuarios</p>
+        <div style="position: absolute; bottom: 10px; right: 20px; font-size: 0.8em;">👤 <span id="userEmail"></span> | <button onclick="logout()" class="btn-sm" style="background:#333;">Cerrar sesión</button></div>
+    </div>
+    <div class="stats">
+        <div class="stat-card" onclick="cambiarTab('lista')"><h3>Total Prestado</h3><div class="value" id="totalPrestado">$0</div></div>
+        <div class="stat-card" onclick="cambiarTab('lista')"><h3>Total Pagado</h3><div class="value" id="totalPagado">$0</div></div>
+        <div class="stat-card" onclick="cambiarTab('lista')"><h3>Saldo Pendiente</h3><div class="value" id="saldoPendiente">$0</div></div>
+        <div class="stat-card alert-card" onclick="cambiarTab('lista')"><h3>⏰ Por vencer (7d)</h3><div class="value" id="porVencer">0</div></div>
+        <div class="stat-card danger-card" onclick="cambiarTab('lista')"><h3>⚠️ Vencidos</h3><div class="value" id="vencidos">0</div></div>
+    </div>
+    <div class="tabs" id="tabsContainer"></div>
 
-        <!-- Stats generales y alertas -->
-        <div class="stats">
-            <div class="stat-card" onclick="cambiarTab('lista')">
-                <h3>Total Prestado</h3>
-                <div class="value" id="totalPrestado">$0</div>
-            </div>
-            <div class="stat-card" onclick="cambiarTab('lista')">
-                <h3>Total Pagado</h3>
-                <div class="value" id="totalPagado">$0</div>
-            </div>
-            <div class="stat-card" onclick="cambiarTab('lista')">
-                <h3>Saldo Pendiente</h3>
-                <div class="value" id="saldoPendiente">$0</div>
-            </div>
-            <div class="stat-card alert-card" onclick="cambiarTab('lista')">
-                <h3>⏰ Préstamos por vencer (7 días)</h3>
-                <div class="value" id="porVencer">0</div>
-            </div>
-            <div class="stat-card danger-card" onclick="cambiarTab('lista')">
-                <h3>⚠️ Préstamos vencidos</h3>
-                <div class="value" id="vencidos">0</div>
-            </div>
-        </div>
+    <!-- Cliente -->
+    <div id="tab-cliente" class="form-section"><form id="formCliente"><div class="form-group"><label>👤 Nombre:</label><input type="text" id="nombre" required></div><div class="form-group"><label>🆔 Cédula (10 dígitos):</label><input type="text" id="cedula" maxlength="10" pattern="\d{10}" required></div><div class="form-group"><label>📞 Teléfono:</label><input type="tel" id="telefono"></div><div class="form-group"><label>📍 Dirección:</label><input type="text" id="direccion"></div><button type="button" onclick="guardarCliente()">Guardar Cliente</button></form></div>
 
-        <div class="tabs">
-            <button class="tab active" onclick="cambiarTab('cliente')">👤 Registrar Cliente</button>
-            <button class="tab" onclick="cambiarTab('prestamo')">📝 Nuevo Préstamo</button>
-            <button class="tab" onclick="cambiarTab('pago')">💵 Registrar Pago</button>
-            <button class="tab" onclick="cambiarTab('lista')">📊 Lista de Préstamos</button>
-            <button class="tab" onclick="cambiarTab('clientes')">👥 Clientes</button>
-            <button class="tab" onclick="cambiarTab('graficos')">📈 Gráficos</button>
-            <button class="tab" onclick="cambiarTab('reportes')">📄 Reportes</button>
-        </div>
-
-        <!-- Registrar Cliente -->
-        <div id="tab-cliente" class="form-section active">
-            <form id="formCliente">
-                <div class="form-group">
-                    <label>👤 Nombre completo:</label>
-                    <input type="text" id="nombre" placeholder="Ej: Juan Pérez" required>
-                </div>
-                <div class="form-group">
-                    <label>🆔 Cédula:</label>
-                    <input type="text" id="cedula" placeholder="Ej: 1234567890" required>
-                </div>
-                <div class="form-group">
-                    <label>📞 Teléfono:</label>
-                    <input type="tel" id="telefono" placeholder="Ej: 0999123456">
-                </div>
-                <div class="form-group">
-                    <label>📍 Dirección:</label>
-                    <input type="text" id="direccion" placeholder="Dirección del cliente">
-                </div>
-                <button type="button" onclick="guardarCliente()">Guardar Cliente</button>
-            </form>
-        </div>
-
-        <!-- Registrar Préstamo -->
-        <div id="tab-prestamo" class="form-section">
-            <form id="formPrestamo">
-                <div class="form-group">
-                    <label>👤 Cliente:</label>
-                    <input type="text" id="clientePrestamo" placeholder="Nombre del cliente" list="listaClientesNombres" required>
-                </div>
-                <div class="form-group">
-                    <label>📅 Fecha del préstamo:</label>
-                    <input type="date" id="fechaPrestamo" value="">
-                </div>
-                <div class="form-group">
-                    <label>💰 Monto del préstamo:</label>
-                    <input type="number" id="monto" step="0.01" placeholder="0.00" required>
-                </div>
-                <div class="form-group">
-                    <label>📈 Tipo de interés:</label>
-                    <select id="tipoInteres">
-                        <option value="anual">Anual (%)</option>
-                        <option value="mensual">Mensual (%)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>📈 Interés:</label>
-                    <input type="number" id="interes" step="0.01" placeholder="0.00" required>
-                </div>
-                <div class="form-group">
-                    <label>📆 Número de cuotas (meses):</label>
-                    <input type="number" id="numCuotas" min="1" max="60" value="12" required>
-                </div>
-                <div class="form-group">
-                    <label>📅 Método de amortización:</label>
-                    <select id="metodoAmortizacion">
-                        <option value="frances">🇫🇷 Francés (cuota fija)</option>
-                        <option value="aleman">🇩🇪 Alemán (cuota decreciente)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>📝 Motivo / Comentario:</label>
-                    <textarea id="comentario" rows="3" placeholder="Ej: Compra de vehículo, capital de trabajo, etc."></textarea>
-                </div>
-                <button type="button" onclick="guardarPrestamo()">Registrar Préstamo</button>
-            </form>
-
-            <!-- Panel de resumen -->
-            <div id="summaryPanel" class="summary-card" style="display: none;">
-                <h3>📋 Resumen del préstamo</h3>
-                <div class="summary-details">
-                    <div class="summary-item">
-                        <span class="summary-label">💰 Monto prestado</span>
-                        <span class="summary-value" id="resumenMonto">$0.00</span>
-                    </div>
-                    <div class="summary-item">
-                        <span class="summary-label">📈 Interés</span>
-                        <span class="summary-value" id="resumenInteres">0%</span>
-                    </div>
-                    <div class="summary-item">
-                        <span class="summary-label">📅 Método</span>
-                        <span class="summary-value" id="resumenMetodo">Francés</span>
-                    </div>
-                    <div class="summary-item">
-                        <span class="summary-label">💰 Total a pagar</span>
-                        <span class="summary-value total" id="resumenTotalPagar">$0.00</span>
-                    </div>
-                    <div class="summary-item">
-                        <span class="summary-label">💸 Interés total</span>
-                        <span class="summary-value" id="resumenInteresTotal">$0.00</span>
-                    </div>
-                    <div class="summary-item">
-                        <span class="summary-label" id="resumenCuotaLabel">Cuota mensual</span>
-                        <span class="summary-value" id="resumenCuota">$0.00</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Tabla de amortización -->
-            <div id="amortizacionPreview" class="amortization-table" style="display:none;"></div>
-        </div>
-
-        <!-- Registrar Pago -->
-        <div id="tab-pago" class="form-section">
-            <form id="formPago">
-                <div class="form-group">
-                    <label>👤 Cliente:</label>
-                    <input type="text" id="clientePago" placeholder="Nombre del cliente" list="listaClientesNombres" required>
-                </div>
-                <div class="form-group">
-                    <label>💵 Monto a pagar:</label>
-                    <input type="number" id="pago" step="0.01" placeholder="0.00" required>
-                </div>
-                <button type="button" onclick="registrarPago()">Registrar Pago</button>
-            </form>
-        </div>
-
-        <!-- Lista de Préstamos -->
-        <div id="tab-lista" class="form-section">
-            <div class="filter-group">
-                <div class="search-box" style="flex: 2;">
-                    <input type="text" id="searchCliente" placeholder="Buscar por cliente o cédula..." onkeyup="filtrarPrestamos()">
-                </div>
-                <input type="number" id="filtroMontoMin" placeholder="Monto mínimo" step="0.01" onchange="filtrarPrestamos()">
-                <input type="number" id="filtroMontoMax" placeholder="Monto máximo" step="0.01" onchange="filtrarPrestamos()">
-                <input type="date" id="filtroFechaInicio" onchange="filtrarPrestamos()">
-                <input type="date" id="filtroFechaFin" onchange="filtrarPrestamos()">
-                <select id="filterEstado" onchange="filtrarPrestamos()">
-                    <option value="todos">Todos los estados</option>
-                    <option value="pendiente">Pendientes</option>
-                    <option value="pagado">Pagados</option>
-                </select>
-                <button onclick="exportarExcel()" class="btn-success">📊 Exportar Excel</button>
-                <button onclick="recargarLista()" class="btn">🔄 Actualizar</button>
-                <button onclick="imprimirLista()" class="btn">🖨️ Imprimir</button>
-            </div>
-            <div id="lista" class="loans-list"></div>
-        </div>
-
-        <!-- Clientes -->
-        <div id="tab-clientes" class="form-section">
-            <div class="search-box">
-                <input type="text" id="searchClienteLista" placeholder="Buscar cliente (nombre o cédula)..." onkeyup="filtrarClientes()">
-            </div>
-            <div id="listaClientes" class="clients-list"></div>
-        </div>
-
-        <!-- Gráficos -->
-        <div id="tab-graficos" class="form-section">
-            <div class="chart-container">
-                <canvas id="chartPagos"></canvas>
-            </div>
-            <div class="chart-container">
-                <canvas id="chartClientes"></canvas>
-            </div>
-        </div>
-
-        <!-- Reportes -->
-        <div id="tab-reportes" class="form-section">
-            <div class="filter-group">
-                <input type="date" id="fechaInicio" placeholder="Fecha inicio">
-                <input type="date" id="fechaFin" placeholder="Fecha fin">
-                <button onclick="generarReporte()" class="btn-success">Generar Reporte</button>
-            </div>
-            <div id="reporteResultado"></div>
-        </div>
+    <!-- Nuevo Préstamo -->
+    <div id="tab-prestamo" class="form-section">
+        <form id="formPrestamo">
+            <div class="form-group"><label>👤 Cliente:</label><input type="text" id="clientePrestamo" list="listaClientesNombres" required></div>
+            <div class="form-group"><label>💰 Monto:</label><input type="number" id="monto" step="0.01" min="0.01" value="1000" required></div>
+            <div class="form-group"><label>📈 Tipo interés:</label><select id="tipoInteres"><option value="anual">Anual (%)</option><option value="mensual">Mensual (%)</option></select></div>
+            <div class="form-group"><label>📈 Interés:</label><input type="number" id="interes" step="0.01" min="0" value="10" required></div>
+            <div class="form-group"><label>📆 N° cuotas:</label><input type="number" id="numCuotas" min="1" max="60" value="12" required></div>
+            <div class="form-group"><label>📅 Método:</label><select id="metodoAmortizacion"><option value="frances">Francés</option><option value="aleman">Alemán</option></select></div>
+            <button type="button" onclick="guardarPrestamo()">Registrar</button>
+        </form>
+        <div id="summaryPanel" style="display:none;"></div>
+        <div id="amortizacionPreview" class="amortization-table" style="display:none;"></div>
     </div>
 
-    <!-- Modal para historial de pagos -->
-    <div id="modalHistorial" class="modal">
-        <div class="modal-content">
-            <h3>📜 Historial de Pagos</h3>
-            <div id="historialContenido"></div>
-            <button onclick="cerrarModal()">Cerrar</button>
-        </div>
+    <!-- Pago -->
+    <div id="tab-pago" class="form-section"><div class="info-panel"><div class="form-group"><label>👤 Cliente:</label><input type="text" id="clientePago" list="listaClientesNombres" onchange="cargarPrestamosCliente()" required></div><div class="form-group"><label>📌 Préstamo:</label><select id="prestamoSelect" onchange="mostrarDetallesPrestamo()"></select></div><div id="detallePrestamo"></div><div class="form-group"><label>💰 Monto:</label><input type="number" id="pagoMonto" step="0.01" min="0.01" required></div><div class="form-group"><label><input type="checkbox" id="extraPaymentCheckbox"> ✔️ Abono a capital (sin cuota)</label><small>Marca para restar directo del capital restante y recalcular cuotas.</small></div><button onclick="registrarPagoAvanzado()" class="btn-success">Procesar</button></div></div>
+
+    <!-- Lista Préstamos -->
+    <div id="tab-lista" class="form-section"><div class="filter-group"><input type="text" id="searchCliente" placeholder="Buscar..." onkeyup="filtrarPrestamos()"><input type="number" id="filtroMontoMin" placeholder="Monto min" onchange="filtrarPrestamos()"><input type="number" id="filtroMontoMax" placeholder="Monto max" onchange="filtrarPrestamos()"><select id="filterEstado" onchange="filtrarPrestamos()"><option value="todos">Todos</option><option value="pendiente">Pendientes</option><option value="pagado">Pagados</option></select><button onclick="exportarExcel()" class="btn-success">Excel</button><button onclick="imprimirLista()" class="btn">Imprimir</button></div><div id="lista" class="loans-list"></div></div>
+
+    <!-- Clientes -->
+    <div id="tab-clientes" class="form-section"><div class="filter-group"><input type="text" id="searchClienteLista" placeholder="Buscar..." onkeyup="filtrarClientes()"></div><div id="listaClientes" class="clients-list"></div></div>
+
+    <!-- Gráficos -->
+    <div id="tab-graficos" class="form-section"><div class="chart-container"><canvas id="chartPagos"></canvas></div><div class="chart-container"><canvas id="chartClientes"></canvas></div></div>
+
+    <!-- Reportes -->
+    <div id="tab-reportes" class="form-section"><div class="filter-group"><input type="date" id="fechaInicio"><input type="date" id="fechaFin"><button onclick="generarReporte()" class="btn-success">Generar</button></div><div id="reporteResultado"></div></div>
+
+    <!-- Perfil -->
+    <div id="tab-perfil" class="form-section"><div class="info-panel"><h3>🏢 Datos de la Empresa</h3><div class="form-group"><label>Nombre / Razón social:</label><input type="text" id="empresaNombreInput"></div><div class="form-group"><label>Teléfono de contacto:</label><input type="text" id="empresaTelefonoInput"></div><button onclick="guardarPerfilEmpresa()" class="btn-success">Guardar</button></div><div class="info-panel"><h3>🔐 Seguridad</h3><div class="form-group"><label>Email de acceso:</label><input type="email" id="userEmailInput" readonly disabled></div><div class="form-group"><label>Contraseña actual:</label><input type="password" id="currentPassword"></div><div class="form-group"><label>Nueva contraseña:</label><input type="password" id="newPassword"></div><div class="form-group"><label>Confirmar:</label><input type="password" id="confirmPassword"></div><button onclick="cambiarContrasena()" class="btn-warning">Cambiar contraseña</button></div></div>
+
+    <!-- Usuarios (solo admin) -->
+    <div id="tab-usuarios" class="form-section"><div class="info-panel"><h3>➕ Crear nuevo usuario</h3><div class="form-group"><label>Email:</label><input type="email" id="newUserEmail" placeholder="correo@ejemplo.com"></div><div class="form-group"><label>Contraseña:</label><input type="password" id="newUserPassword" placeholder="mínimo 6 caracteres"></div><div class="form-group"><label>Rol:</label><select id="newUserRole"><option value="user">Usuario normal</option><option value="admin">Administrador</option></select></div><button onclick="crearUsuario()" class="btn-success">Crear usuario</button></div><div class="info-panel"><h3>👥 Usuarios registrados</h3><div id="listaUsuarios" class="users-list"></div></div></div>
+</div>
+
+<div id="modalHistorial" class="modal"><div class="modal-content"><h3>📜 Historial</h3><div id="historialContenido"></div><button onclick="cerrarModal()">Cerrar</button></div></div>
+<div id="modalAmortizacion" class="modal"><div class="modal-content"><h3>📊 Tabla de Amortización</h3><div id="amortizacionContenido" class="scrollable-table"></div><button onclick="cerrarModal()">Cerrar</button></div></div>
+<datalist id="listaClientesNombres"></datalist>
+
+<!-- Login -->
+<div id="loginOverlay" class="login-overlay">
+    <div class="login-card">
+        <h2>🔐 Acceso al Sistema</h2>
+        <div class="form-group"><label>Email:</label><input type="email" id="loginEmail" placeholder="admin@ejemplo.com"></div>
+        <div class="form-group"><label>Contraseña:</label><input type="password" id="loginPassword"></div>
+        <button onclick="login()" class="btn-success">Iniciar sesión</button>
+        <div id="firstUserContainer" style="margin-top:15px; text-align:center;"></div>
     </div>
+</div>
 
-    <!-- Modal para tabla de amortización -->
-    <div id="modalAmortizacion" class="modal">
-        <div class="modal-content">
-            <h3>📊 Tabla de Amortización</h3>
-            <div id="amortizacionContenido"></div>
-            <button onclick="cerrarModal()">Cerrar</button>
-        </div>
-    </div>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, push, set, get, update, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, updatePassword, signOut, onAuthStateChanged, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-    <datalist id="listaClientesNombres"></datalist>
+    const firebaseConfig = {
+        apiKey: "AIzaSyCPPT7vBogvJvJpnC1TTG3Yx-N30xJit3o",
+        authDomain: "sistema-prestamo-f5303.firebaseapp.com",
+        projectId: "sistema-prestamo-f5303",
+        databaseURL: "https://sistema-prestamo-f5303-default-rtdb.firebaseio.com",
+        storageBucket: "sistema-prestamo-f5303.firebasestorage.app",
+        messagingSenderId: "878399930922",
+        appId: "1:878399930922:web:3274ed4b00b46f28b8b953"
+    };
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, push, set, get, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    let app, db, auth, todosLosPrestamos = [], todosLosClientes = [], currentUserRole = null, chartPagos, chartClientes, prestamosUnsubscribe, clientesUnsubscribe;
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCPPT7vBogvJvJpnC1TTG3Yx-N30xJit3o",
-            authDomain: "sistema-prestamo-f5303.firebaseapp.com",
-            projectId: "sistema-prestamo-f5303",
-            databaseURL: "https://sistema-prestamo-f5303-default-rtdb.firebaseio.com",
-            storageBucket: "sistema-prestamo-f5303.firebasestorage.app",
-            messagingSenderId: "878399930922",
-            appId: "1:878399930922:web:3274ed4b00b46f28b8b953"
-        };
+    try {
+        app = initializeApp(firebaseConfig);
+        db = getDatabase(app);
+        auth = getAuth(app);
+        console.log("✅ Firebase conectado");
+    } catch(e) { console.error(e); }
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+    // Funciones auxiliares
+    function mostrarToast(mensaje, tipo = "success") {
+        const toast = document.createElement('div');
+        toast.className = `toast ${tipo}`;
+        toast.innerHTML = mensaje;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
 
-        let todosLosPrestamos = [];
-        let todosLosClientes = [];
-        let chartPagos, chartClientes;
+    function escapeHtml(str) { return str ? str.replace(/[&<>]/g, function(m) { if (m === "&") return "&amp;"; if (m === "<") return "&lt;"; if (m === ">") return "&gt;"; return m; }) : ""; }
 
-        // Funciones auxiliares
-        function mostrarToast(mensaje, tipo = "success") {
-            const toast = document.createElement('div');
-            toast.className = `toast ${tipo}`;
-            toast.innerHTML = mensaje;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
+    function validarCedula(cedula) {
+        if (!/^\d{10}$/.test(cedula)) return false;
+        const provincia = parseInt(cedula.substring(0, 2), 10);
+        if (provincia < 1 || provincia > 24) return false;
+        const tercerDigito = parseInt(cedula[2], 10);
+        if (tercerDigito < 0 || tercerDigito > 6) return false;
+        let total = 0;
+        for (let i = 0; i < 9; i++) {
+            let digito = parseInt(cedula[i], 10);
+            if (i % 2 === 0) digito *= 2;
+            if (digito > 9) digito -= 9;
+            total += digito;
         }
+        const digitoVerificador = (10 - (total % 10)) % 10;
+        return digitoVerificador === parseInt(cedula[9], 10);
+    }
 
-        function escapeHtml(str) {
-            if (!str) return "";
-            return str.replace(/[&<>]/g, function(m) {
-                if (m === "&") return "&amp;";
-                if (m === "<") return "&lt;";
-                if (m === ">") return "&gt;";
-                return m;
-            });
-        }
-
-        window.toggleTheme = function() {
-            document.body.classList.toggle('dark-mode');
-            const btn = document.querySelector('.theme-toggle');
-            btn.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
-            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
-        };
-
-        if (localStorage.getItem('darkMode') === 'true') {
-            document.body.classList.add('dark-mode');
-            document.querySelector('.theme-toggle').textContent = '☀️';
-        }
-
-        window.cambiarTab = function(tab) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
-            
-            const tabs = { cliente: 0, prestamo: 1, pago: 2, lista: 3, clientes: 4, graficos: 5, reportes: 6 };
-            document.querySelectorAll('.tab')[tabs[tab]].classList.add('active');
-            document.getElementById(`tab-${tab}`).classList.add('active');
-            
-            if (tab === 'lista') mostrarPrestamos();
-            if (tab === 'graficos') actualizarGraficos();
-            if (tab === 'clientes') cargarClientes();
-        };
-
-        // Obtener tasa mensual según tipo de interés
-        function getTasaMensual(interes, tipo) {
-            let tasa = interes / 100;
-            if (tipo === 'anual') tasa = tasa / 12;
-            return tasa;
-        }
-
-        // Cálculo de amortización según método
-        function calcularAmortizacion(monto, interes, numCuotas, metodo, tipoInteres) {
-            const tasaMensual = getTasaMensual(interes, tipoInteres);
-            let amortizacion = [];
-            if (metodo === 'frances') {
-                // Cuota fija (francés)
-                const cuota = monto * tasaMensual * Math.pow(1 + tasaMensual, numCuotas) / (Math.pow(1 + tasaMensual, numCuotas) - 1);
+    function getTasaMensual(interes, tipo) { if (interes === 0) return 0; let tasa = interes / 100; if (tipo === 'anual') tasa /= 12; return tasa; }
+    function calcularAmortizacion(monto, interes, numCuotas, metodo, tipoInteres) {
+        const tasa = getTasaMensual(interes, tipoInteres);
+        let amort = [];
+        if (metodo === 'frances') {
+            if (tasa === 0) {
+                const cuota = monto / numCuotas;
                 let saldo = monto;
                 for (let i = 1; i <= numCuotas; i++) {
-                    const interesCuota = saldo * tasaMensual;
-                    const capital = cuota - interesCuota;
-                    saldo -= capital;
-                    amortizacion.push({
-                        cuota: i,
-                        pago: cuota,
-                        interes: interesCuota,
-                        capital: capital,
-                        saldo: Math.max(0, saldo)
-                    });
+                    const cap = cuota;
+                    saldo -= cap;
+                    amort.push({ cuota: i, pago: cuota, interes: 0, capital: cap, saldo: Math.max(0, saldo) });
                 }
-            } else if (metodo === 'aleman') {
-                // Sistema alemán: capital constante
-                const capitalConstante = monto / numCuotas;
+            } else {
+                const cuota = monto * tasa * Math.pow(1 + tasa, numCuotas) / (Math.pow(1 + tasa, numCuotas) - 1);
                 let saldo = monto;
                 for (let i = 1; i <= numCuotas; i++) {
-                    const interesCuota = saldo * tasaMensual;
-                    const pago = capitalConstante + interesCuota;
-                    saldo -= capitalConstante;
-                    amortizacion.push({
-                        cuota: i,
-                        pago: pago,
-                        interes: interesCuota,
-                        capital: capitalConstante,
-                        saldo: Math.max(0, saldo)
-                    });
+                    const inter = saldo * tasa;
+                    const cap = cuota - inter;
+                    saldo -= cap;
+                    amort.push({ cuota: i, pago: cuota, interes: inter, capital: cap, saldo: Math.max(0, saldo) });
                 }
             }
-            return amortizacion;
-        }
-
-        // Función para actualizar el resumen y la vista previa de amortización
-        function actualizarResumenYAmortizacion() {
-            const monto = parseFloat(document.getElementById("monto").value);
-            const interes = parseFloat(document.getElementById("interes").value);
-            const numCuotas = parseInt(document.getElementById("numCuotas").value);
-            const metodo = document.getElementById("metodoAmortizacion").value;
-            const tipoInteres = document.getElementById("tipoInteres").value;
-
-            if (isNaN(monto) || isNaN(interes) || isNaN(numCuotas) || monto <= 0 || interes < 0 || numCuotas <= 0) {
-                document.getElementById("summaryPanel").style.display = "none";
-                document.getElementById("amortizacionPreview").style.display = "none";
-                return;
-            }
-
-            const amortizacion = calcularAmortizacion(monto, interes, numCuotas, metodo, tipoInteres);
-            if (!amortizacion.length) return;
-
-            const totalPagar = amortizacion.reduce((sum, c) => sum + c.pago, 0);
-            const interesTotal = totalPagar - monto;
-
-            let cuotaTexto = "";
-            if (metodo === 'frances') {
-                cuotaTexto = `$${amortizacion[0].pago.toFixed(2)} (fija)`;
-            } else {
-                const primeraCuota = amortizacion[0].pago;
-                const ultimaCuota = amortizacion[amortizacion.length-1].pago;
-                cuotaTexto = `$${primeraCuota.toFixed(2)} → $${ultimaCuota.toFixed(2)} (decreciente)`;
-            }
-
-            // Mostrar resumen
-            document.getElementById("resumenMonto").textContent = `$${monto.toFixed(2)}`;
-            let interesTexto = `${interes}% ` + (tipoInteres === 'anual' ? 'anual' : 'mensual');
-            document.getElementById("resumenInteres").textContent = interesTexto;
-            document.getElementById("resumenMetodo").textContent = metodo === 'frances' ? 'Francés (cuota fija)' : 'Alemán (cuota decreciente)';
-            document.getElementById("resumenTotalPagar").textContent = `$${totalPagar.toFixed(2)}`;
-            document.getElementById("resumenInteresTotal").textContent = `$${interesTotal.toFixed(2)}`;
-            document.getElementById("resumenCuota").textContent = cuotaTexto;
-            document.getElementById("summaryPanel").style.display = "block";
-
-            // Mostrar tabla de amortización
-            let tabla = `<h4>📊 Tabla de amortización (${metodo === 'frances' ? 'Francés' : 'Alemán'})</h4>
-             <table>
-                <thead>
-                    <tr><th>Cuota</th><th>Pago</th><th>Interés</th><th>Capital</th><th>Saldo</th></tr>
-                </thead>
-                <tbody>`;
-            amortizacion.forEach(c => {
-                tabla += `<tr>
-                    <td>${c.cuota}</td>
-                    <td>$${c.pago.toFixed(2)}</td>
-                    <td>$${c.interes.toFixed(2)}</td>
-                    <td>$${c.capital.toFixed(2)}</td>
-                    <td>$${c.saldo.toFixed(2)}</td>
-                </tr>`;
-            });
-            tabla += `</tbody></table>`;
-            const previewDiv = document.getElementById("amortizacionPreview");
-            previewDiv.innerHTML = tabla;
-            previewDiv.style.display = "block";
-        }
-
-        // Guardar cliente
-        window.guardarCliente = async function() {
-            const nombre = document.getElementById("nombre").value.trim();
-            const cedula = document.getElementById("cedula").value.trim();
-            const telefono = document.getElementById("telefono").value.trim();
-            const direccion = document.getElementById("direccion").value.trim();
-            if (!nombre || !cedula) { mostrarToast("Por favor ingrese nombre y cédula.", "error"); return; }
-            try {
-                const snapshot = await get(ref(db, 'clientes'));
-                const clientes = snapshot.val();
-                if (clientes && Object.values(clientes).some(c => c.cedula === cedula)) {
-                    mostrarToast("Ya existe un cliente con esa cédula.", "error"); return;
-                }
-                const clientesRef = ref(db, 'clientes');
-                const nuevoClienteRef = push(clientesRef);
-                await set(nuevoClienteRef, { nombre, cedula, telefono, direccion, fecha: new Date().toISOString() });
-                mostrarToast("✅ Cliente guardado correctamente", "success");
-                document.getElementById("nombre").value = "";
-                document.getElementById("cedula").value = "";
-                document.getElementById("telefono").value = "";
-                document.getElementById("direccion").value = "";
-                cargarClientes();
-            } catch (error) { mostrarToast("Error: " + error.message, "error"); }
-        };
-
-        // Guardar préstamo
-        window.guardarPrestamo = async function() {
-            const cliente = document.getElementById("clientePrestamo").value.trim();
-            const monto = parseFloat(document.getElementById("monto").value);
-            const interes = parseFloat(document.getElementById("interes").value);
-            const numCuotas = parseInt(document.getElementById("numCuotas").value);
-            const metodo = document.getElementById("metodoAmortizacion").value;
-            const tipoInteres = document.getElementById("tipoInteres").value;
-            const fechaPrestamoStr = document.getElementById("fechaPrestamo").value;
-            const comentario = document.getElementById("comentario").value.trim();
-
-            if (!cliente || isNaN(monto) || isNaN(interes) || isNaN(numCuotas) || monto <= 0 || interes < 0 || numCuotas <= 0) {
-                mostrarToast("Todos los campos son obligatorios y deben ser números válidos.", "error");
-                return;
-            }
-
-            const id = Date.now().toString();
-            const fechaPrestamo = fechaPrestamoStr ? new Date(fechaPrestamoStr).toISOString() : new Date().toISOString();
-            const amortizacion = calcularAmortizacion(monto, interes, numCuotas, metodo, tipoInteres);
-            if (!amortizacion.length) {
-                mostrarToast("Error al calcular la amortización. Verifique los datos.", "error");
-                return;
-            }
-
-            const totalPagar = amortizacion.reduce((sum, c) => sum + c.pago, 0);
-            const saldo = totalPagar;
-
-            const fechaVencimiento = new Date(fechaPrestamo);
-            fechaVencimiento.setMonth(fechaVencimiento.getMonth() + numCuotas);
-
-            try {
-                const prestamoData = {
-                    cliente,
-                    monto,
-                    interes,
-                    tipoInteres,
-                    total: totalPagar,
-                    saldo,
-                    fecha: fechaPrestamo,
-                    fechaVencimiento: fechaVencimiento.toISOString(),
-                    metodoAmortizacion: metodo,
-                    amortizacion,
-                    comentario,
-                    estado: "activo",
-                    tipoPago: "cuotas"
-                };
-                await set(ref(db, `prestamos/${id}`), prestamoData);
-                mostrarToast("✅ Préstamo registrado correctamente", "success");
-                // Limpiar campos
-                document.getElementById("clientePrestamo").value = "";
-                document.getElementById("monto").value = "";
-                document.getElementById("interes").value = "";
-                document.getElementById("numCuotas").value = "12";
-                document.getElementById("tipoInteres").value = "anual";
-                document.getElementById("metodoAmortizacion").value = "frances";
-                document.getElementById("fechaPrestamo").value = "";
-                document.getElementById("comentario").value = "";
-                document.getElementById("summaryPanel").style.display = "none";
-                document.getElementById("amortizacionPreview").style.display = "none";
-                mostrarPrestamos();
-                actualizarEstadisticas();
-                cargarClientes();
-            } catch (error) { mostrarToast("Error: " + error.message, "error"); }
-        };
-
-        // Registrar pago (sin cambios)
-        window.registrarPago = async function() {
-            const cliente = document.getElementById("clientePago").value.trim();
-            const pago = parseFloat(document.getElementById("pago").value);
-            if (!cliente || isNaN(pago) || pago <= 0) {
-                mostrarToast("Ingrese un cliente válido y un monto positivo.", "error"); return;
-            }
-            try {
-                const snapshot = await get(ref(db, 'prestamos'));
-                const prestamos = snapshot.val();
-                if (!prestamos) { mostrarToast("No hay préstamos registrados.", "error"); return; }
-                const prestamosPendientes = [];
-                for (const [id, prestamo] of Object.entries(prestamos)) {
-                    if (prestamo.cliente === cliente && prestamo.saldo > 0) {
-                        prestamosPendientes.push({id, ...prestamo});
-                    }
-                }
-                if (prestamosPendientes.length === 0) {
-                    mostrarToast("No hay préstamos pendientes para este cliente.", "error"); return;
-                }
-                let prestamoSeleccionado = prestamosPendientes[0];
-                if (prestamosPendientes.length > 1) {
-                    let mensaje = "Selecciona el préstamo a pagar:\n\n";
-                    prestamosPendientes.forEach((p, i) => {
-                        const porcentaje = ((p.total - p.saldo) / p.total * 100).toFixed(1);
-                        mensaje += `${i + 1}. $${p.monto} | Saldo: $${p.saldo} | ${porcentaje}%\n`;
-                    });
-                    const opcion = prompt(mensaje + "\nIngresa el número:");
-                    const indice = parseInt(opcion) - 1;
-                    if (isNaN(indice) || indice < 0 || indice >= prestamosPendientes.length) return;
-                    prestamoSeleccionado = prestamosPendientes[indice];
-                }
-                const newSaldo = prestamoSeleccionado.saldo - pago;
-                if (newSaldo < 0) {
-                    mostrarToast(`El pago excede el saldo pendiente ($${prestamoSeleccionado.saldo}).`, "error");
-                    return;
-                }
-                // Guardar historial de pago
-                const historialRef = ref(db, `prestamos/${prestamoSeleccionado.id}/historialPagos`);
-                const nuevoPagoRef = push(historialRef);
-                await set(nuevoPagoRef, {
-                    monto: pago,
-                    fecha: new Date().toISOString(),
-                    saldoAnterior: prestamoSeleccionado.saldo,
-                    saldoNuevo: newSaldo
-                });
-                await update(ref(db, `prestamos/${prestamoSeleccionado.id}`), {
-                    saldo: newSaldo,
-                    ultimoPago: pago,
-                    fechaUltimoPago: new Date().toISOString()
-                });
-                mostrarToast(`✅ Pago de $${pago} registrado. Nuevo saldo: $${newSaldo}`, "success");
-                document.getElementById("clientePago").value = "";
-                document.getElementById("pago").value = "";
-                mostrarPrestamos();
-                actualizarEstadisticas();
-                cargarClientes();
-            } catch (error) { mostrarToast("Error: " + error.message, "error"); }
-        };
-
-        // Ver historial de pagos (sin cambios)
-        window.verHistorial = async function(id) {
-            const snapshot = await get(ref(db, `prestamos/${id}/historialPagos`));
-            const historial = snapshot.val();
-            const modal = document.getElementById("modalHistorial");
-            const contenido = document.getElementById("historialContenido");
-            if (!historial || Object.keys(historial).length === 0) {
-                contenido.innerHTML = "<p>No hay pagos registrados.</p>";
-            } else {
-                contenido.innerHTML = Object.values(historial).sort((a,b) => new Date(b.fecha) - new Date(a.fecha))
-                    .map(p => `
-                        <div class="loan-card" style="margin-bottom:10px;">
-                            <div><strong>${new Date(p.fecha).toLocaleString()}</strong></div>
-                            <div>Monto: $${p.monto.toFixed(2)}</div>
-                            <div>Saldo anterior: $${p.saldoAnterior.toFixed(2)} → Nuevo saldo: $${p.saldoNuevo.toFixed(2)}</div>
-                        </div>
-                    `).join('');
-            }
-            modal.style.display = "block";
-        };
-
-        // Ver tabla de amortización (sin cambios)
-        window.verAmortizacion = async function(id) {
-            const snapshot = await get(ref(db, `prestamos/${id}`));
-            const prestamo = snapshot.val();
-            const modal = document.getElementById("modalAmortizacion");
-            const contenido = document.getElementById("amortizacionContenido");
-            if (!prestamo.amortizacion) {
-                contenido.innerHTML = "<p>Este préstamo no tiene tabla de amortización.</p>";
-            } else {
-                let html = `<h4>Método: ${prestamo.metodoAmortizacion === 'frances' ? 'Francés (cuota fija)' : 'Alemán (cuota decreciente)'}</h4>
-                 <table><thead><tr><th>Cuota</th><th>Pago</th><th>Interés</th><th>Capital</th><th>Saldo</th></tr></thead><tbody>`;
-                prestamo.amortizacion.forEach(c => {
-                    html += `<tr>
-                        <td>${c.cuota}</td>
-                        <td>$${c.pago.toFixed(2)}</td>
-                        <td>$${c.interes.toFixed(2)}</td>
-                        <td>$${c.capital.toFixed(2)}</td>
-                        <td>$${c.saldo.toFixed(2)}</td>
-                    </tr>`;
-                });
-                html += `</tbody></table>`;
-                contenido.innerHTML = html;
-            }
-            modal.style.display = "block";
-        };
-
-        function cerrarModal() {
-            document.getElementById("modalHistorial").style.display = "none";
-            document.getElementById("modalAmortizacion").style.display = "none";
-        }
-        window.cerrarModal = cerrarModal;
-
-        // Editar préstamo (incluyendo fecha y comentario)
-        window.editarPrestamo = async function(id) {
-            const snapshot = await get(ref(db, `prestamos/${id}`));
-            const prestamo = snapshot.val();
-            if (!prestamo) return;
-            const nuevoMonto = prompt("Editar monto:", prestamo.monto);
-            const nuevoInteres = prompt("Editar interés (%):", prestamo.interes);
-            const nuevaFecha = prompt("Editar fecha del préstamo (YYYY-MM-DD):", prestamo.fecha ? prestamo.fecha.slice(0,10) : new Date().toISOString().slice(0,10));
-            const nuevoComentario = prompt("Editar comentario:", prestamo.comentario || '');
-            if (nuevoMonto && nuevoInteres) {
-                const numCuotas = prestamo.amortizacion ? prestamo.amortizacion.length : 12;
-                const metodo = prestamo.metodoAmortizacion || 'frances';
-                const tipoInteres = prestamo.tipoInteres || 'anual';
-                const nuevaAmortizacion = calcularAmortizacion(parseFloat(nuevoMonto), parseFloat(nuevoInteres), numCuotas, metodo, tipoInteres);
-                const nuevoTotal = nuevaAmortizacion.reduce((sum, c) => sum + c.pago, 0);
-                const nuevaFechaISO = nuevaFecha ? new Date(nuevaFecha).toISOString() : prestamo.fecha;
-                const fechaVencimiento = new Date(nuevaFechaISO);
-                fechaVencimiento.setMonth(fechaVencimiento.getMonth() + numCuotas);
-                await update(ref(db, `prestamos/${id}`), {
-                    monto: parseFloat(nuevoMonto),
-                    interes: parseFloat(nuevoInteres),
-                    total: nuevoTotal,
-                    saldo: nuevoTotal,
-                    amortizacion: nuevaAmortizacion,
-                    fecha: nuevaFechaISO,
-                    fechaVencimiento: fechaVencimiento.toISOString(),
-                    comentario: nuevoComentario || ''
-                });
-                mostrarToast("✅ Préstamo actualizado", "success");
-                mostrarPrestamos();
-                actualizarEstadisticas();
-                cargarClientes();
-            }
-        };
-
-        window.eliminarPrestamo = async function(id) {
-            if (confirm("⚠️ ¿Estás seguro de eliminar este préstamo?")) {
-                await set(ref(db, `prestamos/${id}`), null);
-                mostrarToast("✅ Préstamo eliminado", "success");
-                mostrarPrestamos();
-                actualizarEstadisticas();
-                cargarClientes();
-            }
-        };
-
-        window.revertirPago = async function(id) {
-            if (confirm("⚠️ ¿Revertir el último pago de este préstamo?")) {
-                const snapshot = await get(ref(db, `prestamos/${id}`));
-                const prestamo = snapshot.val();
-                if (prestamo && prestamo.ultimoPago) {
-                    const newSaldo = prestamo.saldo + prestamo.ultimoPago;
-                    const historialSnapshot = await get(ref(db, `prestamos/${id}/historialPagos`));
-                    const historial = historialSnapshot.val();
-                    if (historial) {
-                        const ultimoId = Object.keys(historial).sort((a,b) => new Date(historial[b].fecha) - new Date(historial[a].fecha))[0];
-                        await set(ref(db, `prestamos/${id}/historialPagos/${ultimoId}`), null);
-                    }
-                    await update(ref(db, `prestamos/${id}`), {
-                        saldo: newSaldo,
-                        ultimoPago: null,
-                        fechaUltimoPago: null
-                    });
-                    mostrarToast("✅ Pago revertido", "success");
-                    mostrarPrestamos();
-                    actualizarEstadisticas();
-                    cargarClientes();
-                }
-            }
-        };
-
-        // Mostrar lista de préstamos
-        async function mostrarPrestamos() {
-            const lista = document.getElementById("lista");
-            lista.innerHTML = '<div class="empty-state">Cargando préstamos...</div>';
-            try {
-                const snapshot = await get(ref(db, 'prestamos'));
-                const prestamos = snapshot.val();
-                if (!prestamos || Object.keys(prestamos).length === 0) {
-                    lista.innerHTML = '<div class="empty-state">No hay préstamos registrados</div>';
-                    return;
-                }
-                todosLosPrestamos = Object.entries(prestamos).map(([id, prestamo]) => ({ id, ...prestamo }))
-                    .sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-                renderizarLista(todosLosPrestamos);
-                actualizarEstadisticas();
-                actualizarGraficos();
-            } catch (error) {
-                lista.innerHTML = `<div class="empty-state">❌ Error: ${error.message}</div>`;
+        } else {
+            const capConst = monto / numCuotas;
+            let saldo = monto;
+            for (let i = 1; i <= numCuotas; i++) {
+                const inter = saldo * tasa;
+                const pago = capConst + inter;
+                saldo -= capConst;
+                amort.push({ cuota: i, pago: pago, interes: inter, capital: capConst, saldo: Math.max(0, saldo) });
             }
         }
+        return amort;
+    }
+    function recalcularRestante(saldoActual, periodosRestantes, interes, tipoInteres, metodo) {
+        if (periodosRestantes <= 0) return [];
+        return calcularAmortizacion(saldoActual, interes, periodosRestantes, metodo, tipoInteres);
+    }
 
-        function renderizarLista(prestamos) {
-            const lista = document.getElementById("lista");
-            const searchText = document.getElementById("searchCliente")?.value.toLowerCase() || "";
-            const montoMin = parseFloat(document.getElementById("filtroMontoMin")?.value) || 0;
-            const montoMax = parseFloat(document.getElementById("filtroMontoMax")?.value) || Infinity;
-            const fechaInicio = document.getElementById("filtroFechaInicio")?.value;
-            const fechaFin = document.getElementById("filtroFechaFin")?.value;
-            const estadoFiltro = document.getElementById("filterEstado")?.value || "todos";
+    // Función para actualizar resumen y tabla de amortización
+    function actualizarResumenYTabla() {
+        const monto = parseFloat(document.getElementById("monto")?.value);
+        const interes = parseFloat(document.getElementById("interes")?.value);
+        const numCuotas = parseInt(document.getElementById("numCuotas")?.value);
+        const metodo = document.getElementById("metodoAmortizacion")?.value;
+        const tipoInteres = document.getElementById("tipoInteres")?.value;
 
-            let filtrados = prestamos.filter(p => {
-                const clienteData = todosLosClientes.find(c => c.nombre === p.cliente);
-                const cedula = clienteData ? clienteData.cedula : '';
-                return p.cliente.toLowerCase().includes(searchText) || cedula.includes(searchText);
-            });
-            filtrados = filtrados.filter(p => p.monto >= montoMin && p.monto <= montoMax);
-            if (estadoFiltro !== "todos") {
-                filtrados = filtrados.filter(p => estadoFiltro === "pagado" ? p.saldo <= 0 : p.saldo > 0);
-            }
-            if (fechaInicio) {
-                const inicio = new Date(fechaInicio);
-                filtrados = filtrados.filter(p => new Date(p.fecha) >= inicio);
-            }
-            if (fechaFin) {
-                const fin = new Date(fechaFin);
-                fin.setHours(23,59,59,999);
-                filtrados = filtrados.filter(p => new Date(p.fecha) <= fin);
-            }
-
-            if (filtrados.length === 0) { lista.innerHTML = '<div class="empty-state">No se encontraron préstamos</div>'; return; }
-            lista.innerHTML = filtrados.map(prestamo => {
-                const porcentajePagado = ((prestamo.total - prestamo.saldo) / prestamo.total * 100).toFixed(1);
-                const estado = prestamo.saldo <= 0 ? 'pagado' : 'pendiente';
-                const fecha = new Date(prestamo.fecha).toLocaleDateString('es-ES');
-                const vencimiento = prestamo.fechaVencimiento ? new Date(prestamo.fechaVencimiento).toLocaleDateString('es-ES') : 'No especificado';
-                const hoy = new Date();
-                const venc = new Date(prestamo.fechaVencimiento);
-                const diasRestantes = Math.ceil((venc - hoy) / (1000 * 60 * 60 * 24));
-                let estadoBadge = `<span class="badge ${estado}">${estado === 'pagado' ? '✅ Pagado' : '⏳ Pendiente'}</span>`;
-                if (prestamo.saldo > 0 && diasRestantes < 0) estadoBadge = `<span class="badge vencido">⚠️ Vencido</span>`;
-                else if (prestamo.saldo > 0 && diasRestantes <= 7) estadoBadge = `<span class="badge proximo">⏰ Próximo a vencer</span>`;
-                const metodoBadge = prestamo.metodoAmortizacion === 'frances' ? 
-                    '<span class="badge frances">🇫🇷 Francés</span>' : 
-                    '<span class="badge aleman">🇩🇪 Alemán</span>';
-                return `
-                    <div class="loan-card">
-                        <div class="loan-header">
-                            <span class="loan-client">👤 ${escapeHtml(prestamo.cliente)}</span>
-                            <div class="loan-actions">
-                                ${estadoBadge} ${metodoBadge}
-                                <button onclick="editarPrestamo('${prestamo.id}')" class="btn-sm">✏️</button>
-                                <button onclick="eliminarPrestamo('${prestamo.id}')" class="btn-sm btn-danger">🗑️</button>
-                                <button onclick="verHistorial('${prestamo.id}')" class="btn-sm">📜</button>
-                                <button onclick="verAmortizacion('${prestamo.id}')" class="btn-sm">📊</button>
-                                ${prestamo.ultimoPago ? `<button onclick="revertirPago('${prestamo.id}')" class="btn-sm btn-warning">↩️</button>` : ''}
-                            </div>
-                        </div>
-                        <div class="loan-details">
-                            <div class="detail-item"><span class="detail-label">💰 Monto</span><span class="detail-value monto">$${prestamo.monto.toFixed(2)}</span></div>
-                            <div class="detail-item"><span class="detail-label">📈 Interés</span><span class="detail-value">${prestamo.interes}% ${prestamo.tipoInteres === 'anual' ? 'anual' : 'mensual'}</span></div>
-                            <div class="detail-item"><span class="detail-label">💵 Total</span><span class="detail-value">$${prestamo.total.toFixed(2)}</span></div>
-                            <div class="detail-item"><span class="detail-label">🔻 Saldo</span><span class="detail-value saldo">$${prestamo.saldo.toFixed(2)}</span></div>
-                            <div class="detail-item"><span class="detail-label">📅 Fecha</span><span class="detail-value">${fecha}</span></div>
-                            <div class="detail-item"><span class="detail-label">⏰ Vence</span><span class="detail-value">${vencimiento}</span></div>
-                        </div>
-                        ${prestamo.comentario ? `<div style="margin-top: 10px; padding: 8px; background: rgba(0,0,0,0.05); border-radius: 8px;"><span class="detail-label">📝 Motivo:</span> ${escapeHtml(prestamo.comentario)}</div>` : ''}
-                        <div class="progress-bar"><div class="progress-fill" style="width: ${porcentajePagado}%"></div></div>
-                    </div>
-                `;
-            }).join('');
+        if (isNaN(monto) || isNaN(interes) || isNaN(numCuotas) || monto <= 0 || numCuotas <= 0) {
+            document.getElementById("summaryPanel").style.display = "none";
+            document.getElementById("amortizacionPreview").style.display = "none";
+            return;
         }
 
-        window.filtrarPrestamos = function() { renderizarLista(todosLosPrestamos); };
-        window.recargarLista = function() { mostrarPrestamos(); };
+        const amort = calcularAmortizacion(monto, interes, numCuotas, metodo, tipoInteres);
+        if (!amort.length) return;
 
-        // Clientes con totales pagados (sin cambios)
-        async function cargarClientes() {
-            const snapshot = await get(ref(db, 'clientes'));
-            const clientes = snapshot.val();
-            if (!clientes) {
-                document.getElementById("listaClientes").innerHTML = '<div class="empty-state">No hay clientes registrados</div>';
-                return;
-            }
-            const prestamosSnapshot = await get(ref(db, 'prestamos'));
-            const prestamos = prestamosSnapshot.val() || {};
-            const clientesConTotales = Object.entries(clientes).map(([id, cliente]) => {
-                let totalPrestado = 0;
-                let totalPagado = 0;
-                let cantidadPrestamos = 0;
-                for (const prestamo of Object.values(prestamos)) {
-                    if (prestamo.cliente === cliente.nombre) {
-                        cantidadPrestamos++;
-                        totalPrestado += prestamo.total;
-                        totalPagado += (prestamo.total - prestamo.saldo);
-                    }
-                }
-                return {
-                    id,
-                    ...cliente,
-                    totalPrestado,
-                    totalPagado,
-                    cantidadPrestamos,
-                    saldoPendiente: totalPrestado - totalPagado
-                };
-            });
-            todosLosClientes = clientesConTotales;
-            renderizarClientes(todosLosClientes);
+        const total = amort.reduce((a,b)=>a+b.pago,0);
+        const summaryHtml = `<h3>📋 Resumen</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div>💰 Monto: $${monto.toFixed(2)}</div>
+            <div>📈 Interés: ${interes}% ${tipoInteres==='anual'?'anual':'mensual'}</div>
+            <div>📅 Método: ${metodo==='frances'?'Francés':'Alemán'}</div>
+            <div>💰 Total a pagar: $${total.toFixed(2)}</div>
+            <div>💸 Interés total: $${(total-monto).toFixed(2)}</div>
+            <div>💵 Cuota: ${metodo==='frances'?`$${amort[0].pago.toFixed(2)} fija`:`$${amort[0].pago.toFixed(2)} → $${amort[amort.length-1].pago.toFixed(2)}`}</div>
+        </div>`;
+        document.getElementById("summaryPanel").innerHTML = summaryHtml;
+        document.getElementById("summaryPanel").style.display = "block";
+
+        const previewDiv = document.getElementById("amortizacionPreview");
+        const tablaHtml = `<h4>📊 Tabla de amortización (${metodo === 'frances' ? 'Francés' : 'Alemán'})</h4>
+            <div class="scrollable-table">
+            <table>
+                <thead><tr><th>Cuota</th><th>Pago</th><th>Interés</th><th>Capital</th><th>Saldo</th></tr></thead>
+                <tbody>
+                ${amort.slice(0,10).map(c => `<tr><td>${c.cuota}</td><td>$${c.pago.toFixed(2)}</td><td>$${c.interes.toFixed(2)}</td><td>$${c.capital.toFixed(2)}</td><td>$${c.saldo.toFixed(2)}</td></tr>`).join('')}
+                </tbody>
+            </table>
+            ${amort.length > 10 ? `<button class="btn-sm" onclick="mostrarTodasCuotas()">Ver todas (${amort.length} cuotas)</button>` : ''}
+            </div>`;
+        previewDiv.innerHTML = tablaHtml;
+        previewDiv.style.display = "block";
+        window.amortizacionCompleta = amort; // para ver todas
+    }
+
+    window.mostrarTodasCuotas = function() {
+        if (!window.amortizacionCompleta) return;
+        const amort = window.amortizacionCompleta;
+        let html = `<div class="scrollable-table"><table><thead><tr><th>Cuota</th><th>Pago</th><th>Interés</th><th>Capital</th><th>Saldo</th></tr></thead><tbody>`;
+        amort.forEach(c => {
+            html += `<tr><td>${c.cuota}</td><td>$${c.pago.toFixed(2)}</td><td>$${c.interes.toFixed(2)}</td><td>$${c.capital.toFixed(2)}</td><td>$${c.saldo.toFixed(2)}</td></tr>`;
+        });
+        html += `</tbody></table></div>`;
+        document.getElementById("amortizacionContenido").innerHTML = html;
+        document.getElementById("modalAmortizacion").style.display = "block";
+    };
+
+    // Observadores de datos
+    function iniciarObservadores() {
+        if (!db) return;
+        if (prestamosUnsubscribe) prestamosUnsubscribe();
+        if (clientesUnsubscribe) clientesUnsubscribe();
+
+        prestamosUnsubscribe = onValue(ref(db, 'prestamos'), (snapshot) => {
+            const data = snapshot.val();
+            todosLosPrestamos = data ? Object.entries(data).map(([id, p]) => ({ id, ...p })) : [];
+            actualizarEstadisticas();
+            const active = document.querySelector('.form-section.active')?.id;
+            if (active === 'tab-lista') renderizarLista();
+            if (active === 'tab-clientes') renderizarClientes();
+            if (active === 'tab-graficos') actualizarGraficos();
+            if (active === 'tab-pago') { cargarPrestamosCliente(); mostrarDetallesPrestamo(); }
+        });
+
+        clientesUnsubscribe = onValue(ref(db, 'clientes'), (snapshot) => {
+            const data = snapshot.val();
+            todosLosClientes = data ? Object.entries(data).map(([id, c]) => ({ id, ...c })) : [];
             actualizarDatalistClientes();
+            if (document.querySelector('.form-section.active')?.id === 'tab-clientes') renderizarClientes();
+        });
+    }
+
+    function actualizarDatalistClientes() {
+        const dl = document.getElementById("listaClientesNombres");
+        if (dl) { dl.innerHTML = ""; todosLosClientes.forEach(c => { const opt = document.createElement("option"); opt.value = c.nombre; dl.appendChild(opt); }); }
+    }
+
+    // CRUD Clientes
+    window.guardarCliente = async function() {
+        const nombre = document.getElementById("nombre").value.trim();
+        const cedula = document.getElementById("cedula").value.trim();
+        const telefono = document.getElementById("telefono").value.trim();
+        const direccion = document.getElementById("direccion").value.trim();
+        if (!nombre || !cedula) { mostrarToast("Nombre y cédula obligatorios", "error"); return; }
+        if (!validarCedula(cedula)) { mostrarToast("Cédula inválida", "error"); return; }
+        if (todosLosClientes.some(c => c.cedula === cedula)) { mostrarToast("Cédula ya registrada", "error"); return; }
+        try {
+            await set(push(ref(db, 'clientes')), { nombre, cedula, telefono, direccion, fecha: new Date().toISOString() });
+            mostrarToast("Cliente guardado");
+            document.getElementById("nombre").value = ""; document.getElementById("cedula").value = ""; document.getElementById("telefono").value = ""; document.getElementById("direccion").value = "";
+        } catch(e) { mostrarToast("Error: " + e.message, "error"); }
+    };
+
+    window.editarCliente = async function(id) {
+        const cliente = todosLosClientes.find(c => c.id === id);
+        if (!cliente) return;
+        const nuevoNombre = prompt("Nuevo nombre:", cliente.nombre);
+        const nuevaCedula = prompt("Nueva cédula:", cliente.cedula);
+        const nuevoTelefono = prompt("Teléfono:", cliente.telefono || '');
+        const nuevaDireccion = prompt("Dirección:", cliente.direccion || '');
+        if (nuevoNombre && nuevaCedula) {
+            if (!validarCedula(nuevaCedula)) { mostrarToast("Cédula inválida", "error"); return; }
+            if (todosLosClientes.some(c => c.cedula === nuevaCedula && c.id !== id)) { mostrarToast("Cédula ya registrada", "error"); return; }
+            try {
+                await update(ref(db, `clientes/${id}`), { nombre: nuevoNombre, cedula: nuevaCedula, telefono: nuevoTelefono, direccion: nuevaDireccion });
+                mostrarToast("Cliente actualizado");
+            } catch(e) { mostrarToast("Error: " + e.message, "error"); }
         }
+    };
 
-        function renderizarClientes(clientes) {
-            const lista = document.getElementById("listaClientes");
-            lista.innerHTML = clientes.map(cliente => `
-                <div class="loan-card client-card">
-                    <div class="loan-header">
-                        <span class="client-name">👤 ${escapeHtml(cliente.nombre)}</span>
-                        <div class="client-actions">
-                            <button onclick="editarCliente('${cliente.id}')" class="btn-sm">✏️</button>
-                            <button onclick="eliminarCliente('${cliente.id}')" class="btn-sm btn-danger">🗑️</button>
-                        </div>
-                    </div>
-                    <div class="loan-details">
-                        <div class="detail-item"><span class="detail-label">🆔 Cédula</span><span class="detail-value">${escapeHtml(cliente.cedula)}</span></div>
-                        <div class="detail-item"><span class="detail-label">📞 Teléfono</span><span class="detail-value">${escapeHtml(cliente.telefono || 'No registrado')}</span></div>
-                        <div class="detail-item"><span class="detail-label">📍 Dirección</span><span class="detail-value">${escapeHtml(cliente.direccion || 'No registrada')}</span></div>
-                        <div class="detail-item"><span class="detail-label">📊 Préstamos</span><span class="detail-value">${cliente.cantidadPrestamos}</span></div>
-                        <div class="detail-item"><span class="detail-label">💰 Total prestado</span><span class="detail-value">$${cliente.totalPrestado.toFixed(2)}</span></div>
-                        <div class="detail-item"><span class="detail-label">💸 Total pagado</span><span class="detail-value">$${cliente.totalPagado.toFixed(2)}</span></div>
-                        <div class="detail-item"><span class="detail-label">🔻 Saldo pendiente</span><span class="detail-value saldo">$${cliente.saldoPendiente.toFixed(2)}</span></div>
-                        <div class="detail-item"><span class="detail-label">📅 Registro</span><span class="detail-value">${new Date(cliente.fecha).toLocaleDateString()}</span></div>
-                    </div>
-                    <button onclick="verPrestamosCliente('${escapeHtml(cliente.nombre)}')" class="btn-sm" style="margin-top:10px;">📊 Ver préstamos</button>
-                </div>
-            `).join('');
+    window.eliminarCliente = async function(id) {
+        const cliente = todosLosClientes.find(c => c.id === id);
+        if (!cliente) return;
+        if (todosLosPrestamos.some(p => p.cliente === cliente.nombre)) { mostrarToast("Cliente con préstamos", "error"); return; }
+        if (confirm(`Eliminar ${cliente.nombre}?`)) {
+            try {
+                await remove(ref(db, `clientes/${id}`));
+                mostrarToast("Cliente eliminado");
+            } catch(e) { mostrarToast("Error: " + e.message, "error"); }
         }
+    };
 
-        function actualizarDatalistClientes() {
-            const datalist = document.getElementById("listaClientesNombres");
-            if (!datalist) return;
-            datalist.innerHTML = "";
-            todosLosClientes.forEach(cliente => {
-                const option = document.createElement("option");
-                option.value = cliente.nombre;
-                datalist.appendChild(option);
-            });
-        }
-
-        window.editarCliente = async function(id) {
-            const cliente = todosLosClientes.find(c => c.id === id);
-            if (!cliente) return;
-            const nuevoNombre = prompt("Nuevo nombre:", cliente.nombre);
-            const nuevaCedula = prompt("Nueva cédula:", cliente.cedula);
-            const nuevoTelefono = prompt("Teléfono:", cliente.telefono || '');
-            const nuevaDireccion = prompt("Dirección:", cliente.direccion || '');
-            if (nuevoNombre && nuevaCedula) {
-                await update(ref(db, `clientes/${id}`), {
-                    nombre: nuevoNombre,
-                    cedula: nuevaCedula,
-                    telefono: nuevoTelefono,
-                    direccion: nuevaDireccion
-                });
-                mostrarToast("✅ Cliente actualizado", "success");
-                cargarClientes();
-            }
-        };
-
-        window.eliminarCliente = async function(id) {
-            const cliente = todosLosClientes.find(c => c.id === id);
-            const prestamosSnapshot = await get(ref(db, 'prestamos'));
-            const prestamos = prestamosSnapshot.val();
-            if (prestamos && Object.values(prestamos).some(p => p.cliente === cliente.nombre)) {
-                mostrarToast("❌ No se puede eliminar porque tiene préstamos asociados.", "error");
-                return;
-            }
-            if (confirm(`¿Eliminar al cliente ${cliente.nombre}?`)) {
-                await set(ref(db, `clientes/${id}`), null);
-                mostrarToast("✅ Cliente eliminado", "success");
-                cargarClientes();
-            }
-        };
-
-        window.verPrestamosCliente = function(nombre) {
-            cambiarTab('lista');
-            document.getElementById("searchCliente").value = nombre;
-            filtrarPrestamos();
-        };
-
-        window.filtrarClientes = function() {
-            const texto = document.getElementById("searchClienteLista").value.toLowerCase();
-            const filtrados = todosLosClientes.filter(c => 
-                c.nombre.toLowerCase().includes(texto) || 
-                c.cedula.includes(texto)
-            );
-            renderizarClientes(filtrados);
-        };
-
-        // Estadísticas (sin cambios)
-        async function actualizarEstadisticas() {
-            const snapshot = await get(ref(db, 'prestamos'));
-            const prestamos = snapshot.val();
-            if (!prestamos) return;
-            let totalPrestado = 0, totalPagado = 0, prestamosActivos = 0;
-            let porVencer = 0, vencidos = 0;
-            const hoy = new Date();
-            Object.values(prestamos).forEach(prestamo => {
-                totalPrestado += prestamo.total;
-                totalPagado += prestamo.total - prestamo.saldo;
-                if (prestamo.saldo > 0) prestamosActivos++;
-                if (prestamo.saldo > 0 && prestamo.fechaVencimiento) {
-                    const venc = new Date(prestamo.fechaVencimiento);
-                    const dias = Math.ceil((venc - hoy) / (1000 * 60 * 60 * 24));
-                    if (dias < 0) vencidos++;
-                    else if (dias <= 7) porVencer++;
+    function renderizarClientes() {
+        const texto = document.getElementById("searchClienteLista")?.value.toLowerCase() || "";
+        const filtrados = todosLosClientes.filter(c => c.nombre.toLowerCase().includes(texto) || c.cedula.includes(texto));
+        const listaDiv = document.getElementById("listaClientes");
+        if (filtrados.length === 0) { listaDiv.innerHTML = '<div class="empty-state">No hay clientes</div>'; return; }
+        listaDiv.innerHTML = filtrados.map(c => {
+            let totalPrestado = 0, totalPagado = 0, cantPrestamos = 0;
+            todosLosPrestamos.forEach(p => {
+                if (p.cliente === c.nombre) {
+                    cantPrestamos++;
+                    totalPrestado += p.total;
+                    totalPagado += p.total - p.saldo;
                 }
             });
-            document.getElementById("totalPrestado").textContent = `$${totalPrestado.toFixed(2)}`;
-            document.getElementById("totalPagado").textContent = `$${totalPagado.toFixed(2)}`;
-            document.getElementById("saldoPendiente").textContent = `$${(totalPrestado - totalPagado).toFixed(2)}`;
-            document.getElementById("prestamosActivos").textContent = prestamosActivos;
-            document.getElementById("porVencer").textContent = porVencer;
-            document.getElementById("vencidos").textContent = vencidos;
-        }
+            return `<div class="client-card"><div class="client-header"><span class="client-name">👤 ${escapeHtml(c.nombre)}</span><div><button onclick="editarCliente('${c.id}')" class="btn-sm">✏️</button><button onclick="eliminarCliente('${c.id}')" class="btn-sm btn-danger">🗑️</button></div></div><div class="loan-details"><div class="detail-item"><span class="detail-label">Cédula</span><span class="detail-value">${escapeHtml(c.cedula)}</span></div><div class="detail-item"><span class="detail-label">Teléfono</span><span class="detail-value">${escapeHtml(c.telefono || 'N/A')}</span></div><div class="detail-item"><span class="detail-label">Préstamos</span><span class="detail-value">${cantPrestamos}</span></div><div class="detail-item"><span class="detail-label">Saldo pendiente</span><span class="detail-value saldo">$${(totalPrestado - totalPagado).toFixed(2)}</span></div></div><button onclick="verPrestamosCliente('${escapeHtml(c.nombre)}')" class="btn-sm">Ver préstamos</button></div>`;
+        }).join('');
+    }
 
-        async function actualizarGraficos() {
-            const snapshot = await get(ref(db, 'prestamos'));
-            const prestamos = snapshot.val();
-            if (!prestamos) return;
-            const pagosPorMes = {};
-            const prestamosPorCliente = {};
-            Object.values(prestamos).forEach(prestamo => {
-                const mes = new Date(prestamo.fecha).toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
-                pagosPorMes[mes] = (pagosPorMes[mes] || 0) + (prestamo.total - prestamo.saldo);
-                prestamosPorCliente[prestamo.cliente] = (prestamosPorCliente[prestamo.cliente] || 0) + prestamo.total;
-            });
-            const ctxPagos = document.getElementById('chartPagos')?.getContext('2d');
-            const ctxClientes = document.getElementById('chartClientes')?.getContext('2d');
-            if (ctxPagos) {
-                if (chartPagos) chartPagos.destroy();
-                chartPagos = new Chart(ctxPagos, {
-                    type: 'line',
-                    data: { labels: Object.keys(pagosPorMes), datasets: [{ label: 'Pagos realizados', data: Object.values(pagosPorMes), borderColor: '#48bb78', tension: 0.4 }] },
-                    options: { responsive: true, maintainAspectRatio: true }
-                });
+    window.filtrarClientes = function() { renderizarClientes(); };
+    window.verPrestamosCliente = function(nombre) { cambiarTab('lista'); document.getElementById("searchCliente").value = nombre; filtrarPrestamos(); };
+
+    // Préstamos
+    window.guardarPrestamo = async function() {
+        const cliente = document.getElementById("clientePrestamo").value.trim();
+        const monto = parseFloat(document.getElementById("monto").value);
+        const interes = parseFloat(document.getElementById("interes").value);
+        const numCuotas = parseInt(document.getElementById("numCuotas").value);
+        const metodo = document.getElementById("metodoAmortizacion").value;
+        const tipoInteres = document.getElementById("tipoInteres").value;
+        if (!cliente || isNaN(monto) || isNaN(interes) || numCuotas <= 0) { mostrarToast("Datos inválidos", "error"); return; }
+        if (!todosLosClientes.some(c => c.nombre === cliente)) { mostrarToast("Cliente no existe", "error"); return; }
+        const amort = calcularAmortizacion(monto, interes, numCuotas, metodo, tipoInteres);
+        const total = amort.reduce((s,c)=>s+c.pago,0);
+        const id = Date.now().toString();
+        const fechaVencimiento = new Date(); fechaVencimiento.setMonth(fechaVencimiento.getMonth() + numCuotas);
+        try {
+            await set(ref(db, `prestamos/${id}`), { cliente, monto, interes, tipoInteres, total, saldo: total, fecha: new Date().toISOString(), fechaVencimiento: fechaVencimiento.toISOString(), metodoAmortizacion: metodo, amortizacion: amort, estado: "activo" });
+            mostrarToast("Préstamo registrado");
+            cambiarTab('lista');
+        } catch(e) { mostrarToast("Error: " + e.message, "error"); }
+    };
+
+    window.cargarPrestamosCliente = function() {
+        const cliente = document.getElementById("clientePago").value.trim();
+        const select = document.getElementById("prestamoSelect");
+        select.innerHTML = '<option value="">-- Seleccione --</option>';
+        if (!cliente) return;
+        const pendientes = todosLosPrestamos.filter(p => p.cliente === cliente && p.saldo > 0);
+        pendientes.forEach(p => { const opt = document.createElement("option"); opt.value = p.id; opt.textContent = `$${p.monto} | Saldo: $${p.saldo.toFixed(2)}`; select.appendChild(opt); });
+    };
+    window.mostrarDetallesPrestamo = function() {
+        const id = document.getElementById("prestamoSelect").value;
+        const p = todosLosPrestamos.find(p => p.id === id);
+        const div = document.getElementById("detallePrestamo");
+        if (!p) { div.innerHTML = ""; return; }
+        const prox = p.amortizacion?.[0];
+        div.innerHTML = `<div class="info-highlight"><strong>Saldo actual:</strong> $${p.saldo.toFixed(2)}<br>${prox ? `Próxima cuota: $${prox.pago.toFixed(2)}` : 'Sin cuotas pendientes'}</div>`;
+    };
+    window.registrarPagoAvanzado = async function() {
+        const id = document.getElementById("prestamoSelect").value;
+        const monto = parseFloat(document.getElementById("pagoMonto").value);
+        const esAbono = document.getElementById("extraPaymentCheckbox").checked;
+        if (!id || isNaN(monto) || monto <= 0) { mostrarToast("Seleccione préstamo y monto", "error"); return; }
+        const prestamo = todosLosPrestamos.find(p => p.id === id);
+        if (!prestamo || prestamo.saldo <= 0) { mostrarToast("Préstamo no válido", "error"); return; }
+        let nuevoSaldo = prestamo.saldo;
+        let nuevaAmort = [...(prestamo.amortizacion || [])];
+        const historial = { monto, fecha: new Date().toISOString(), tipo: esAbono ? "abono_capital" : "pago_cuota", saldoAnterior: prestamo.saldo };
+        if (esAbono) {
+            if (monto > nuevoSaldo) { mostrarToast("Abono excede saldo", "error"); return; }
+            nuevoSaldo -= monto;
+            if (nuevoSaldo <= 0) nuevaAmort = [];
+            else nuevaAmort = recalcularRestante(nuevoSaldo, nuevaAmort.length, prestamo.interes, prestamo.tipoInteres, prestamo.metodoAmortizacion);
+            historial.abonoCapital = monto;
+        } else {
+            const cuotaActual = nuevaAmort[0];
+            if (!cuotaActual) { mostrarToast("No hay tabla", "error"); return; }
+            if (monto < cuotaActual.pago - 0.01) { mostrarToast(`Monto insuficiente para cuota ($${cuotaActual.pago.toFixed(2)})`, "error"); return; }
+            let excedente = monto - cuotaActual.pago;
+            nuevoSaldo -= cuotaActual.capital;
+            if (excedente > 0) {
+                if (excedente > nuevoSaldo) excedente = nuevoSaldo;
+                nuevoSaldo -= excedente;
+                historial.abonoExtraAdicional = excedente;
             }
-            if (ctxClientes) {
-                if (chartClientes) chartClientes.destroy();
-                chartClientes = new Chart(ctxClientes, {
-                    type: 'bar',
-                    data: { labels: Object.keys(prestamosPorCliente), datasets: [{ label: 'Total por cliente', data: Object.values(prestamosPorCliente), backgroundColor: '#667eea' }] },
-                    options: { responsive: true, maintainAspectRatio: true }
-                });
-            }
+            const nuevasPeriodos = nuevaAmort.length - 1;
+            if (nuevoSaldo <= 0) nuevaAmort = [];
+            else if (nuevasPeriodos > 0) nuevaAmort = recalcularRestante(nuevoSaldo, nuevasPeriodos, prestamo.interes, prestamo.tipoInteres, prestamo.metodoAmortizacion);
+            else nuevaAmort = [];
+            historial.pagoCuota = cuotaActual.pago;
         }
+        if (nuevoSaldo < 0) nuevoSaldo = 0;
+        try {
+            await set(push(ref(db, `prestamos/${id}/historialPagos`)), historial);
+            await update(ref(db, `prestamos/${id}`), { saldo: nuevoSaldo, amortizacion: nuevaAmort, ultimoPago: monto, fechaUltimoPago: new Date().toISOString() });
+            mostrarToast(`Pago registrado. Nuevo saldo: $${nuevoSaldo.toFixed(2)}`);
+            document.getElementById("pagoMonto").value = "";
+            document.getElementById("extraPaymentCheckbox").checked = false;
+            cargarPrestamosCliente();
+            mostrarDetallesPrestamo();
+            if (document.querySelector('.form-section.active')?.id === 'tab-lista') renderizarLista();
+            actualizarEstadisticas();
+        } catch(e) { mostrarToast("Error: " + e.message, "error"); }
+    };
 
-        // Exportar Excel (incluir comentario)
-        window.exportarExcel = function() {
-            try {
-                const datos = [["Cliente", "Monto", "Interés (%)", "Tipo interés", "Total", "Pagado", "Saldo", "Estado", "Método", "Fecha", "Vencimiento", "Último Pago", "Progreso (%)", "Comentario"]];
-                todosLosPrestamos.forEach(p => {
-                    const pagado = p.total - p.saldo;
-                    const porcentajePagado = ((pagado / p.total) * 100).toFixed(2);
-                    const estado = p.saldo <= 0 ? "Pagado" : "Pendiente";
-                    const metodo = p.metodoAmortizacion === 'frances' ? 'Francés' : 'Alemán';
-                    const fecha = new Date(p.fecha).toLocaleDateString('es-ES');
-                    const vencimiento = p.fechaVencimiento ? new Date(p.fechaVencimiento).toLocaleDateString('es-ES') : 'No especificado';
-                    const ultimoPago = p.ultimoPago ? `$${p.ultimoPago.toFixed(2)} (${new Date(p.fechaUltimoPago).toLocaleDateString('es-ES')})` : 'Sin pagos';
-                    datos.push([p.cliente, p.monto, p.interes, p.tipoInteres === 'anual' ? 'Anual' : 'Mensual', p.total, pagado, p.saldo, estado, metodo, fecha, vencimiento, ultimoPago, parseFloat(porcentajePagado), p.comentario || '']);
-                });
-                const wb = XLSX.utils.book_new();
-                const ws = XLSX.utils.aoa_to_sheet(datos);
-                ws['!cols'] = [{wch:25},{wch:12},{wch:12},{wch:12},{wch:12},{wch:12},{wch:12},{wch:12},{wch:12},{wch:15},{wch:15},{wch:25},{wch:12},{wch:30}];
-                XLSX.utils.book_append_sheet(wb, ws, "Préstamos");
-                XLSX.writeFile(wb, `prestamos_${new Date().toISOString().split('T')[0]}.xlsx`);
-                mostrarToast("✅ Exportado a Excel", "success");
-            } catch (error) { mostrarToast("Error: " + error.message, "error"); }
-        };
+    function renderizarLista() {
+        const search = document.getElementById("searchCliente")?.value.toLowerCase() || "";
+        const montoMin = parseFloat(document.getElementById("filtroMontoMin")?.value) || 0;
+        const montoMax = parseFloat(document.getElementById("filtroMontoMax")?.value) || Infinity;
+        const estadoFiltro = document.getElementById("filterEstado")?.value || "todos";
+        let filtrados = todosLosPrestamos.filter(p => p.cliente.toLowerCase().includes(search) && p.monto >= montoMin && p.monto <= montoMax);
+        if (estadoFiltro !== "todos") filtrados = filtrados.filter(p => estadoFiltro === "pagado" ? p.saldo <= 0 : p.saldo > 0);
+        const listaDiv = document.getElementById("lista");
+        if (!filtrados.length) { listaDiv.innerHTML = '<div class="empty-state">Sin préstamos</div>'; return; }
+        listaDiv.innerHTML = filtrados.map(p => {
+            const porcentaje = ((p.total - p.saldo) / p.total * 100).toFixed(1);
+            const estado = p.saldo <= 0 ? 'pagado' : 'pendiente';
+            const prox = p.amortizacion?.[0];
+            const proxInfo = prox ? `Próx cuota: $${prox.pago.toFixed(2)}` : 'Sin cuotas';
+            return `<div class="loan-card"><div class="loan-header"><span class="loan-client">👤 ${escapeHtml(p.cliente)}</span><div><span class="badge ${estado}">${estado === 'pagado' ? 'Pagado' : 'Pendiente'}</span><button onclick="verHistorial('${p.id}')" class="btn-sm">📜</button><button onclick="verAmortizacion('${p.id}')" class="btn-sm">📊</button><button onclick="eliminarPrestamo('${p.id}')" class="btn-sm btn-danger">🗑️</button></div></div><div class="loan-details"><div class="detail-item"><span class="detail-label">Monto</span><span class="detail-value">$${p.monto.toFixed(2)}</span></div><div class="detail-item"><span class="detail-label">Saldo</span><span class="detail-value saldo">$${p.saldo.toFixed(2)}</span></div><div class="detail-item"><span class="detail-label">${proxInfo}</span></div></div><div class="progress-bar"><div class="progress-fill" style="width:${porcentaje}%"></div></div></div>`;
+        }).join('');
+    }
+    window.filtrarPrestamos = function() { renderizarLista(); };
 
-        window.imprimirLista = function() { window.print(); mostrarToast("🖨️ Enviando a impresora", "success"); };
-        window.generarReporte = async function() {
-            const inicio = document.getElementById("fechaInicio").value;
-            const fin = document.getElementById("fechaFin").value;
-            const reporteDiv = document.getElementById("reporteResultado");
-            if (!inicio || !fin) { mostrarToast("Selecciona un rango de fechas", "error"); return; }
-            const fechaInicio = new Date(inicio);
-            const fechaFin = new Date(fin);
-            const filtrados = todosLosPrestamos.filter(p => {
-                const fecha = new Date(p.fecha);
-                return fecha >= fechaInicio && fecha <= fechaFin;
-            });
-            let total = 0, pagado = 0;
-            filtrados.forEach(p => { total += p.total; pagado += p.total - p.saldo; });
-            reporteDiv.innerHTML = `<div class="loan-card"><h3>📊 Reporte del ${inicio} al ${fin}</h3><div class="loan-details">
-                <div class="detail-item"><span class="detail-label">Total prestado</span><span class="detail-value">$${total.toFixed(2)}</span></div>
-                <div class="detail-item"><span class="detail-label">Total pagado</span><span class="detail-value">$${pagado.toFixed(2)}</span></div>
-                <div class="detail-item"><span class="detail-label">Saldo pendiente</span><span class="detail-value">$${(total - pagado).toFixed(2)}</span></div>
-                <div class="detail-item"><span class="detail-label">N° préstamos</span><span class="detail-value">${filtrados.length}</span></div>
-            </div></div>`;
-            mostrarToast("✅ Reporte generado", "success");
-        };
+    window.verHistorial = function(id) {
+        const p = todosLosPrestamos.find(p => p.id === id);
+        if (!p) return;
+        const hist = p.historialPagos ? Object.values(p.historialPagos) : [];
+        const contenido = document.getElementById("historialContenido");
+        if (hist.length === 0) contenido.innerHTML = "<p>No hay pagos registrados.</p>";
+        else contenido.innerHTML = hist.sort((a,b)=>new Date(b.fecha)-new Date(a.fecha)).map(h => `<div class="loan-card"><div>${new Date(h.fecha).toLocaleString()}</div><div>Monto: $${h.monto.toFixed(2)} | Tipo: ${h.tipo || 'pago'}</div><div>Saldo anterior: $${h.saldoAnterior?.toFixed(2)}</div></div>`).join('');
+        document.getElementById("modalHistorial").style.display = "block";
+    };
 
-        // Eventos para actualizar resumen en tiempo real
-        document.getElementById("monto").addEventListener("input", actualizarResumenYAmortizacion);
-        document.getElementById("interes").addEventListener("input", actualizarResumenYAmortizacion);
-        document.getElementById("numCuotas").addEventListener("input", actualizarResumenYAmortizacion);
-        document.getElementById("metodoAmortizacion").addEventListener("change", actualizarResumenYAmortizacion);
-        document.getElementById("tipoInteres").addEventListener("change", actualizarResumenYAmortizacion);
+    window.verAmortizacion = function(id) {
+        const p = todosLosPrestamos.find(p => p.id === id);
+        if (!p || !p.amortizacion?.length) { document.getElementById("amortizacionContenido").innerHTML = "<p>No hay tabla disponible</p>"; document.getElementById("modalAmortizacion").style.display = "block"; return; }
+        let html = `<div class="scrollable-table"><table><thead><tr><th>Cuota</th><th>Pago</th><th>Interés</th><th>Capital</th><th>Saldo</th></tr></thead><tbody>`;
+        p.amortizacion.forEach(c => { html += `<tr><td>${c.cuota}</td><td>$${c.pago.toFixed(2)}</td><td>$${c.interes.toFixed(2)}</td><td>$${c.capital.toFixed(2)}</td><td>$${c.saldo.toFixed(2)}</td></tr>`; });
+        html += `</tbody></table></div>`;
+        document.getElementById("amortizacionContenido").innerHTML = html;
+        document.getElementById("modalAmortizacion").style.display = "block";
+    };
 
-        // Inicialización
-        mostrarPrestamos();
-        cargarClientes();
-    </script>
+    window.eliminarPrestamo = async function(id) {
+        if (confirm("¿Eliminar préstamo?")) { try { await remove(ref(db, `prestamos/${id}`)); mostrarToast("Préstamo eliminado"); } catch(e) { mostrarToast("Error: " + e.message, "error"); } }
+    };
+
+    function actualizarEstadisticas() {
+        let totalPres = 0, totalPag = 0, porVencer = 0, vencidos = 0, hoy = new Date();
+        todosLosPrestamos.forEach(p => {
+            totalPres += p.total;
+            totalPag += p.total - p.saldo;
+            if (p.saldo > 0 && p.fechaVencimiento) {
+                const dias = Math.ceil((new Date(p.fechaVencimiento) - hoy) / 86400000);
+                if (dias < 0) vencidos++;
+                else if (dias <= 7) porVencer++;
+            }
+        });
+        document.getElementById("totalPrestado").textContent = `$${totalPres.toFixed(2)}`;
+        document.getElementById("totalPagado").textContent = `$${totalPag.toFixed(2)}`;
+        document.getElementById("saldoPendiente").textContent = `$${(totalPres - totalPag).toFixed(2)}`;
+        document.getElementById("porVencer").textContent = porVencer;
+        document.getElementById("vencidos").textContent = vencidos;
+    }
+
+    async function actualizarGraficos() {
+        const pagosPorMes = {};
+        const prestamosPorCliente = {};
+        todosLosPrestamos.forEach(p => {
+            const mes = new Date(p.fecha).toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+            pagosPorMes[mes] = (pagosPorMes[mes] || 0) + (p.total - p.saldo);
+            prestamosPorCliente[p.cliente] = (prestamosPorCliente[p.cliente] || 0) + p.total;
+        });
+        const ctxPagos = document.getElementById('chartPagos')?.getContext('2d');
+        const ctxClientes = document.getElementById('chartClientes')?.getContext('2d');
+        if (ctxPagos) {
+            if (chartPagos) chartPagos.destroy();
+            chartPagos = new Chart(ctxPagos, { type: 'line', data: { labels: Object.keys(pagosPorMes), datasets: [{ label: 'Pagos realizados', data: Object.values(pagosPorMes), borderColor: '#48bb78', tension: 0.4 }] }, options: { responsive: true } });
+        }
+        if (ctxClientes) {
+            if (chartClientes) chartClientes.destroy();
+            chartClientes = new Chart(ctxClientes, { type: 'bar', data: { labels: Object.keys(prestamosPorCliente), datasets: [{ label: 'Total prestado', data: Object.values(prestamosPorCliente), backgroundColor: '#667eea' }] }, options: { responsive: true } });
+        }
+    }
+
+    window.exportarExcel = function() {
+        const datos = [["Cliente", "Monto", "Total a pagar", "Saldo", "Estado", "Método", "Fecha", "Vencimiento"]];
+        todosLosPrestamos.forEach(p => {
+            const estado = p.saldo <= 0 ? "Pagado" : "Pendiente";
+            const fecha = new Date(p.fecha).toLocaleDateString();
+            const venc = p.fechaVencimiento ? new Date(p.fechaVencimiento).toLocaleDateString() : "";
+            datos.push([p.cliente, p.monto, p.total, p.saldo, estado, p.metodoAmortizacion === 'frances' ? 'Francés' : 'Alemán', fecha, venc]);
+        });
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet(datos);
+        XLSX.utils.book_append_sheet(wb, ws, "Préstamos");
+        XLSX.writeFile(wb, `prestamos_${new Date().toISOString().slice(0,10)}.xlsx`);
+        mostrarToast("Exportado a Excel");
+    };
+
+    window.imprimirLista = function() { window.print(); };
+    window.generarReporte = function() {
+        const inicio = document.getElementById("fechaInicio").value;
+        const fin = document.getElementById("fechaFin").value;
+        if (!inicio || !fin) { mostrarToast("Seleccione rango de fechas", "error"); return; }
+        const fechaInicio = new Date(inicio);
+        const fechaFin = new Date(fin);
+        const filtrados = todosLosPrestamos.filter(p => new Date(p.fecha) >= fechaInicio && new Date(p.fecha) <= fechaFin);
+        let total = 0, pagado = 0;
+        filtrados.forEach(p => { total += p.total; pagado += p.total - p.saldo; });
+        document.getElementById("reporteResultado").innerHTML = `<div class="loan-card"><h3>Reporte ${inicio} al ${fin}</h3><div>Total prestado: $${total.toFixed(2)}</div><div>Total pagado: $${pagado.toFixed(2)}</div><div>Saldo: $${(total-pagado).toFixed(2)}</div><div>Préstamos: ${filtrados.length}</div></div>`;
+    };
+
+    window.cambiarTab = function(tab) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+        const tabBtn = Array.from(document.querySelectorAll('.tab')).find(btn => btn.getAttribute('data-tab') === tab);
+        if (tabBtn) tabBtn.classList.add('active');
+        document.getElementById(`tab-${tab}`)?.classList.add('active');
+        if (tab === 'lista') renderizarLista();
+        if (tab === 'clientes') renderizarClientes();
+        if (tab === 'pago') { cargarPrestamosCliente(); mostrarDetallesPrestamo(); }
+        if (tab === 'graficos') actualizarGraficos();
+        if (tab === 'perfil') cargarPerfilEmpresa();
+        if (tab === 'usuarios' && currentUserRole === 'admin') cargarUsuarios();
+        if (tab === 'prestamo') actualizarResumenYTabla(); // Forzar actualización al abrir la pestaña
+    };
+
+    // Perfil empresa
+    async function cargarPerfilEmpresa() {
+        const snap = await get(ref(db, 'config/empresa'));
+        const data = snap.val();
+        if (data) {
+            document.getElementById("empresaNombreInput").value = data.nombre || "";
+            document.getElementById("empresaTelefonoInput").value = data.telefono || "";
+            document.getElementById("empresaNombre").innerText = data.nombre || "Sistema de Préstamos";
+            document.getElementById("empresaTelefono").innerText = data.telefono ? `| ${data.telefono}` : "";
+        }
+    }
+    window.guardarPerfilEmpresa = async function() {
+        const nombre = document.getElementById("empresaNombreInput").value.trim();
+        const telefono = document.getElementById("empresaTelefonoInput").value.trim();
+        if (!nombre) { mostrarToast("Nombre requerido", "error"); return; }
+        await set(ref(db, 'config/empresa'), { nombre, telefono });
+        document.getElementById("empresaNombre").innerText = nombre;
+        document.getElementById("empresaTelefono").innerText = telefono ? `| ${telefono}` : "";
+        mostrarToast("Datos guardados");
+    };
+
+    // Cambiar contraseña
+    window.cambiarContrasena = async function() {
+        const current = document.getElementById("currentPassword").value;
+        const newPass = document.getElementById("newPassword").value;
+        const confirm = document.getElementById("confirmPassword").value;
+        if (!current || !newPass || !confirm) { mostrarToast("Complete todos los campos", "error"); return; }
+        if (newPass !== confirm) { mostrarToast("Las contraseñas nuevas no coinciden", "error"); return; }
+        if (newPass.length < 6) { mostrarToast("Mínimo 6 caracteres", "error"); return; }
+        const user = auth.currentUser;
+        if (!user) return;
+        const credential = EmailAuthProvider.credential(user.email, current);
+        try {
+            await reauthenticateWithCredential(user, credential);
+            await updatePassword(user, newPass);
+            mostrarToast("Contraseña cambiada");
+            document.getElementById("currentPassword").value = "";
+            document.getElementById("newPassword").value = "";
+            document.getElementById("confirmPassword").value = "";
+        } catch(e) { mostrarToast("Error: " + e.message, "error"); }
+    };
+
+    // Gestión de usuarios (admin)
+    async function cargarUsuarios() {
+        if (currentUserRole !== 'admin') return;
+        const snapshot = await get(ref(db, 'users'));
+        const users = snapshot.val();
+        const listDiv = document.getElementById("listaUsuarios");
+        if (!users) { listDiv.innerHTML = '<div class="empty-state">No hay usuarios registrados</div>'; return; }
+        const userList = Object.entries(users).map(([uid, u]) => ({ uid, ...u }));
+        listDiv.innerHTML = userList.map(u => `<div class="user-card"><div class="user-header"><span class="user-email">📧 ${escapeHtml(u.email)}</span><span class="badge ${u.isAdmin ? 'admin' : 'user'}">${u.isAdmin ? 'Administrador' : 'Usuario normal'}</span></div><div class="user-details"><div class="detail-item"><span class="detail-label">Creado</span><span class="detail-value">${new Date(u.createdAt).toLocaleDateString()}</span></div>${u.uid !== auth.currentUser?.uid ? `<button onclick="eliminarUsuario('${u.uid}')" class="btn-sm btn-danger">Eliminar</button>` : ''}</div></div>`).join('');
+    }
+
+    window.crearUsuario = async function() {
+        if (currentUserRole !== 'admin') { mostrarToast("No autorizado", "error"); return; }
+        const email = document.getElementById("newUserEmail").value.trim();
+        const password = document.getElementById("newUserPassword").value;
+        const role = document.getElementById("newUserRole").value;
+        if (!email || !password) { mostrarToast("Email y contraseña requeridos", "error"); return; }
+        if (password.length < 6) { mostrarToast("Contraseña mínima 6 caracteres", "error"); return; }
+        try {
+            const userCred = await createUserWithEmailAndPassword(auth, email, password);
+            await set(ref(db, `users/${userCred.user.uid}`), { email, isAdmin: (role === 'admin'), createdAt: new Date().toISOString() });
+            mostrarToast(`Usuario ${email} creado como ${role === 'admin' ? 'administrador' : 'usuario normal'}`);
+            document.getElementById("newUserEmail").value = "";
+            document.getElementById("newUserPassword").value = "";
+            if (currentUserRole === 'admin') cargarUsuarios();
+        } catch(e) { mostrarToast("Error: " + e.message, "error"); }
+    };
+
+    window.eliminarUsuario = async function(uid) {
+        if (currentUserRole !== 'admin') return;
+        if (!confirm("¿Eliminar este usuario permanentemente?")) return;
+        try {
+            await remove(ref(db, `users/${uid}`));
+            mostrarToast("Usuario eliminado de la base de datos. También debe eliminarse de Authentication en Firebase Console si se desea.", "warning");
+            cargarUsuarios();
+        } catch(e) { mostrarToast("Error: " + e.message, "error"); }
+    };
+
+    // Autenticación y UI dinámica
+    function actualizarUIporRol(role) {
+        const tabsContainer = document.getElementById("tabsContainer");
+        const tabs = [
+            { id: "cliente", label: "👤 Cliente" },
+            { id: "prestamo", label: "📝 Nuevo Préstamo" },
+            { id: "pago", label: "💵 Pago / Abono" },
+            { id: "lista", label: "📊 Préstamos" },
+            { id: "clientes", label: "👥 Clientes" },
+            { id: "graficos", label: "📈 Gráficos" },
+            { id: "reportes", label: "📄 Reportes" },
+            { id: "perfil", label: "⚙️ Perfil" }
+        ];
+        if (role === 'admin') tabs.push({ id: "usuarios", label: "👥 Usuarios" });
+        tabsContainer.innerHTML = tabs.map(t => `<button class="tab ${t.id === 'cliente' ? 'active' : ''}" data-tab="${t.id}" onclick="cambiarTab('${t.id}')">${t.label}</button>`).join('');
+        document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+        document.getElementById("tab-cliente")?.classList.add('active');
+    }
+
+    window.login = async function() {
+        const email = document.getElementById("loginEmail").value.trim();
+        const password = document.getElementById("loginPassword").value;
+        if (!email || !password) { mostrarToast("Email y contraseña requeridos", "error"); return; }
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            document.getElementById("loginOverlay").style.display = "none";
+            document.getElementById("mainApp").style.display = "block";
+            mostrarToast("Sesión iniciada");
+            iniciarObservadores();
+            cargarPerfilEmpresa();
+            document.getElementById("userEmail").innerText = email;
+            document.getElementById("userEmailInput").value = email;
+        } catch(e) { mostrarToast("Error: " + e.message, "error"); }
+    };
+
+    window.logout = async function() {
+        await signOut(auth);
+        document.getElementById("loginOverlay").style.display = "flex";
+        document.getElementById("mainApp").style.display = "none";
+        mostrarToast("Sesión cerrada");
+        if (prestamosUnsubscribe) prestamosUnsubscribe();
+        if (clientesUnsubscribe) clientesUnsubscribe();
+    };
+
+    // Verificar si hay usuarios en la BD para mostrar botón de primer admin
+    async function checkFirstUser() {
+        const snapshot = await get(ref(db, 'users'));
+        const usersExist = snapshot.exists();
+        const container = document.getElementById("firstUserContainer");
+        if (!usersExist) {
+            container.innerHTML = `<button onclick="crearPrimerAdmin()" class="btn-warning">🔐 Crear cuenta de administrador (primer usuario)</button>`;
+        } else {
+            container.innerHTML = "";
+        }
+    }
+
+    window.crearPrimerAdmin = async function() {
+        const email = prompt("Email del administrador:");
+        if (!email) return;
+        const password = prompt("Contraseña (mínimo 6 caracteres):");
+        if (!password || password.length < 6) { mostrarToast("Contraseña muy corta", "error"); return; }
+        try {
+            const userCred = await createUserWithEmailAndPassword(auth, email, password);
+            await set(ref(db, `users/${userCred.user.uid}`), { email, isAdmin: true, createdAt: new Date().toISOString() });
+            mostrarToast("Administrador creado. Inicie sesión.");
+            await checkFirstUser();
+        } catch(e) { mostrarToast("Error: " + e.message, "error"); }
+    };
+
+    // Estado de autenticación
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            const snap = await get(ref(db, `users/${user.uid}`));
+            const userData = snap.val();
+            if (!userData) {
+                await set(ref(db, `users/${user.uid}`), { email: user.email, isAdmin: false, createdAt: new Date().toISOString() });
+                currentUserRole = false;
+            } else {
+                currentUserRole = userData.isAdmin ? 'admin' : 'user';
+            }
+            actualizarUIporRol(currentUserRole);
+            document.getElementById("loginOverlay").style.display = "none";
+            document.getElementById("mainApp").style.display = "block";
+            iniciarObservadores();
+            cargarPerfilEmpresa();
+            document.getElementById("userEmail").innerText = user.email;
+            document.getElementById("userEmailInput").value = user.email;
+            if (currentUserRole === 'admin') cargarUsuarios();
+        } else {
+            document.getElementById("loginOverlay").style.display = "flex";
+            document.getElementById("mainApp").style.display = "none";
+            checkFirstUser();
+            currentUserRole = null;
+        }
+    });
+
+    // Vincular eventos de los campos del préstamo para actualizar en tiempo real
+    const camposPrestamo = ["monto", "interes", "numCuotas", "metodoAmortizacion", "tipoInteres"];
+    camposPrestamo.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener("input", actualizarResumenYTabla);
+        if (el && id !== "tipoInteres" && id !== "metodoAmortizacion") el.addEventListener("change", actualizarResumenYTabla);
+    });
+
+    window.toggleTheme = function() {
+        document.body.classList.toggle('dark-mode');
+        localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        document.querySelector('.theme-toggle').textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+    };
+    if (localStorage.getItem('darkMode') === 'true') { document.body.classList.add('dark-mode'); document.querySelector('.theme-toggle').textContent = '☀️'; }
+    window.cerrarModal = function() {
+        document.getElementById("modalHistorial").style.display = "none";
+        document.getElementById("modalAmortizacion").style.display = "none";
+    };
+</script>
 </body>
 </html>
