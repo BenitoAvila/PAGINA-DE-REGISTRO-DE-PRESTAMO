@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Sistema de Préstamos | Administración de Usuarios</title>
+    <title>Sistema de Préstamos | Gestión de Usuarios</title>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
-        /* Estilos (igual que antes, no cambian) */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --primary: #667eea;
@@ -48,22 +47,105 @@
         .header {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
-            padding: 30px;
+            padding: 20px 30px;
             text-align: center;
             position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
         }
-        .theme-toggle {
-            position: absolute;
-            top: 20px;
-            right: 20px;
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .logo-img {
+            max-height: 50px;
+            width: auto;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.1);
+            padding: 5px;
+        }
+        .header-text {
+            text-align: left;
+        }
+        .header-text h1 {
+            font-size: 1.8rem;
+            margin: 0;
+        }
+        .header-text p {
+            margin: 5px 0 0;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        .header-right {
+            font-size: 0.9rem;
+            background: rgba(0,0,0,0.2);
+            padding: 5px 15px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .user-name {
+            font-weight: 500;
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .settings-icon {
             background: rgba(255,255,255,0.2);
             border: none;
             color: white;
-            padding: 10px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 4px 8px;
+            border-radius: 20px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .settings-icon:hover {
+            background: rgba(255,255,255,0.4);
+            transform: scale(1.05);
+        }
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.4);
+            transform: none;
+        }
+        .theme-toggle {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 6px;
             border-radius: 50%;
             cursor: pointer;
-            font-size: 1.2em;
+            font-size: 1.1em;
             transition: all 0.3s;
+            width: 34px;
+            height: 34px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
         .theme-toggle:hover { background: rgba(255,255,255,0.3); transform: rotate(15deg); }
         .stats {
@@ -200,16 +282,40 @@
             box-shadow: 0 20px 40px rgba(0,0,0,0.3);
         }
         body.dark-mode .login-card { background: var(--card-dark); color: white; }
-        @media (max-width: 768px) { .tabs { padding: 0 15px; } .tab { padding: 12px 15px; font-size: 0.85em; } .form-section { padding: 20px; } }
+        .logo-preview {
+            max-width: 100%;
+            max-height: 100px;
+            margin-top: 10px;
+            border-radius: 8px;
+        }
+        @media (max-width: 768px) {
+            .tabs { padding: 0 15px; }
+            .tab { padding: 12px 15px; font-size: 0.85em; }
+            .form-section { padding: 20px; }
+            .header { flex-direction: column; text-align: center; }
+            .header-left { flex-direction: column; text-align: center; }
+            .header-text h1 { font-size: 1.4rem; }
+        }
     </style>
 </head>
 <body>
 <div class="container" id="mainApp" style="display: none;">
     <div class="header">
-        <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
-        <h1>💰 <span id="empresaNombre">Sistema de Préstamos</span> | <span id="empresaTelefono"></span></h1>
-        <p>Amortización Francesa y Alemana | Abonos a capital | Gestión de usuarios</p>
-        <div style="position: absolute; bottom: 10px; right: 20px; font-size: 0.8em;">👤 <span id="userEmail"></span> | <button onclick="logout()" class="btn-sm" style="background:#333;">Cerrar sesión</button></div>
+        <div class="header-left">
+            <img id="empresaLogo" class="logo-img" style="display: none;" alt="Logo">
+            <div class="header-text">
+                <h1>💰 <span id="empresaNombre">Sistema de Préstamos</span> | <span id="empresaTelefono"></span></h1>
+                <p>Amortización Francesa y Alemana | Abonos a capital | Gestión de usuarios</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="user-info">
+                <span class="user-name" id="userDisplayName"></span>
+                <button class="settings-icon" onclick="cambiarTab('perfil')" title="Configuración">⚙️</button>
+            </div>
+            <button class="logout-btn" onclick="logout()">Cerrar sesión</button>
+            <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+        </div>
     </div>
     <div class="stats">
         <div class="stat-card" onclick="cambiarTab('lista')"><h3>Total Prestado</h3><div class="value" id="totalPrestado">$0</div></div>
@@ -254,7 +360,33 @@
     <div id="tab-reportes" class="form-section"><div class="filter-group"><input type="date" id="fechaInicio"><input type="date" id="fechaFin"><button onclick="generarReporte()" class="btn-success">Generar</button></div><div id="reporteResultado"></div></div>
 
     <!-- Perfil -->
-    <div id="tab-perfil" class="form-section"><div class="info-panel"><h3>🏢 Datos de la Empresa</h3><div class="form-group"><label>Nombre / Razón social:</label><input type="text" id="empresaNombreInput"></div><div class="form-group"><label>Teléfono de contacto:</label><input type="text" id="empresaTelefonoInput"></div><button onclick="guardarPerfilEmpresa()" class="btn-success">Guardar</button></div><div class="info-panel"><h3>🔐 Seguridad</h3><div class="form-group"><label>Email de acceso:</label><input type="email" id="userEmailInput" readonly disabled></div><div class="form-group"><label>Contraseña actual:</label><input type="password" id="currentPassword"></div><div class="form-group"><label>Nueva contraseña:</label><input type="password" id="newPassword"></div><div class="form-group"><label>Confirmar:</label><input type="password" id="confirmPassword"></div><button onclick="cambiarContrasena()" class="btn-warning">Cambiar contraseña</button></div></div>
+    <div id="tab-perfil" class="form-section">
+        <div class="info-panel">
+            <h3>👤 Datos de usuario</h3>
+            <div class="form-group"><label>Nombre para mostrar:</label><input type="text" id="userDisplayNameInput" placeholder="Tu nombre o apodo"></div>
+            <div class="form-group"><label>Email de acceso:</label><input type="email" id="userEmailInput" readonly disabled></div>
+            <button onclick="guardarPerfilUsuario()" class="btn-success">Guardar nombre</button>
+        </div>
+        <div class="info-panel">
+            <h3>🏢 Datos de la Empresa</h3>
+            <div class="form-group"><label>Nombre / Razón social:</label><input type="text" id="empresaNombreInput"></div>
+            <div class="form-group"><label>Teléfono de contacto:</label><input type="text" id="empresaTelefonoInput"></div>
+            <div class="form-group"><label>Logo (URL o subir imagen):</label>
+                <input type="text" id="logoUrl" placeholder="https://ejemplo.com/logo.png">
+                <input type="file" id="logoFile" accept="image/*" onchange="previewLogo(event)">
+                <div id="logoPreviewContainer"></div>
+                <small>Puedes pegar una URL o seleccionar una imagen de tu dispositivo. La imagen se guardará en la base de datos.</small>
+            </div>
+            <button onclick="guardarPerfilEmpresa()" class="btn-success">Guardar datos empresa</button>
+        </div>
+        <div class="info-panel">
+            <h3>🔐 Seguridad</h3>
+            <div class="form-group"><label>Contraseña actual:</label><input type="password" id="currentPassword"></div>
+            <div class="form-group"><label>Nueva contraseña:</label><input type="password" id="newPassword"></div>
+            <div class="form-group"><label>Confirmar:</label><input type="password" id="confirmPassword"></div>
+            <button onclick="cambiarContrasena()" class="btn-warning">Cambiar contraseña</button>
+        </div>
+    </div>
 
     <!-- Usuarios (solo admin) -->
     <div id="tab-usuarios" class="form-section"><div class="info-panel"><h3>➕ Crear nuevo usuario</h3><div class="form-group"><label>Email:</label><input type="email" id="newUserEmail" placeholder="correo@ejemplo.com"></div><div class="form-group"><label>Contraseña:</label><input type="password" id="newUserPassword" placeholder="mínimo 6 caracteres"></div><div class="form-group"><label>Rol:</label><select id="newUserRole"><option value="user">Usuario normal</option><option value="admin">Administrador</option></select></div><button onclick="crearUsuario()" class="btn-success">Crear usuario</button></div><div class="info-panel"><h3>👥 Usuarios registrados</h3><div id="listaUsuarios" class="users-list"></div></div></div>
@@ -290,7 +422,8 @@
         appId: "1:878399930922:web:3274ed4b00b46f28b8b953"
     };
 
-    let app, db, auth, todosLosPrestamos = [], todosLosClientes = [], currentUserRole = null, chartPagos, chartClientes, prestamosUnsubscribe, clientesUnsubscribe;
+    let app, db, auth, todosLosPrestamos = [], todosLosClientes = [], currentUserRole = null, currentUserUid = null, currentUserDisplayName = "";
+    let chartPagos, chartClientes, prestamosUnsubscribe, clientesUnsubscribe;
 
     try {
         app = initializeApp(firebaseConfig);
@@ -399,12 +532,12 @@
         const previewDiv = document.getElementById("amortizacionPreview");
         const tablaHtml = `<h4>📊 Tabla de amortización (${metodo === 'frances' ? 'Francés' : 'Alemán'})</h4>
             <div class="scrollable-table">
-            <table>
+             <table>
                 <thead><tr><th>Cuota</th><th>Pago</th><th>Interés</th><th>Capital</th><th>Saldo</th></tr></thead>
                 <tbody>
                 ${amort.slice(0,10).map(c => `<tr><td>${c.cuota}</td><td>$${c.pago.toFixed(2)}</td><td>$${c.interes.toFixed(2)}</td><td>$${c.capital.toFixed(2)}</td><td>$${c.saldo.toFixed(2)}</td></tr>`).join('')}
                 </tbody>
-            </table>
+             </table>
             ${amort.length > 10 ? `<button class="btn-sm" onclick="mostrarTodasCuotas()">Ver todas (${amort.length} cuotas)</button>` : ''}
             </div>`;
         previewDiv.innerHTML = tablaHtml;
@@ -728,24 +861,90 @@
         if (tab === 'prestamo') actualizarResumenYTabla(); // Forzar actualización al abrir la pestaña
     };
 
-    // Perfil empresa
+    // Perfil de usuario (nombre a mostrar)
+    async function cargarPerfilUsuario() {
+        if (!currentUserUid) return;
+        const snap = await get(ref(db, `users/${currentUserUid}`));
+        const userData = snap.val();
+        if (userData && userData.displayName) {
+            document.getElementById("userDisplayNameInput").value = userData.displayName;
+            document.getElementById("userDisplayName").innerText = userData.displayName;
+            currentUserDisplayName = userData.displayName;
+        } else {
+            document.getElementById("userDisplayNameInput").value = "";
+            const email = auth.currentUser?.email || "";
+            document.getElementById("userDisplayName").innerText = email.split('@')[0];
+            currentUserDisplayName = email.split('@')[0];
+        }
+    }
+
+    window.guardarPerfilUsuario = async function() {
+        if (!currentUserUid) return;
+        const newName = document.getElementById("userDisplayNameInput").value.trim();
+        if (!newName) { mostrarToast("El nombre no puede estar vacío", "error"); return; }
+        try {
+            await update(ref(db, `users/${currentUserUid}`), { displayName: newName });
+            document.getElementById("userDisplayName").innerText = newName;
+            currentUserDisplayName = newName;
+            mostrarToast("Nombre actualizado");
+        } catch(e) { mostrarToast("Error: " + e.message, "error"); }
+    };
+
+    // Perfil empresa con logo
+    window.previewLogo = function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const previewDiv = document.getElementById("logoPreviewContainer");
+                previewDiv.innerHTML = `<img src="${e.target.result}" class="logo-preview" alt="Vista previa">`;
+                document.getElementById("logoUrl").value = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
     async function cargarPerfilEmpresa() {
         const snap = await get(ref(db, 'config/empresa'));
         const data = snap.val();
         if (data) {
             document.getElementById("empresaNombreInput").value = data.nombre || "";
             document.getElementById("empresaTelefonoInput").value = data.telefono || "";
+            document.getElementById("logoUrl").value = data.logo || "";
             document.getElementById("empresaNombre").innerText = data.nombre || "Sistema de Préstamos";
             document.getElementById("empresaTelefono").innerText = data.telefono ? `| ${data.telefono}` : "";
+            if (data.logo) {
+                const logoImg = document.getElementById("empresaLogo");
+                logoImg.src = data.logo;
+                logoImg.style.display = "inline-block";
+            } else {
+                document.getElementById("empresaLogo").style.display = "none";
+            }
+            if (data.logo) {
+                document.getElementById("logoPreviewContainer").innerHTML = `<img src="${data.logo}" class="logo-preview" alt="Logo actual">`;
+            }
+        } else {
+            document.getElementById("empresaLogo").style.display = "none";
         }
     }
+
     window.guardarPerfilEmpresa = async function() {
         const nombre = document.getElementById("empresaNombreInput").value.trim();
         const telefono = document.getElementById("empresaTelefonoInput").value.trim();
+        let logo = document.getElementById("logoUrl").value.trim();
         if (!nombre) { mostrarToast("Nombre requerido", "error"); return; }
-        await set(ref(db, 'config/empresa'), { nombre, telefono });
+        const updateData = { nombre, telefono };
+        if (logo) updateData.logo = logo;
+        await set(ref(db, 'config/empresa'), updateData);
         document.getElementById("empresaNombre").innerText = nombre;
         document.getElementById("empresaTelefono").innerText = telefono ? `| ${telefono}` : "";
+        if (logo) {
+            const logoImg = document.getElementById("empresaLogo");
+            logoImg.src = logo;
+            logoImg.style.display = "inline-block";
+        } else {
+            document.getElementById("empresaLogo").style.display = "none";
+        }
         mostrarToast("Datos guardados");
     };
 
@@ -778,7 +977,7 @@
         const listDiv = document.getElementById("listaUsuarios");
         if (!users) { listDiv.innerHTML = '<div class="empty-state">No hay usuarios registrados</div>'; return; }
         const userList = Object.entries(users).map(([uid, u]) => ({ uid, ...u }));
-        listDiv.innerHTML = userList.map(u => `<div class="user-card"><div class="user-header"><span class="user-email">📧 ${escapeHtml(u.email)}</span><span class="badge ${u.isAdmin ? 'admin' : 'user'}">${u.isAdmin ? 'Administrador' : 'Usuario normal'}</span></div><div class="user-details"><div class="detail-item"><span class="detail-label">Creado</span><span class="detail-value">${new Date(u.createdAt).toLocaleDateString()}</span></div>${u.uid !== auth.currentUser?.uid ? `<button onclick="eliminarUsuario('${u.uid}')" class="btn-sm btn-danger">Eliminar</button>` : ''}</div></div>`).join('');
+        listDiv.innerHTML = userList.map(u => `<div class="user-card"><div class="user-header"><span class="user-email">📧 ${escapeHtml(u.email)}</span><span class="badge ${u.isAdmin ? 'admin' : 'user'}">${u.isAdmin ? 'Administrador' : 'Usuario normal'}</span></div><div class="user-details"><div class="detail-item"><span class="detail-label">Nombre</span><span class="detail-value">${escapeHtml(u.displayName || u.email.split('@')[0])}</span></div><div class="detail-item"><span class="detail-label">Creado</span><span class="detail-value">${new Date(u.createdAt).toLocaleDateString()}</span></div>${u.uid !== auth.currentUser?.uid ? `<button onclick="eliminarUsuario('${u.uid}')" class="btn-sm btn-danger">Eliminar</button>` : ''}</div></div>`).join('');
     }
 
     window.crearUsuario = async function() {
@@ -790,7 +989,7 @@
         if (password.length < 6) { mostrarToast("Contraseña mínima 6 caracteres", "error"); return; }
         try {
             const userCred = await createUserWithEmailAndPassword(auth, email, password);
-            await set(ref(db, `users/${userCred.user.uid}`), { email, isAdmin: (role === 'admin'), createdAt: new Date().toISOString() });
+            await set(ref(db, `users/${userCred.user.uid}`), { email, isAdmin: (role === 'admin'), createdAt: new Date().toISOString(), displayName: email.split('@')[0] });
             mostrarToast(`Usuario ${email} creado como ${role === 'admin' ? 'administrador' : 'usuario normal'}`);
             document.getElementById("newUserEmail").value = "";
             document.getElementById("newUserPassword").value = "";
@@ -838,8 +1037,7 @@
             mostrarToast("Sesión iniciada");
             iniciarObservadores();
             cargarPerfilEmpresa();
-            document.getElementById("userEmail").innerText = email;
-            document.getElementById("userEmailInput").value = email;
+            // El perfil de usuario se carga en onAuthStateChanged
         } catch(e) { mostrarToast("Error: " + e.message, "error"); }
     };
 
@@ -871,7 +1069,7 @@
         if (!password || password.length < 6) { mostrarToast("Contraseña muy corta", "error"); return; }
         try {
             const userCred = await createUserWithEmailAndPassword(auth, email, password);
-            await set(ref(db, `users/${userCred.user.uid}`), { email, isAdmin: true, createdAt: new Date().toISOString() });
+            await set(ref(db, `users/${userCred.user.uid}`), { email, isAdmin: true, createdAt: new Date().toISOString(), displayName: email.split('@')[0] });
             mostrarToast("Administrador creado. Inicie sesión.");
             await checkFirstUser();
         } catch(e) { mostrarToast("Error: " + e.message, "error"); }
@@ -880,20 +1078,24 @@
     // Estado de autenticación
     onAuthStateChanged(auth, async (user) => {
         if (user) {
+            currentUserUid = user.uid;
             const snap = await get(ref(db, `users/${user.uid}`));
             const userData = snap.val();
             if (!userData) {
-                await set(ref(db, `users/${user.uid}`), { email: user.email, isAdmin: false, createdAt: new Date().toISOString() });
+                await set(ref(db, `users/${user.uid}`), { email: user.email, isAdmin: false, createdAt: new Date().toISOString(), displayName: user.email.split('@')[0] });
                 currentUserRole = false;
             } else {
                 currentUserRole = userData.isAdmin ? 'admin' : 'user';
+                if (!userData.displayName) {
+                    await update(ref(db, `users/${user.uid}`), { displayName: user.email.split('@')[0] });
+                }
             }
             actualizarUIporRol(currentUserRole);
             document.getElementById("loginOverlay").style.display = "none";
             document.getElementById("mainApp").style.display = "block";
             iniciarObservadores();
             cargarPerfilEmpresa();
-            document.getElementById("userEmail").innerText = user.email;
+            cargarPerfilUsuario();
             document.getElementById("userEmailInput").value = user.email;
             if (currentUserRole === 'admin') cargarUsuarios();
         } else {
@@ -901,6 +1103,7 @@
             document.getElementById("mainApp").style.display = "none";
             checkFirstUser();
             currentUserRole = null;
+            currentUserUid = null;
         }
     });
 
