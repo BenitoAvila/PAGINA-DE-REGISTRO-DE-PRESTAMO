@@ -3,413 +3,755 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Sistema de Préstamos | Gestión de Usuarios</title>
+    <title>Sistema de Préstamos | Gestión Moderna</title>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root {
-            --primary: #667eea;
-            --primary-dark: #5a67d8;
-            --secondary: #764ba2;
-            --success: #48bb78;
-            --danger: #f56565;
-            --warning: #ed8936;
-            --dark: #2d3748;
-            --light: #f7fafc;
-            --gray: #718096;
-            --bg-light: #f8f9fa;
-            --bg-dark: #1a202c;
-            --card-light: #ffffff;
-            --card-dark: #2d3748;
-            --border-light: #e0e0e0;
-            --border-dark: #4a5568;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            min-height: 100vh;
-            padding: 20px;
-            transition: all 0.3s ease;
-        }
-        body.dark-mode { background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%); }
-        .container {
-            max-width: 1400px;
-            margin: auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
-            animation: fadeIn 0.5s ease-in;
-        }
-        body.dark-mode .container { background: var(--bg-dark); }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-        .header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-            padding: 20px 30px;
-            text-align: center;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        .logo-img {
-            max-height: 50px;
-            width: auto;
-            border-radius: 10px;
-            background: rgba(255,255,255,0.1);
-            padding: 5px;
-        }
-        .header-text {
-            text-align: left;
-        }
-        .header-text h1 {
-            font-size: 1.8rem;
+        /* ========== ESTILOS MODERNOS ========== */
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .header-text p {
-            margin: 5px 0 0;
-            font-size: 0.9rem;
-            opacity: 0.9;
+
+        :root {
+            --primary: #0f172a;
+            --primary-light: #1e293b;
+            --accent: #10b981;
+            --accent-dark: #059669;
+            --accent-light: #34d399;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --sidebar-width: 280px;
+            --header-height: 70px;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
         }
-        .header-right {
-            font-size: 0.9rem;
-            background: rgba(0,0,0,0.2);
-            padding: 5px 15px;
-            border-radius: 30px;
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--gray-100);
+            overflow-x: hidden;
+            transition: background 0.3s ease;
+        }
+
+        body.dark-mode {
+            --gray-50: #0f172a;
+            --gray-100: #1e293b;
+            --gray-200: #334155;
+            --gray-300: #475569;
+            --gray-400: #64748b;
+            --gray-500: #94a3b8;
+            --gray-600: #cbd5e1;
+            --gray-700: #e2e8f0;
+            --gray-800: #f1f5f9;
+            --gray-900: #f8fafc;
+            background: var(--gray-100);
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Moderno */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+        }
+
+        .sidebar-logo {
+            max-height: 50px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+        }
+
+        .sidebar-header h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 8px 0 4px;
+        }
+
+        .sidebar-header p {
+            font-size: 0.7rem;
+            opacity: 0.7;
+        }
+
+        .sidebar-nav {
+            padding: 20px 0;
+        }
+
+        .nav-item {
+            padding: 10px 24px;
             display: flex;
             align-items: center;
             gap: 12px;
+            color: rgba(255,255,255,0.8);
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 4px 12px;
+            border-radius: 12px;
         }
+
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .nav-item.active {
+            background: var(--accent);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .nav-item i {
+            width: 24px;
+            font-size: 1.1rem;
+        }
+
+        .nav-item span {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .nav-divider {
+            height: 1px;
+            background: rgba(255,255,255,0.1);
+            margin: 16px 24px;
+        }
+
+        .nav-title {
+            padding: 12px 24px 6px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255,255,255,0.5);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .top-header {
+            background: white;
+            padding: 0 30px;
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 99;
+            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.9);
+        }
+
+        body.dark-mode .top-header {
+            background: rgba(30,41,59,0.9);
+            backdrop-filter: blur(10px);
+        }
+
+        .header-search {
+            display: flex;
+            align-items: center;
+            background: var(--gray-100);
+            border-radius: 40px;
+            padding: 8px 18px;
+            width: 320px;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .header-search:focus-within {
+            border-color: var(--accent);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(16,185,129,0.1);
+        }
+
+        .header-search i {
+            color: var(--gray-400);
+            margin-right: 10px;
+        }
+
+        .header-search input {
+            border: none;
+            background: none;
+            outline: none;
+            width: 100%;
+            font-size: 0.9rem;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
         .user-info {
             display: flex;
             align-items: center;
-            gap: 8px;
-        }
-        .user-name {
-            font-weight: 500;
-            max-width: 200px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .settings-icon {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
+            gap: 10px;
             cursor: pointer;
-            font-size: 1.2rem;
-            padding: 4px 8px;
-            border-radius: 20px;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
+            padding: 6px 12px;
+            border-radius: 40px;
+            transition: background 0.2s;
         }
-        .settings-icon:hover {
-            background: rgba(255,255,255,0.4);
-            transform: scale(1.05);
+
+        .user-info:hover {
+            background: var(--gray-100);
         }
-        .logout-btn {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            transition: all 0.2s;
-        }
-        .logout-btn:hover {
-            background: rgba(255,255,255,0.4);
-            transform: none;
-        }
-        .theme-toggle {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            padding: 6px;
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
             border-radius: 50%;
-            cursor: pointer;
-            font-size: 1.1em;
-            transition: all 0.3s;
-            width: 34px;
-            height: 34px;
-            display: inline-flex;
+            display: flex;
             align-items: center;
             justify-content: center;
+            color: white;
+            font-weight: 600;
         }
-        .theme-toggle:hover { background: rgba(255,255,255,0.3); transform: rotate(15deg); }
-        .stats {
+
+        /* Cards */
+        .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            padding: 30px;
-            background: var(--bg-light);
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 24px;
+            padding: 30px 30px 0;
         }
-        body.dark-mode .stats { background: var(--bg-dark); }
+
         .stat-card {
-            background: var(--card-light);
+            background: white;
+            border-radius: 20px;
             padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            text-align: center;
-            transition: transform 0.3s;
-            cursor: pointer;
-        }
-        body.dark-mode .stat-card { background: var(--card-dark); color: #e2e8f0; }
-        .stat-card:hover { transform: translateY(-5px); }
-        .stat-card h3 { color: var(--gray); font-size: 0.9em; margin-bottom: 10px; text-transform: uppercase; }
-        .stat-card .value { font-size: 2em; font-weight: bold; color: var(--primary); }
-        .tabs {
-            display: flex;
-            padding: 0 30px;
-            background: var(--bg-light);
-            border-bottom: 2px solid var(--border-light);
-            flex-wrap: wrap;
-        }
-        body.dark-mode .tabs { background: var(--bg-dark); border-bottom-color: var(--border-dark); }
-        .tab {
-            padding: 15px 25px;
-            cursor: pointer;
-            background: transparent;
-            border: none;
-            font-size: 1em;
-            font-weight: 500;
-            color: var(--gray);
             transition: all 0.3s;
-            position: relative;
+            cursor: pointer;
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-sm);
         }
-        .tab:hover { color: var(--primary); }
-        .tab.active { color: var(--primary); }
-        .tab.active::after { content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 2px; background: var(--primary); }
-        .form-section { padding: 30px; display: none; animation: fadeIn 0.3s ease-in; }
-        .form-section.active { display: block; }
-        form, .info-panel {
-            background: var(--bg-light);
-            padding: 25px;
-            border-radius: 15px;
+
+        body.dark-mode .stat-card {
+            background: var(--gray-800);
+            border-color: var(--gray-700);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--accent-light);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .stat-header h3 {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--gray-500);
+        }
+
+        .stat-icon {
+            width: 42px;
+            height: 42px;
+            background: rgba(16,185,129,0.1);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-size: 1.2rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 4px;
+        }
+
+        body.dark-mode .stat-value {
+            color: var(--gray-100);
+        }
+
+        .stat-sub {
+            font-size: 0.7rem;
+            color: var(--gray-500);
+        }
+
+        /* Paneles */
+        .content-panel {
+            padding: 0 30px 30px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .panel-header h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        body.dark-mode .panel-header h2 {
+            color: var(--gray-200);
+        }
+
+        /* Filtros */
+        .filter-bar {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .filter-bar input, .filter-bar select {
+            padding: 10px 16px;
+            border: 1px solid var(--gray-300);
+            border-radius: 40px;
+            font-size: 0.85rem;
+            background: white;
+            transition: all 0.2s;
+            outline: none;
+        }
+
+        body.dark-mode .filter-bar input, body.dark-mode .filter-bar select {
+            background: var(--gray-800);
+            border-color: var(--gray-700);
+            color: var(--gray-200);
+        }
+
+        .filter-bar input:focus, .filter-bar select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(16,185,129,0.1);
+        }
+
+        /* Tabla moderna */
+        .loans-table {
+            background: white;
+            border-radius: 20px;
+            overflow-x: auto;
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-sm);
+        }
+
+        body.dark-mode .loans-table {
+            background: var(--gray-800);
+            border-color: var(--gray-700);
+        }
+
+        .loans-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .loans-table th, .loans-table td {
+            padding: 16px 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        body.dark-mode .loans-table th, body.dark-mode .loans-table td {
+            border-bottom-color: var(--gray-700);
+        }
+
+        .loans-table th {
+            background: var(--gray-50);
+            font-weight: 600;
+            color: var(--gray-600);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        body.dark-mode .loans-table th {
+            background: var(--gray-900);
+            color: var(--gray-400);
+        }
+
+        .loans-table tr:hover {
+            background: var(--gray-50);
+        }
+
+        body.dark-mode .loans-table tr:hover {
+            background: var(--gray-700);
+        }
+
+        /* Badges */
+        .badge {
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .badge-pagado {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .badge-pendiente {
+            background: #fed7aa;
+            color: #92400e;
+        }
+        .badge-activo {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        /* Botones */
+        .btn {
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+        .btn-primary:hover {
+            background: var(--accent-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+        .btn-success {
+            background: var(--accent);
+            color: white;
+        }
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+        .btn-sm {
+            padding: 4px 12px;
+            font-size: 0.75rem;
+        }
+
+        /* Formularios */
+        .form-card {
+            background: white;
+            border-radius: 24px;
+            padding: 28px;
+            margin-bottom: 24px;
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-sm);
+        }
+
+        body.dark-mode .form-card {
+            background: var(--gray-800);
+            border-color: var(--gray-700);
+        }
+
+        .form-group {
             margin-bottom: 20px;
         }
-        body.dark-mode form, body.dark-mode .info-panel { background: var(--card-dark); }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--dark); }
-        body.dark-mode label { color: #e2e8f0; }
-        input, select, textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid var(--border-light);
-            border-radius: 8px;
-            font-size: 1em;
-            transition: all 0.3s;
-        }
-        body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background: var(--bg-dark); border-color: var(--border-dark); color: #e2e8f0; }
-        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
-        button {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 8px;
-            font-size: 1em;
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
             font-weight: 500;
+            font-size: 0.85rem;
+            color: var(--gray-700);
+        }
+
+        body.dark-mode .form-group label {
+            color: var(--gray-300);
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--gray-300);
+            border-radius: 16px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        body.dark-mode .form-group input, body.dark-mode .form-group select, body.dark-mode .form-group textarea {
+            background: var(--gray-900);
+            border-color: var(--gray-700);
+            color: var(--gray-200);
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(16,185,129,0.1);
+        }
+
+        /* Fechas dinámicas */
+        input[type="date"] {
+            position: relative;
+            font-family: inherit;
+        }
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            background: transparent;
+            color: var(--accent);
             cursor: pointer;
-            transition: all 0.3s;
-            margin: 5px;
         }
-        button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4); }
-        .btn-danger { background: linear-gradient(135deg, var(--danger) 0%, #c53030 100%); }
-        .btn-success { background: linear-gradient(135deg, var(--success) 0%, #2f855a 100%); }
-        .btn-warning { background: linear-gradient(135deg, var(--warning) 0%, #dd6b20 100%); }
-        .btn-sm { padding: 5px 10px; font-size: 0.85em; }
-        .loans-list, .clients-list, .users-list { max-height: 600px; overflow-y: auto; }
-        .loan-card, .client-card, .user-card {
-            background: var(--card-light);
-            border: 1px solid var(--border-light);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 15px;
-            transition: all 0.3s;
-            animation: slideIn 0.3s ease-out;
+
+        /* Grid */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 24px;
         }
-        body.dark-mode .loan-card, body.dark-mode .client-card, body.dark-mode .user-card { background: var(--card-dark); border-color: var(--border-dark); }
-        .loan-header, .client-header, .user-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; }
-        .loan-client, .client-name, .user-email { font-size: 1.2em; font-weight: bold; color: var(--dark); }
-        body.dark-mode .loan-client, body.dark-mode .client-name, body.dark-mode .user-email { color: #e2e8f0; }
-        .badge { display: inline-block; padding: 5px 12px; border-radius: 20px; font-size: 0.85em; font-weight: bold; }
-        .badge.pagado { background: #d4edda; color: #155724; }
-        .badge.pendiente { background: #f8d7da; color: #721c24; }
-        .badge.admin { background: #cce5ff; color: #004085; }
-        .badge.user { background: #e2e3e5; color: #383d41; }
-        .loan-details, .user-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-light); }
-        .progress-bar { margin-top: 10px; height: 8px; background: #e0e0e0; border-radius: 4px; overflow: hidden; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--success), #2f855a); transition: width 0.5s ease; }
-        .amortization-table { background: var(--card-light); border-radius: 12px; padding: 15px; margin-top: 20px; overflow-x: auto; }
-        .scrollable-table { max-height: 400px; overflow-y: auto; }
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); animation: fadeIn 0.3s; }
-        .modal-content { background: var(--card-light); margin: 50px auto; padding: 30px; border-radius: 15px; max-width: 90%; width: 800px; max-height: 80vh; overflow-y: auto; }
-        .chart-container { padding: 20px; background: var(--card-light); border-radius: 15px; margin-bottom: 20px; }
-        canvas { max-height: 300px; }
-        .toast { position: fixed; bottom: 20px; right: 20px; background: white; padding: 15px 25px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); animation: slideInRight 0.3s; z-index: 2000; }
-        .empty-state { text-align: center; padding: 40px; color: var(--gray); }
-        .filter-group { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; align-items: center; }
+
+        /* Modales */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 28px;
+            padding: 28px;
+            max-width: 90%;
+            width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+        }
+        body.dark-mode .modal-content {
+            background: var(--gray-800);
+        }
+
+        /* Login */
         .login-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.8);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 9999;
+            z-index: 2000;
         }
         .login-card {
             background: white;
-            padding: 30px;
-            border-radius: 20px;
+            border-radius: 32px;
+            padding: 40px;
             width: 90%;
-            max-width: 400px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            max-width: 420px;
+            text-align: center;
+            box-shadow: var(--shadow-xl);
         }
-        body.dark-mode .login-card { background: var(--card-dark); color: white; }
-        .logo-preview {
-            max-width: 100%;
-            max-height: 100px;
-            margin-top: 10px;
-            border-radius: 8px;
+        body.dark-mode .login-card {
+            background: var(--gray-800);
         }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--gray-900);
+            color: white;
+            padding: 14px 24px;
+            border-radius: 40px;
+            z-index: 2000;
+            animation: slideIn 0.3s ease;
+            box-shadow: var(--shadow-lg);
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            color: var(--gray-500);
+            background: white;
+            border-radius: 24px;
+        }
+
         @media (max-width: 768px) {
-            .tabs { padding: 0 15px; }
-            .tab { padding: 12px 15px; font-size: 0.85em; }
-            .form-section { padding: 20px; }
-            .header { flex-direction: column; text-align: center; }
-            .header-left { flex-direction: column; text-align: center; }
-            .header-text h1 { font-size: 1.4rem; }
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+            .content-panel {
+                padding: 0 20px 20px;
+            }
         }
     </style>
 </head>
 <body>
-<div class="container" id="mainApp" style="display: none;">
-    <div class="header">
-        <div class="header-left">
-            <img id="empresaLogo" class="logo-img" style="display: none;" alt="Logo">
-            <div class="header-text">
-                <h1>💰 <span id="empresaNombre">Sistema de Préstamos</span> | <span id="empresaTelefono"></span></h1>
-                <p>Amortización Francesa y Alemana | Abonos a capital | Gestión de usuarios</p>
+<div class="app-container">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img id="sidebarLogo" class="sidebar-logo" style="display: none;" alt="Logo">
+            <h3 id="empresaNombreSidebar">Sistema de Préstamos</h3>
+            <p>Gestión Financiera Moderna</p>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-title">PRINCIPAL</div>
+            <div class="nav-item active" data-tab="dashboard"><i class="fas fa-tachometer-alt"></i><span>Panel Principal</span></div>
+            <div class="nav-item" data-tab="clientes"><i class="fas fa-users"></i><span>Clientes</span></div>
+            <div class="nav-item" data-tab="prestamos"><i class="fas fa-hand-holding-usd"></i><span>Préstamos</span></div>
+            <div class="nav-item" data-tab="pagos"><i class="fas fa-money-bill-wave"></i><span>Pagos / Abonos</span></div>
+            <div class="nav-item" data-tab="calculadora"><i class="fas fa-calculator"></i><span>Calculadora</span></div>
+            <div class="nav-divider"></div>
+            <div class="nav-title">OPERACIONES</div>
+            <div class="nav-item" data-tab="ahorros"><i class="fas fa-piggy-bank"></i><span>Ahorros</span></div>
+            <div class="nav-item" data-tab="empenos"><i class="fas fa-gem"></i><span>Empeños</span></div>
+            <div class="nav-item" data-tab="gastos"><i class="fas fa-receipt"></i><span>Gastos</span></div>
+            <div class="nav-divider"></div>
+            <div class="nav-title">REPORTES</div>
+            <div class="nav-item" data-tab="reportes"><i class="fas fa-file-excel"></i><span>Reportes Excel</span></div>
+            <div class="nav-divider"></div>
+            <div class="nav-title">ADMINISTRACIÓN</div>
+            <div class="nav-item" data-tab="corteCaja"><i class="fas fa-cash-register"></i><span>Corte de Caja</span></div>
+            <div class="nav-item" data-tab="auditoria"><i class="fas fa-history"></i><span>Auditoría</span></div>
+            <div class="nav-item" data-tab="usuarios" id="usuariosNavItem" style="display: none;"><i class="fas fa-user-shield"></i><span>Usuarios</span></div>
+            <div class="nav-item" data-tab="configuracion"><i class="fas fa-cog"></i><span>Configuración</span></div>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-header">
+            <div class="header-search">
+                <i class="fas fa-search"></i>
+                <input type="text" id="globalSearch" placeholder="Buscar clientes, préstamos..." onkeyup="buscarGlobal()">
             </div>
-        </div>
-        <div class="header-right">
-            <div class="user-info">
-                <span class="user-name" id="userDisplayName"></span>
-                <button class="settings-icon" onclick="cambiarTab('perfil')" title="Configuración">⚙️</button>
+            <div class="header-actions">
+                <div class="user-info" onclick="cambiarTab('configuracion')">
+                    <div class="user-avatar" id="userAvatar">A</div>
+                    <span id="userDisplayNameHeader">Administrador</span>
+                </div>
+                <button class="btn btn-sm" onclick="toggleTheme()" style="background: var(--gray-200);"><i class="fas fa-moon"></i></button>
+                <button class="btn btn-sm btn-danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button>
             </div>
-            <button class="logout-btn" onclick="logout()">Cerrar sesión</button>
-            <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
-        </div>
-    </div>
-    <div class="stats">
-        <div class="stat-card" onclick="cambiarTab('lista')"><h3>Total Prestado</h3><div class="value" id="totalPrestado">$0</div></div>
-        <div class="stat-card" onclick="cambiarTab('lista')"><h3>Total Pagado</h3><div class="value" id="totalPagado">$0</div></div>
-        <div class="stat-card" onclick="cambiarTab('lista')"><h3>Saldo Pendiente</h3><div class="value" id="saldoPendiente">$0</div></div>
-        <div class="stat-card alert-card" onclick="cambiarTab('lista')"><h3>⏰ Por vencer (7d)</h3><div class="value" id="porVencer">0</div></div>
-        <div class="stat-card danger-card" onclick="cambiarTab('lista')"><h3>⚠️ Vencidos</h3><div class="value" id="vencidos">0</div></div>
-    </div>
-    <div class="tabs" id="tabsContainer"></div>
-
-    <!-- Cliente -->
-    <div id="tab-cliente" class="form-section"><form id="formCliente"><div class="form-group"><label>👤 Nombre:</label><input type="text" id="nombre" required></div><div class="form-group"><label>🆔 Cédula (10 dígitos):</label><input type="text" id="cedula" maxlength="10" pattern="\d{10}" required></div><div class="form-group"><label>📞 Teléfono:</label><input type="tel" id="telefono"></div><div class="form-group"><label>📍 Dirección:</label><input type="text" id="direccion"></div><button type="button" onclick="guardarCliente()">Guardar Cliente</button></form></div>
-
-    <!-- Nuevo Préstamo -->
-    <div id="tab-prestamo" class="form-section">
-        <form id="formPrestamo">
-            <div class="form-group"><label>👤 Cliente:</label><input type="text" id="clientePrestamo" list="listaClientesNombres" required></div>
-            <div class="form-group"><label>💰 Monto:</label><input type="number" id="monto" step="0.01" min="0.01" value="1000" required></div>
-            <div class="form-group"><label>📈 Tipo interés:</label><select id="tipoInteres"><option value="anual">Anual (%)</option><option value="mensual">Mensual (%)</option></select></div>
-            <div class="form-group"><label>📈 Interés:</label><input type="number" id="interes" step="0.01" min="0" value="10" required></div>
-            <div class="form-group"><label>📆 N° cuotas:</label><input type="number" id="numCuotas" min="1" max="60" value="12" required></div>
-            <div class="form-group"><label>📅 Método:</label><select id="metodoAmortizacion"><option value="frances">Francés</option><option value="aleman">Alemán</option></select></div>
-            <button type="button" onclick="guardarPrestamo()">Registrar</button>
-        </form>
-        <div id="summaryPanel" style="display:none;"></div>
-        <div id="amortizacionPreview" class="amortization-table" style="display:none;"></div>
-    </div>
-
-    <!-- Pago -->
-    <div id="tab-pago" class="form-section"><div class="info-panel"><div class="form-group"><label>👤 Cliente:</label><input type="text" id="clientePago" list="listaClientesNombres" onchange="cargarPrestamosCliente()" required></div><div class="form-group"><label>📌 Préstamo:</label><select id="prestamoSelect" onchange="mostrarDetallesPrestamo()"></select></div><div id="detallePrestamo"></div><div class="form-group"><label>💰 Monto:</label><input type="number" id="pagoMonto" step="0.01" min="0.01" required></div><div class="form-group"><label><input type="checkbox" id="extraPaymentCheckbox"> ✔️ Abono a capital (sin cuota)</label><small>Marca para restar directo del capital restante y recalcular cuotas.</small></div><button onclick="registrarPagoAvanzado()" class="btn-success">Procesar</button></div></div>
-
-    <!-- Lista Préstamos -->
-    <div id="tab-lista" class="form-section"><div class="filter-group"><input type="text" id="searchCliente" placeholder="Buscar..." onkeyup="filtrarPrestamos()"><input type="number" id="filtroMontoMin" placeholder="Monto min" onchange="filtrarPrestamos()"><input type="number" id="filtroMontoMax" placeholder="Monto max" onchange="filtrarPrestamos()"><select id="filterEstado" onchange="filtrarPrestamos()"><option value="todos">Todos</option><option value="pendiente">Pendientes</option><option value="pagado">Pagados</option></select><button onclick="exportarExcel()" class="btn-success">Excel</button><button onclick="imprimirLista()" class="btn">Imprimir</button></div><div id="lista" class="loans-list"></div></div>
-
-    <!-- Clientes -->
-    <div id="tab-clientes" class="form-section"><div class="filter-group"><input type="text" id="searchClienteLista" placeholder="Buscar..." onkeyup="filtrarClientes()"></div><div id="listaClientes" class="clients-list"></div></div>
-
-    <!-- Gráficos -->
-    <div id="tab-graficos" class="form-section"><div class="chart-container"><canvas id="chartPagos"></canvas></div><div class="chart-container"><canvas id="chartClientes"></canvas></div></div>
-
-    <!-- Reportes -->
-    <div id="tab-reportes" class="form-section"><div class="filter-group"><input type="date" id="fechaInicio"><input type="date" id="fechaFin"><button onclick="generarReporte()" class="btn-success">Generar</button></div><div id="reporteResultado"></div></div>
-
-    <!-- Perfil -->
-    <div id="tab-perfil" class="form-section">
-        <div class="info-panel">
-            <h3>👤 Datos de usuario</h3>
-            <div class="form-group"><label>Nombre para mostrar:</label><input type="text" id="userDisplayNameInput" placeholder="Tu nombre o apodo"></div>
-            <div class="form-group"><label>Email de acceso:</label><input type="email" id="userEmailInput" readonly disabled></div>
-            <button onclick="guardarPerfilUsuario()" class="btn-success">Guardar nombre</button>
-        </div>
-        <div class="info-panel">
-            <h3>🏢 Datos de la Empresa</h3>
-            <div class="form-group"><label>Nombre / Razón social:</label><input type="text" id="empresaNombreInput"></div>
-            <div class="form-group"><label>Teléfono de contacto:</label><input type="text" id="empresaTelefonoInput"></div>
-            <div class="form-group"><label>Logo (URL o subir imagen):</label>
-                <input type="text" id="logoUrl" placeholder="https://ejemplo.com/logo.png">
-                <input type="file" id="logoFile" accept="image/*" onchange="previewLogo(event)">
-                <div id="logoPreviewContainer"></div>
-                <small>Puedes pegar una URL o seleccionar una imagen de tu dispositivo. La imagen se guardará en la base de datos.</small>
-            </div>
-            <button onclick="guardarPerfilEmpresa()" class="btn-success">Guardar datos empresa</button>
-        </div>
-        <div class="info-panel">
-            <h3>🔐 Seguridad</h3>
-            <div class="form-group"><label>Contraseña actual:</label><input type="password" id="currentPassword"></div>
-            <div class="form-group"><label>Nueva contraseña:</label><input type="password" id="newPassword"></div>
-            <div class="form-group"><label>Confirmar:</label><input type="password" id="confirmPassword"></div>
-            <button onclick="cambiarContrasena()" class="btn-warning">Cambiar contraseña</button>
-        </div>
-    </div>
-
-    <!-- Usuarios (solo admin) -->
-    <div id="tab-usuarios" class="form-section"><div class="info-panel"><h3>➕ Crear nuevo usuario</h3><div class="form-group"><label>Email:</label><input type="email" id="newUserEmail" placeholder="correo@ejemplo.com"></div><div class="form-group"><label>Contraseña:</label><input type="password" id="newUserPassword" placeholder="mínimo 6 caracteres"></div><div class="form-group"><label>Rol:</label><select id="newUserRole"><option value="user">Usuario normal</option><option value="admin">Administrador</option></select></div><button onclick="crearUsuario()" class="btn-success">Crear usuario</button></div><div class="info-panel"><h3>👥 Usuarios registrados</h3><div id="listaUsuarios" class="users-list"></div></div></div>
+        </header>
+        <div id="dynamicContent"></div>
+    </main>
 </div>
 
-<div id="modalHistorial" class="modal"><div class="modal-content"><h3>📜 Historial</h3><div id="historialContenido"></div><button onclick="cerrarModal()">Cerrar</button></div></div>
-<div id="modalAmortizacion" class="modal"><div class="modal-content"><h3>📊 Tabla de Amortización</h3><div id="amortizacionContenido" class="scrollable-table"></div><button onclick="cerrarModal()">Cerrar</button></div></div>
+<div id="modalHistorial" class="modal">
+    <div class="modal-content">
+        <h3><i class="fas fa-history"></i> Historial de Pagos</h3>
+        <div id="historialContenido"></div>
+        <button onclick="cerrarModal()" class="btn btn-primary" style="margin-top:20px;">Cerrar</button>
+    </div>
+</div>
+<div id="modalAmortizacion" class="modal">
+    <div class="modal-content">
+        <h3><i class="fas fa-table"></i> Tabla de Amortización</h3>
+        <div id="amortizacionContenido"></div>
+        <button onclick="cerrarModal()" class="btn btn-primary" style="margin-top:20px;">Cerrar</button>
+    </div>
+</div>
+<div id="modalPago" class="modal">
+    <div class="modal-content">
+        <h3><i class="fas fa-money-bill-wave"></i> Registrar Pago</h3>
+        <div id="pagoContenido"></div>
+        <button onclick="cerrarModal()" class="btn btn-primary" style="margin-top:20px;">Cerrar</button>
+    </div>
+</div>
 <datalist id="listaClientesNombres"></datalist>
 
-<!-- Login -->
 <div id="loginOverlay" class="login-overlay">
     <div class="login-card">
-        <h2>🔐 Acceso al Sistema</h2>
-        <div class="form-group"><label>Email:</label><input type="email" id="loginEmail" placeholder="admin@ejemplo.com"></div>
-        <div class="form-group"><label>Contraseña:</label><input type="password" id="loginPassword"></div>
-        <button onclick="login()" class="btn-success">Iniciar sesión</button>
-        <div id="firstUserContainer" style="margin-top:15px; text-align:center;"></div>
+        <i class="fas fa-chart-line" style="font-size: 48px; color: var(--accent); margin-bottom: 20px;"></i>
+        <h2>Sistema de Préstamos</h2>
+        <p style="margin-bottom: 30px; color: var(--gray-500);">Ingrese sus credenciales</p>
+        <div class="form-group">
+            <input type="email" id="loginEmail" placeholder="correo@ejemplo.com">
+        </div>
+        <div class="form-group">
+            <input type="password" id="loginPassword" placeholder="Contraseña">
+        </div>
+        <button onclick="login()" class="btn btn-primary" style="width: 100%;">Iniciar Sesión</button>
+        <div id="firstUserContainer" style="margin-top: 20px;"></div>
     </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, push, set, get, update, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getDatabase, ref, push, set, get, update, remove, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, updatePassword, signOut, onAuthStateChanged, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
     const firebaseConfig = {
@@ -422,33 +764,34 @@
         appId: "1:878399930922:web:3274ed4b00b46f28b8b953"
     };
 
-    let app, db, auth, todosLosPrestamos = [], todosLosClientes = [], currentUserRole = null, currentUserUid = null, currentUserDisplayName = "";
-    let chartPagos, chartClientes, prestamosUnsubscribe, clientesUnsubscribe;
+    let app, db, auth, todosLosPrestamos = [], todosLosClientes = [], todosLosAhorros = [], todosLosEmpenos = [], todosLosGastos = [], todosLosCortes = [], todosLosAuditoria = [];
+    let currentUserRole = null, currentUserUid = null, currentUserDisplayName = "";
+    let currentTab = 'dashboard';
+    let chartPagos, chartClientes;
+    let empresaConfig = { nombre: "Sistema de Préstamos", telefono: "", ruc: "", direccion: "" };
 
     try {
         app = initializeApp(firebaseConfig);
         db = getDatabase(app);
         auth = getAuth(app);
-        console.log("✅ Firebase conectado");
-    } catch(e) { console.error(e); }
+        console.log("Firebase inicializado");
+    } catch (e) { console.error("Error Firebase:", e); }
 
-    // Funciones auxiliares
+    // ========== UTILS ==========
     function mostrarToast(mensaje, tipo = "success") {
         const toast = document.createElement('div');
-        toast.className = `toast ${tipo}`;
-        toast.innerHTML = mensaje;
+        toast.className = 'toast';
+        toast.innerHTML = `<i class="fas fa-${tipo === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${mensaje}`;
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 3000);
     }
 
-    function escapeHtml(str) { return str ? str.replace(/[&<>]/g, function(m) { if (m === "&") return "&amp;"; if (m === "<") return "&lt;"; if (m === ">") return "&gt;"; return m; }) : ""; }
+    function escapeHtml(str) {
+        return str ? String(str).replace(/[&<>]/g, m => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[m] || m)) : "";
+    }
 
     function validarCedula(cedula) {
         if (!/^\d{10}$/.test(cedula)) return false;
-        const provincia = parseInt(cedula.substring(0, 2), 10);
-        if (provincia < 1 || provincia > 24) return false;
-        const tercerDigito = parseInt(cedula[2], 10);
-        if (tercerDigito < 0 || tercerDigito > 6) return false;
         let total = 0;
         for (let i = 0; i < 9; i++) {
             let digito = parseInt(cedula[i], 10);
@@ -460,7 +803,25 @@
         return digitoVerificador === parseInt(cedula[9], 10);
     }
 
-    function getTasaMensual(interes, tipo) { if (interes === 0) return 0; let tasa = interes / 100; if (tipo === 'anual') tasa /= 12; return tasa; }
+    async function registrarAuditoria(accion, detalles) {
+        if (!currentUserUid) return;
+        try {
+            await push(ref(db, 'auditoria'), {
+                usuario: currentUserUid,
+                usuarioNombre: currentUserDisplayName || auth.currentUser?.email,
+                accion, detalles,
+                fecha: new Date().toISOString()
+            });
+        } catch (e) { console.error("Auditoría error:", e); }
+    }
+
+    function getTasaMensual(interes, tipo) {
+        if (interes === 0) return 0;
+        let tasa = interes / 100;
+        if (tipo === 'anual') tasa /= 12;
+        return tasa;
+    }
+
     function calcularAmortizacion(monto, interes, numCuotas, metodo, tipoInteres) {
         const tasa = getTasaMensual(interes, tipoInteres);
         let amort = [];
@@ -495,205 +856,511 @@
         }
         return amort;
     }
-    function recalcularRestante(saldoActual, periodosRestantes, interes, tipoInteres, metodo) {
-        if (periodosRestantes <= 0) return [];
-        return calcularAmortizacion(saldoActual, interes, periodosRestantes, metodo, tipoInteres);
-    }
 
-    // Función para actualizar resumen y tabla de amortización
-    function actualizarResumenYTabla() {
-        const monto = parseFloat(document.getElementById("monto")?.value);
-        const interes = parseFloat(document.getElementById("interes")?.value);
-        const numCuotas = parseInt(document.getElementById("numCuotas")?.value);
-        const metodo = document.getElementById("metodoAmortizacion")?.value;
-        const tipoInteres = document.getElementById("tipoInteres")?.value;
-
-        if (isNaN(monto) || isNaN(interes) || isNaN(numCuotas) || monto <= 0 || numCuotas <= 0) {
-            document.getElementById("summaryPanel").style.display = "none";
-            document.getElementById("amortizacionPreview").style.display = "none";
-            return;
+    function actualizarDatalist() {
+        const dl = document.getElementById("listaClientesNombres");
+        if (dl) {
+            dl.innerHTML = "";
+            todosLosClientes.forEach(c => {
+                const opt = document.createElement("option");
+                opt.value = c.nombre;
+                dl.appendChild(opt);
+            });
         }
-
-        const amort = calcularAmortizacion(monto, interes, numCuotas, metodo, tipoInteres);
-        if (!amort.length) return;
-
-        const total = amort.reduce((a,b)=>a+b.pago,0);
-        const summaryHtml = `<h3>📋 Resumen</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-            <div>💰 Monto: $${monto.toFixed(2)}</div>
-            <div>📈 Interés: ${interes}% ${tipoInteres==='anual'?'anual':'mensual'}</div>
-            <div>📅 Método: ${metodo==='frances'?'Francés':'Alemán'}</div>
-            <div>💰 Total a pagar: $${total.toFixed(2)}</div>
-            <div>💸 Interés total: $${(total-monto).toFixed(2)}</div>
-            <div>💵 Cuota: ${metodo==='frances'?`$${amort[0].pago.toFixed(2)} fija`:`$${amort[0].pago.toFixed(2)} → $${amort[amort.length-1].pago.toFixed(2)}`}</div>
-        </div>`;
-        document.getElementById("summaryPanel").innerHTML = summaryHtml;
-        document.getElementById("summaryPanel").style.display = "block";
-
-        const previewDiv = document.getElementById("amortizacionPreview");
-        const tablaHtml = `<h4>📊 Tabla de amortización (${metodo === 'frances' ? 'Francés' : 'Alemán'})</h4>
-            <div class="scrollable-table">
-             <table>
-                <thead><tr><th>Cuota</th><th>Pago</th><th>Interés</th><th>Capital</th><th>Saldo</th></tr></thead>
-                <tbody>
-                ${amort.slice(0,10).map(c => `<tr><td>${c.cuota}</td><td>$${c.pago.toFixed(2)}</td><td>$${c.interes.toFixed(2)}</td><td>$${c.capital.toFixed(2)}</td><td>$${c.saldo.toFixed(2)}</td></tr>`).join('')}
-                </tbody>
-             </table>
-            ${amort.length > 10 ? `<button class="btn-sm" onclick="mostrarTodasCuotas()">Ver todas (${amort.length} cuotas)</button>` : ''}
-            </div>`;
-        previewDiv.innerHTML = tablaHtml;
-        previewDiv.style.display = "block";
-        window.amortizacionCompleta = amort; // para ver todas
     }
 
-    window.mostrarTodasCuotas = function() {
-        if (!window.amortizacionCompleta) return;
-        const amort = window.amortizacionCompleta;
-        let html = `<div class="scrollable-table"><table><thead><tr><th>Cuota</th><th>Pago</th><th>Interés</th><th>Capital</th><th>Saldo</th></tr></thead><tbody>`;
+    async function cargarEmpresaConfig() {
+        const snap = await get(ref(db, 'config/empresa'));
+        if (snap.exists()) {
+            empresaConfig = snap.val();
+            document.getElementById("empresaNombreSidebar").innerText = empresaConfig.nombre || "Sistema de Préstamos";
+            if (empresaConfig.logo) {
+                document.getElementById("sidebarLogo").src = empresaConfig.logo;
+                document.getElementById("sidebarLogo").style.display = "inline-block";
+            } else {
+                document.getElementById("sidebarLogo").style.display = "none";
+            }
+        }
+    }
+
+    function generarTablaAmortizacionHTML(amort, cliente, metodo, monto, interes, tipoInteres, usuario) {
+        let html = `<div style="font-family: 'Inter', sans-serif; padding: 20px;">
+            <h2>Tabla de Amortización</h2>
+            <p><strong>Cliente:</strong> ${escapeHtml(cliente)}</p>
+            <p><strong>Monto:</strong> $${monto.toFixed(2)}</p>
+            <p><strong>Interés:</strong> ${interes}% (${tipoInteres === 'anual' ? 'anual' : 'mensual'})</p>
+            <p><strong>Método:</strong> ${metodo === 'frances' ? 'Francés' : 'Alemán'}</p>
+            <p><strong>Usuario que registra:</strong> ${escapeHtml(usuario)}</p>
+            <p><strong>Fecha:</strong> ${new Date().toLocaleString()}</p>
+            <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%; margin-top: 20px; border-radius: 16px;">
+                <thead><tr style="background:#f2f2f2;"><th>Cuota</th><th>Pago</th><th>Interés</th><th>Capital</th><th>Saldo</th>    </tr></thead>
+                <tbody>`;
         amort.forEach(c => {
             html += `<tr><td>${c.cuota}</td><td>$${c.pago.toFixed(2)}</td><td>$${c.interes.toFixed(2)}</td><td>$${c.capital.toFixed(2)}</td><td>$${c.saldo.toFixed(2)}</td></tr>`;
         });
         html += `</tbody></table></div>`;
-        document.getElementById("amortizacionContenido").innerHTML = html;
-        document.getElementById("modalAmortizacion").style.display = "block";
-    };
-
-    // Observadores de datos
-    function iniciarObservadores() {
-        if (!db) return;
-        if (prestamosUnsubscribe) prestamosUnsubscribe();
-        if (clientesUnsubscribe) clientesUnsubscribe();
-
-        prestamosUnsubscribe = onValue(ref(db, 'prestamos'), (snapshot) => {
-            const data = snapshot.val();
-            todosLosPrestamos = data ? Object.entries(data).map(([id, p]) => ({ id, ...p })) : [];
-            actualizarEstadisticas();
-            const active = document.querySelector('.form-section.active')?.id;
-            if (active === 'tab-lista') renderizarLista();
-            if (active === 'tab-clientes') renderizarClientes();
-            if (active === 'tab-graficos') actualizarGraficos();
-            if (active === 'tab-pago') { cargarPrestamosCliente(); mostrarDetallesPrestamo(); }
-        });
-
-        clientesUnsubscribe = onValue(ref(db, 'clientes'), (snapshot) => {
-            const data = snapshot.val();
-            todosLosClientes = data ? Object.entries(data).map(([id, c]) => ({ id, ...c })) : [];
-            actualizarDatalistClientes();
-            if (document.querySelector('.form-section.active')?.id === 'tab-clientes') renderizarClientes();
-        });
+        return html;
     }
 
-    function actualizarDatalistClientes() {
-        const dl = document.getElementById("listaClientesNombres");
-        if (dl) { dl.innerHTML = ""; todosLosClientes.forEach(c => { const opt = document.createElement("option"); opt.value = c.nombre; dl.appendChild(opt); }); }
+    function generarCronogramaHTML(amort, p) {
+        const fechaInicio = new Date(p.fecha);
+        const historial = p.historialPagos ? Object.values(p.historialPagos) : [];
+        let cuotasPagadas = 0;
+        historial.forEach(h => { if (h.tipo === 'pago_cuota') cuotasPagadas++; });
+        let html = `<div id="cronogramaExport" style="font-family: 'Inter', sans-serif; padding: 20px;">
+            <h2>Cronograma de Pagos</h2>
+            <p><strong>${escapeHtml(p.cliente)}</strong><br>
+            Préstamo #${p.id.slice(-4)} | ${p.tipoInteres === 'mensual' ? 'MENSUAL' : 'ANUAL'}</p>
+            <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%; margin-top: 20px;">
+                <thead><tr style="background:#f2f2f2;"><th># CUOTA</th><th>FECHA DE VENCIMIENTO</th><th>MONTO A PAGAR</th><th>ESTADO</th></tr></thead>
+                <tbody>`;
+        for (let i = 0; i < amort.length; i++) {
+            const cuota = amort[i];
+            const fechaVencimiento = new Date(fechaInicio);
+            fechaVencimiento.setMonth(fechaInicio.getMonth() + i + 1);
+            const fechaStr = fechaVencimiento.toLocaleDateString();
+            const estado = (i < cuotasPagadas) ? "Pagado" : "Programado";
+            html += `<tr><td style="text-align:center;">${cuota.cuota}</td><td style="text-align:center;">${fechaStr}</td><td style="text-align:center;">$${cuota.pago.toFixed(2)}</td><td style="text-align:center;">${estado}</td></tr>`;
+        }
+        html += `</tbody></table></div>`;
+        return html;
     }
 
-    // CRUD Clientes
-    window.guardarCliente = async function() {
-        const nombre = document.getElementById("nombre").value.trim();
-        const cedula = document.getElementById("cedula").value.trim();
-        const telefono = document.getElementById("telefono").value.trim();
-        const direccion = document.getElementById("direccion").value.trim();
-        if (!nombre || !cedula) { mostrarToast("Nombre y cédula obligatorios", "error"); return; }
-        if (!validarCedula(cedula)) { mostrarToast("Cédula inválida", "error"); return; }
-        if (todosLosClientes.some(c => c.cedula === cedula)) { mostrarToast("Cédula ya registrada", "error"); return; }
-        try {
-            await set(push(ref(db, 'clientes')), { nombre, cedula, telefono, direccion, fecha: new Date().toISOString() });
-            mostrarToast("Cliente guardado");
-            document.getElementById("nombre").value = ""; document.getElementById("cedula").value = ""; document.getElementById("telefono").value = ""; document.getElementById("direccion").value = "";
-        } catch(e) { mostrarToast("Error: " + e.message, "error"); }
-    };
+    // ========== DASHBOARD ==========
+    function renderDashboard() {
+        const totalPrestado = todosLosPrestamos.reduce((s, p) => s + p.total, 0);
+        const totalPagado = todosLosPrestamos.reduce((s, p) => s + (p.total - p.saldo), 0);
+        const saldoPendiente = totalPrestado - totalPagado;
+        const totalAhorros = todosLosAhorros.reduce((s, a) => s + a.saldo, 0);
+        const empenosActivos = todosLosEmpenos.filter(e => e.estado === "activo").length;
+        const content = `
+            <div class="stats-grid">
+                <div class="stat-card" onclick="cambiarTab('clientes')"><div class="stat-header"><h3>Clientes</h3><div class="stat-icon"><i class="fas fa-users"></i></div></div><div class="stat-value">${todosLosClientes.length}</div></div>
+                <div class="stat-card" onclick="cambiarTab('prestamos')"><div class="stat-header"><h3>Capital Pendiente</h3><div class="stat-icon"><i class="fas fa-money-bill-wave"></i></div></div><div class="stat-value">$${saldoPendiente.toFixed(2)}</div><div class="stat-sub">Dinero en calle</div></div>
+                <div class="stat-card" onclick="cambiarTab('ahorros')"><div class="stat-header"><h3>Fondos / Ahorros</h3><div class="stat-icon"><i class="fas fa-piggy-bank"></i></div></div><div class="stat-value">$${totalAhorros.toFixed(2)}</div><div class="stat-sub">Capital Captado</div></div>
+                <div class="stat-card" onclick="cambiarTab('empenos')"><div class="stat-header"><h3>Empeños</h3><div class="stat-icon"><i class="fas fa-gem"></i></div></div><div class="stat-value">${empenosActivos}</div><div class="stat-sub">En Almacén</div></div>
+                <div class="stat-card" onclick="cambiarTab('prestamos')"><div class="stat-header"><h3>Total Cobrado</h3><div class="stat-icon"><i class="fas fa-chart-line"></i></div></div><div class="stat-value">$${totalPagado.toFixed(2)}</div><div class="stat-sub">Histórico Ingresos</div></div>
+            </div>
+            <div class="content-panel">
+                <div class="grid-2">
+                    <div class="form-card"><h3><i class="fas fa-chart-pie"></i> Estado de la Cartera</h3><canvas id="carteraChart" style="max-height:250px;"></canvas><div style="margin-top:15px;display:flex;justify-content:center;gap:20px;"><span><span style="background:#ff9e00;display:inline-block;width:12px;height:12px;border-radius:50%;"></span> Pendiente</span><span><span style="background:#06d6a0;"></span> Pagado</span><span><span style="background:#ef476f;"></span> Vencido</span></div></div>
+                    <div class="form-card"><h3><i class="fas fa-balance-scale"></i> Balance: Prestado vs Recuperado</h3><canvas id="balanceChart" style="max-height:250px;"></canvas></div>
+                </div>
+                <div class="form-card"><h3><i class="fas fa-bolt"></i> Accesos Rápidos</h3><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-top:15px;"><div class="stat-card" onclick="cambiarTab('nuevoPrestamo')" style="text-align:center;cursor:pointer;"><i class="fas fa-hand-holding-usd" style="font-size:24px;color:var(--accent);"></i><div><strong>Nuevo Préstamo</strong></div><small>Registrar salida de dinero</small></div><div class="stat-card" onclick="cambiarTab('empenos')" style="text-align:center;cursor:pointer;"><i class="fas fa-gem" style="font-size:24px;color:var(--warning);"></i><div><strong>Nuevo Empeño</strong></div><small>Registrar entrada de garantía</small></div><div class="stat-card" onclick="cambiarTab('clientes')" style="text-align:center;cursor:pointer;"><i class="fas fa-user-plus" style="font-size:24px;color:var(--success);"></i><div><strong>Nuevo Cliente</strong></div><small>Registrar nueva persona</small></div></div></div>
+            </div>`;
+        document.getElementById("dynamicContent").innerHTML = content;
+        setTimeout(() => {
+            const pendiente = todosLosPrestamos.filter(p => p.saldo > 0 && (!p.fechaVencimiento || new Date(p.fechaVencimiento) >= new Date())).reduce((s, p) => s + p.saldo, 0);
+            const pagado = todosLosPrestamos.reduce((s, p) => s + (p.total - p.saldo), 0);
+            const vencidoTotal = todosLosPrestamos.filter(p => p.saldo > 0 && p.fechaVencimiento && new Date(p.fechaVencimiento) < new Date()).reduce((s, p) => s + p.saldo, 0);
+            const ctxC = document.getElementById('carteraChart')?.getContext('2d');
+            if (ctxC) { if (chartPagos) chartPagos.destroy(); chartPagos = new Chart(ctxC, { type: 'doughnut', data: { labels: ['Pendiente', 'Pagado', 'Vencido'], datasets: [{ data: [pendiente, pagado, vencidoTotal], backgroundColor: ['#ff9e00', '#06d6a0', '#ef476f'] }] }, options: { responsive: true, maintainAspectRatio: true } }); }
+            const ctxB = document.getElementById('balanceChart')?.getContext('2d');
+            if (ctxB) { if (chartClientes) chartClientes.destroy(); chartClientes = new Chart(ctxB, { type: 'bar', data: { labels: ['Prestado', 'Recuperado', 'Pendiente'], datasets: [{ label: 'Monto', data: [totalPrestado, pagado, saldoPendiente], backgroundColor: ['#4361ee', '#06d6a0', '#ff9e00'] }] }, options: { responsive: true } }); }
+        }, 100);
+    }
 
-    window.editarCliente = async function(id) {
-        const cliente = todosLosClientes.find(c => c.id === id);
-        if (!cliente) return;
-        const nuevoNombre = prompt("Nuevo nombre:", cliente.nombre);
-        const nuevaCedula = prompt("Nueva cédula:", cliente.cedula);
-        const nuevoTelefono = prompt("Teléfono:", cliente.telefono || '');
-        const nuevaDireccion = prompt("Dirección:", cliente.direccion || '');
-        if (nuevoNombre && nuevaCedula) {
-            if (!validarCedula(nuevaCedula)) { mostrarToast("Cédula inválida", "error"); return; }
-            if (todosLosClientes.some(c => c.cedula === nuevaCedula && c.id !== id)) { mostrarToast("Cédula ya registrada", "error"); return; }
-            try {
-                await update(ref(db, `clientes/${id}`), { nombre: nuevoNombre, cedula: nuevaCedula, telefono: nuevoTelefono, direccion: nuevaDireccion });
-                mostrarToast("Cliente actualizado");
-            } catch(e) { mostrarToast("Error: " + e.message, "error"); }
-        }
-    };
+    // ========== CLIENTES ==========
+    function renderClientes() {
+        const content = `<div class="content-panel"><div class="panel-header"><h2><i class="fas fa-users"></i> Clientes</h2><button class="btn btn-primary" onclick="mostrarFormCliente()"><i class="fas fa-plus"></i> Nuevo Cliente</button></div><div class="form-card" id="formClienteCard" style="display:none;"><h3>Registrar Nuevo Cliente</h3><div class="form-group"><label>Nombre</label><input type="text" id="nombreCliente"></div><div class="form-group"><label>Cédula</label><input type="text" id="cedulaCliente" maxlength="10"></div><div class="form-group"><label>Teléfono</label><input type="text" id="telefonoCliente"></div><div class="form-group"><label>Dirección</label><input type="text" id="direccionCliente"></div><button class="btn btn-success" onclick="guardarCliente()">Guardar</button><button class="btn" onclick="ocultarFormCliente()">Cancelar</button></div><div class="filter-bar"><input type="text" id="searchClienteInput" placeholder="Buscar..." onkeyup="filtrarClientes()"></div><div id="clientesLista"></div></div>`;
+        document.getElementById("dynamicContent").innerHTML = content;
+        renderizarClientesLista();
+    }
 
-    window.eliminarCliente = async function(id) {
-        const cliente = todosLosClientes.find(c => c.id === id);
-        if (!cliente) return;
-        if (todosLosPrestamos.some(p => p.cliente === cliente.nombre)) { mostrarToast("Cliente con préstamos", "error"); return; }
-        if (confirm(`Eliminar ${cliente.nombre}?`)) {
-            try {
-                await remove(ref(db, `clientes/${id}`));
-                mostrarToast("Cliente eliminado");
-            } catch(e) { mostrarToast("Error: " + e.message, "error"); }
-        }
-    };
-
-    function renderizarClientes() {
-        const texto = document.getElementById("searchClienteLista")?.value.toLowerCase() || "";
-        const filtrados = todosLosClientes.filter(c => c.nombre.toLowerCase().includes(texto) || c.cedula.includes(texto));
-        const listaDiv = document.getElementById("listaClientes");
-        if (filtrados.length === 0) { listaDiv.innerHTML = '<div class="empty-state">No hay clientes</div>'; return; }
-        listaDiv.innerHTML = filtrados.map(c => {
-            let totalPrestado = 0, totalPagado = 0, cantPrestamos = 0;
-            todosLosPrestamos.forEach(p => {
-                if (p.cliente === c.nombre) {
-                    cantPrestamos++;
-                    totalPrestado += p.total;
-                    totalPagado += p.total - p.saldo;
-                }
-            });
-            return `<div class="client-card"><div class="client-header"><span class="client-name">👤 ${escapeHtml(c.nombre)}</span><div><button onclick="editarCliente('${c.id}')" class="btn-sm">✏️</button><button onclick="eliminarCliente('${c.id}')" class="btn-sm btn-danger">🗑️</button></div></div><div class="loan-details"><div class="detail-item"><span class="detail-label">Cédula</span><span class="detail-value">${escapeHtml(c.cedula)}</span></div><div class="detail-item"><span class="detail-label">Teléfono</span><span class="detail-value">${escapeHtml(c.telefono || 'N/A')}</span></div><div class="detail-item"><span class="detail-label">Préstamos</span><span class="detail-value">${cantPrestamos}</span></div><div class="detail-item"><span class="detail-label">Saldo pendiente</span><span class="detail-value saldo">$${(totalPrestado - totalPagado).toFixed(2)}</span></div></div><button onclick="verPrestamosCliente('${escapeHtml(c.nombre)}')" class="btn-sm">Ver préstamos</button></div>`;
+    function renderizarClientesLista() {
+        const search = document.getElementById("searchClienteInput")?.value.toLowerCase() || "";
+        const filtrados = todosLosClientes.filter(c => c.nombre.toLowerCase().includes(search) || c.cedula.includes(search));
+        const lista = document.getElementById("clientesLista");
+        if (!filtrados.length) { lista.innerHTML = '<div class="empty-state">No hay clientes</div>'; return; }
+        lista.innerHTML = filtrados.map(c => {
+            let prestado = 0, pagado = 0;
+            todosLosPrestamos.forEach(p => { if (p.cliente === c.nombre) { prestado += p.total; pagado += p.total - p.saldo; } });
+            return `<div class="form-card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;"><span class="card-title"><i class="fas fa-user-circle"></i> ${escapeHtml(c.nombre)}</span><div><button class="btn btn-sm" onclick="editarCliente('${c.id}')"><i class="fas fa-edit"></i></button><button class="btn btn-sm btn-danger" onclick="eliminarCliente('${c.id}')"><i class="fas fa-trash"></i></button></div></div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;"><div><span style="color:var(--gray-500);font-size:0.7rem;">Cédula</span><br><strong>${escapeHtml(c.cedula)}</strong></div><div><span style="color:var(--gray-500);font-size:0.7rem;">Teléfono</span><br><strong>${escapeHtml(c.telefono || 'N/A')}</strong></div><div><span style="color:var(--gray-500);font-size:0.7rem;">Préstamos</span><br><strong>${todosLosPrestamos.filter(p => p.cliente === c.nombre).length}</strong></div><div><span style="color:var(--gray-500);font-size:0.7rem;">Saldo</span><br><strong>$${(prestado - pagado).toFixed(2)}</strong></div></div><button class="btn btn-sm btn-primary" style="margin-top:12px;" onclick="verPrestamosCliente('${escapeHtml(c.nombre)}')">Ver préstamos</button></div>`;
         }).join('');
     }
 
-    window.filtrarClientes = function() { renderizarClientes(); };
-    window.verPrestamosCliente = function(nombre) { cambiarTab('lista'); document.getElementById("searchCliente").value = nombre; filtrarPrestamos(); };
+    window.mostrarFormCliente = () => document.getElementById("formClienteCard").style.display = "block";
+    window.ocultarFormCliente = () => document.getElementById("formClienteCard").style.display = "none";
+    
+    window.guardarCliente = async function() {
+        const nombre = document.getElementById("nombreCliente").value.trim();
+        const cedula = document.getElementById("cedulaCliente").value.trim();
+        const telefono = document.getElementById("telefonoCliente").value.trim();
+        const direccion = document.getElementById("direccionCliente").value.trim();
+        if (!nombre || !cedula) { mostrarToast("Nombre y cédula requeridos", "error"); return; }
+        if (!validarCedula(cedula)) { mostrarToast("Cédula inválida", "error"); return; }
+        if (todosLosClientes.some(c => c.cedula === cedula)) { mostrarToast("Cédula ya existe", "error"); return; }
+        await set(push(ref(db, 'clientes')), { nombre, cedula, telefono, direccion, fecha: new Date().toISOString() });
+        await registrarAuditoria("Crear Cliente", `Cliente: ${nombre}`);
+        mostrarToast("Cliente guardado");
+        ocultarFormCliente();
+        document.getElementById("nombreCliente").value = "";
+        document.getElementById("cedulaCliente").value = "";
+    };
+    
+    window.editarCliente = async function(id) {
+        const c = todosLosClientes.find(c => c.id === id);
+        if (!c) return;
+        const nuevoNombre = prompt("Nuevo nombre:", c.nombre);
+        const nuevaCedula = prompt("Nueva cédula:", c.cedula);
+        if (nuevoNombre && nuevaCedula) {
+            if (!validarCedula(nuevaCedula)) { mostrarToast("Cédula inválida", "error"); return; }
+            await update(ref(db, `clientes/${id}`), { nombre: nuevoNombre, cedula: nuevaCedula });
+            mostrarToast("Cliente actualizado");
+        }
+    };
+    
+    window.eliminarCliente = async function(id) { if (confirm("Eliminar?")) { await remove(ref(db, `clientes/${id}`)); mostrarToast("Eliminado"); } };
+    window.filtrarClientes = () => renderizarClientesLista();
+    window.verPrestamosCliente = (nombre) => { cambiarTab('prestamos'); setTimeout(() => { document.getElementById("searchPrestamoInput").value = nombre; filtrarPrestamos(); }, 100); };
 
-    // Préstamos
-    window.guardarPrestamo = async function() {
-        const cliente = document.getElementById("clientePrestamo").value.trim();
-        const monto = parseFloat(document.getElementById("monto").value);
-        const interes = parseFloat(document.getElementById("interes").value);
-        const numCuotas = parseInt(document.getElementById("numCuotas").value);
-        const metodo = document.getElementById("metodoAmortizacion").value;
-        const tipoInteres = document.getElementById("tipoInteres").value;
-        if (!cliente || isNaN(monto) || isNaN(interes) || numCuotas <= 0) { mostrarToast("Datos inválidos", "error"); return; }
-        if (!todosLosClientes.some(c => c.nombre === cliente)) { mostrarToast("Cliente no existe", "error"); return; }
-        const amort = calcularAmortizacion(monto, interes, numCuotas, metodo, tipoInteres);
-        const total = amort.reduce((s,c)=>s+c.pago,0);
-        const id = Date.now().toString();
-        const fechaVencimiento = new Date(); fechaVencimiento.setMonth(fechaVencimiento.getMonth() + numCuotas);
-        try {
-            await set(ref(db, `prestamos/${id}`), { cliente, monto, interes, tipoInteres, total, saldo: total, fecha: new Date().toISOString(), fechaVencimiento: fechaVencimiento.toISOString(), metodoAmortizacion: metodo, amortizacion: amort, estado: "activo" });
-            mostrarToast("Préstamo registrado");
-            cambiarTab('lista');
-        } catch(e) { mostrarToast("Error: " + e.message, "error"); }
+    // ========== PRÉSTAMOS ==========
+    function renderPrestamos() {
+        const content = `<div class="content-panel"><div class="panel-header"><h2><i class="fas fa-hand-holding-usd"></i> Préstamos</h2><button class="btn btn-primary" onclick="cambiarTab('nuevoPrestamo')"><i class="fas fa-plus"></i> Nuevo Préstamo</button></div><div class="filter-bar"><input type="text" id="searchPrestamoInput" placeholder="Buscar cliente o ID..." onkeyup="filtrarPrestamos()"><select id="estadoPrestamoFilter" onchange="filtrarPrestamos()"><option value="todos">Todos</option><option value="pendiente">Pendientes</option><option value="pagado">Pagados</option></select><button class="btn btn-success" onclick="exportarPrestamosExcel()"><i class="fas fa-file-excel"></i> Exportar</button></div><div id="prestamosTabla"></div></div>`;
+        document.getElementById("dynamicContent").innerHTML = content;
+        renderizarTablaPrestamos();
+    }
+
+    function renderizarTablaPrestamos() {
+        const search = document.getElementById("searchPrestamoInput")?.value.toLowerCase() || "";
+        const estado = document.getElementById("estadoPrestamoFilter")?.value || "todos";
+        let filtrados = todosLosPrestamos.filter(p => p.cliente.toLowerCase().includes(search) || p.id.includes(search));
+        if (estado !== "todos") filtrados = filtrados.filter(p => estado === "pagado" ? p.saldo <= 0 : p.saldo > 0);
+        const container = document.getElementById("prestamosTabla");
+        if (!filtrados.length) { container.innerHTML = '<div class="empty-state">No hay préstamos</div>'; return; }
+        let html = `<div class="loans-table"><table><thead><tr><th>ID</th><th>Cliente</th><th>Monto Prestado</th><th>Total a Pagar</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>`;
+        filtrados.forEach(p => {
+            const estadoClass = p.saldo <= 0 ? "pagado" : "pendiente";
+            const clienteObj = todosLosClientes.find(c => c.nombre === p.cliente);
+            html += `<tr>
+                <td>#${p.id.slice(-4)}</td>
+                <td>${escapeHtml(p.cliente)}<br><small>DNI: ${clienteObj ? escapeHtml(clienteObj.cedula) : 'N/A'}</small></td>
+                <td>$${p.monto.toFixed(2)}</td>
+                <td>$${p.total.toFixed(2)}</td>
+                <td><span class="badge badge-${estadoClass}">${estadoClass === 'pagado' ? 'Pagado' : 'Pendiente'}</span></td>
+                <td>
+                    <button class="btn btn-sm btn-success" onclick="abrirModalPago('${p.id}')"><i class="fas fa-money-bill-wave"></i> Pagar</button>
+                    <button class="btn btn-sm btn-info" onclick="verCronograma('${p.id}')"><i class="fas fa-calendar-alt"></i> Cronograma</button>
+                    <button class="btn btn-sm btn-primary" onclick="descargarContrato('${p.id}')"><i class="fas fa-file-contract"></i> Contrato</button>
+                    <button class="btn btn-sm" onclick="verHistorialPrestamo('${p.id}')"><i class="fas fa-history"></i></button>
+                    <button class="btn btn-sm btn-danger" onclick="eliminarPrestamo('${p.id}')"><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>`;
+        });
+        html += `</tbody></table></div>`;
+        container.innerHTML = html;
+    }
+
+    window.filtrarPrestamos = () => renderizarTablaPrestamos();
+    window.eliminarPrestamo = async function(id) { if (confirm("Eliminar préstamo?")) { await remove(ref(db, `prestamos/${id}`)); mostrarToast("Eliminado"); } };
+    
+    window.exportarPrestamosExcel = function() {
+        const datos = [["ID", "Cliente", "Cédula", "Monto", "Total", "Saldo", "Estado", "Fecha", "Registrado por"]];
+        todosLosPrestamos.forEach(p => {
+            const c = todosLosClientes.find(c => c.nombre === p.cliente);
+            datos.push([p.id, p.cliente, c?.cedula || '', p.monto, p.total, p.saldo, p.saldo <= 0 ? "Pagado" : "Pendiente", new Date(p.fecha).toLocaleDateString(), p.creadoPor || 'N/A']);
+        });
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(datos), "Préstamos");
+        XLSX.writeFile(wb, `prestamos_${new Date().toISOString().slice(0, 10)}.xlsx`);
+        mostrarToast("Exportado");
     };
 
-    window.cargarPrestamosCliente = function() {
-        const cliente = document.getElementById("clientePago").value.trim();
-        const select = document.getElementById("prestamoSelect");
+    // ========== MODAL PAGO ==========
+    window.abrirModalPago = function(id) {
+        const p = todosLosPrestamos.find(p => p.id === id);
+        if (!p) return;
+        document.getElementById("pagoContenido").innerHTML = `<div class="form-card"><p><strong>Cliente:</strong> ${escapeHtml(p.cliente)}</p><p><strong>Saldo actual:</strong> $${p.saldo.toFixed(2)}</p><div class="form-group"><label>Monto a pagar</label><input type="number" id="montoPagoModal" step="0.01" placeholder="Ingrese el monto"></div><div class="form-group"><label><input type="checkbox" id="abonoCapitalModal"> Abono a capital (sin cuota)</label></div><button class="btn btn-success" onclick="registrarPagoModal('${id}')">Registrar Pago</button></div>`;
+        document.getElementById("modalPago").style.display = "flex";
+    };
+    
+    window.registrarPagoModal = async function(id) {
+        const monto = parseFloat(document.getElementById("montoPagoModal").value);
+        const esAbono = document.getElementById("abonoCapitalModal").checked;
+        if (isNaN(monto) || monto <= 0) { mostrarToast("Monto inválido", "error"); return; }
+        const prestamo = todosLosPrestamos.find(p => p.id === id);
+        if (!prestamo || prestamo.saldo <= 0) { mostrarToast("Préstamo no válido", "error"); return; }
+        let nuevoSaldo = prestamo.saldo;
+        let nuevaAmort = [...(prestamo.amortizacion || [])];
+        const historial = { monto, fecha: new Date().toISOString(), tipo: esAbono ? "abono_capital" : "pago_cuota", saldoAnterior: prestamo.saldo };
+        if (esAbono) {
+            if (monto > nuevoSaldo) { mostrarToast("Abono excede saldo", "error"); return; }
+            nuevoSaldo -= monto;
+            if (nuevoSaldo <= 0) nuevaAmort = [];
+            else nuevaAmort = calcularAmortizacion(nuevoSaldo, prestamo.interes, nuevaAmort.length, prestamo.metodoAmortizacion, prestamo.tipoInteres);
+        } else {
+            const cuotaActual = nuevaAmort[0];
+            if (!cuotaActual) { mostrarToast("No hay tabla", "error"); return; }
+            if (monto < cuotaActual.pago - 0.01) { mostrarToast(`Monto insuficiente (mínimo $${cuotaActual.pago.toFixed(2)})`, "error"); return; }
+            let excedente = monto - cuotaActual.pago;
+            nuevoSaldo -= cuotaActual.capital;
+            if (excedente > 0) {
+                if (excedente > nuevoSaldo) excedente = nuevoSaldo;
+                nuevoSaldo -= excedente;
+            }
+            const nuevasPeriodos = nuevaAmort.length - 1;
+            if (nuevoSaldo <= 0) nuevaAmort = [];
+            else if (nuevasPeriodos > 0) nuevaAmort = calcularAmortizacion(nuevoSaldo, prestamo.interes, nuevasPeriodos, prestamo.metodoAmortizacion, prestamo.tipoInteres);
+            else nuevaAmort = [];
+        }
+        if (nuevoSaldo < 0) nuevoSaldo = 0;
+        try {
+            await set(push(ref(db, `prestamos/${id}/historialPagos`)), historial);
+            await update(ref(db, `prestamos/${id}`), { saldo: nuevoSaldo, amortizacion: nuevaAmort });
+            await registrarAuditoria("Pago", `Préstamo ${id} - $${monto}`);
+            mostrarToast(`Pago registrado. Nuevo saldo: $${nuevoSaldo.toFixed(2)}`);
+            cerrarModal();
+            renderizarTablaPrestamos();
+        } catch (e) { mostrarToast("Error: " + e.message, "error"); }
+    };
+
+    // ========== CRONOGRAMA ==========
+    window.verCronograma = function(id) {
+        const p = todosLosPrestamos.find(p => p.id === id);
+        if (!p) { mostrarToast("Préstamo no encontrado", "error"); return; }
+        let amort = p.amortizacion;
+        if (!amort || !amort.length) {
+            amort = calcularAmortizacion(p.monto, p.interes, (p.amortizacion?.length || 12), p.metodoAmortizacion, p.tipoInteres);
+            if (!amort.length) { mostrarToast("No se pudo generar la tabla de amortización", "error"); return; }
+        }
+        const cronogramaHTML = generarCronogramaHTML(amort, p);
+        const html = `${cronogramaHTML}
+            <div style="margin-top:20px; display:flex; gap:12px; justify-content:flex-end;">
+                <button class="btn btn-sm btn-success" onclick="exportarCronogramaExcel('${id}')"><i class="fas fa-file-excel"></i> Exportar Excel</button>
+                <button class="btn btn-sm btn-danger" onclick="exportarCronogramaPDF('${id}')"><i class="fas fa-file-pdf"></i> Descargar PDF Oficial</button>
+            </div>`;
+        document.getElementById("amortizacionContenido").innerHTML = html;
+        document.getElementById("modalAmortizacion").style.display = "flex";
+        window.cronogramaActual = { ...p, amortizacion: amort };
+    };
+
+    window.exportarCronogramaExcel = function(id) {
+        const p = todosLosPrestamos.find(p => p.id === id);
+        if (!p) return;
+        let amort = p.amortizacion;
+        if (!amort || !amort.length) {
+            amort = calcularAmortizacion(p.monto, p.interes, (p.amortizacion?.length || 12), p.metodoAmortizacion, p.tipoInteres);
+        }
+        const fechaInicio = new Date(p.fecha);
+        const historial = p.historialPagos ? Object.values(p.historialPagos) : [];
+        let cuotasPagadas = 0;
+        historial.forEach(h => { if (h.tipo === 'pago_cuota') cuotasPagadas++; });
+        const datos = [["# Cuota", "Fecha de Vencimiento", "Monto a Pagar", "Estado"]];
+        for (let i = 0; i < amort.length; i++) {
+            const cuota = amort[i];
+            const fechaVencimiento = new Date(fechaInicio);
+            fechaVencimiento.setMonth(fechaInicio.getMonth() + i + 1);
+            const estado = (i < cuotasPagadas) ? "Pagado" : "Programado";
+            datos.push([cuota.cuota, fechaVencimiento.toLocaleDateString(), `$${cuota.pago.toFixed(2)}`, estado]);
+        }
+        const ws = XLSX.utils.aoa_to_sheet(datos);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Cronograma");
+        XLSX.writeFile(wb, `cronograma_${p.cliente}.xlsx`);
+        mostrarToast("Exportado Excel");
+    };
+
+    window.exportarCronogramaPDF = function(id) {
+        const p = todosLosPrestamos.find(p => p.id === id);
+        if (!p) return;
+        let amort = p.amortizacion;
+        if (!amort || !amort.length) {
+            amort = calcularAmortizacion(p.monto, p.interes, (p.amortizacion?.length || 12), p.metodoAmortizacion, p.tipoInteres);
+        }
+        const html = generarCronogramaHTML(amort, p);
+        const div = document.createElement('div');
+        div.innerHTML = html;
+        document.body.appendChild(div);
+        html2pdf().from(div).set({
+            margin: [0.5, 0.5, 0.5, 0.5],
+            filename: `cronograma_${p.cliente}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }
+        }).save().then(() => div.remove());
+    };
+
+    // ========== CONTRATO ==========
+    function numeroALetras(num) {
+        if (num === 0) return "cero";
+        const unidades = ["", "un", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"];
+        const decenas = ["", "diez", "veinte", "treinta", "cuarenta", "cincuenta", "sesenta", "setenta", "ochenta", "noventa"];
+        const centenas = ["", "cien", "doscientos", "trescientos", "cuatrocientos", "quinientos", "seiscientos", "setecientos", "ochocientos", "novecientos"];
+        let entero = Math.floor(num);
+        let partes = [];
+        if (entero >= 1000) {
+            let miles = Math.floor(entero / 1000);
+            if (miles === 1) partes.push("mil");
+            else partes.push(numeroALetras(miles) + " mil");
+            entero %= 1000;
+        }
+        if (entero >= 100) {
+            let c = Math.floor(entero / 100);
+            if (c === 1 && entero % 100 === 0) partes.push("cien");
+            else partes.push(centenas[c]);
+            entero %= 100;
+        }
+        if (entero >= 20) {
+            let d = Math.floor(entero / 10);
+            let u = entero % 10;
+            if (u === 0) partes.push(decenas[d]);
+            else partes.push(decenas[d] + " y " + unidades[u]);
+        } else if (entero >= 10) {
+            if (entero === 10) partes.push("diez");
+            else if (entero === 11) partes.push("once");
+            else if (entero === 12) partes.push("doce");
+            else if (entero === 13) partes.push("trece");
+            else if (entero === 14) partes.push("catorce");
+            else if (entero === 15) partes.push("quince");
+            else partes.push("dieci" + unidades[entero - 10]);
+        } else if (entero > 0) {
+            partes.push(unidades[entero]);
+        }
+        return partes.join(" ").trim();
+    }
+
+    window.descargarContrato = async function(id) {
+        const p = todosLosPrestamos.find(p => p.id === id);
+        if (!p) { mostrarToast("Préstamo no encontrado", "error"); return; }
+        const cliente = todosLosClientes.find(c => c.nombre === p.cliente);
+        if (!cliente) { mostrarToast("Cliente no encontrado", "error"); return; }
+        
+        const fecha = new Date().toLocaleDateString();
+        const lugar = "Quito";
+        const logoHtml = empresaConfig.logo ? `<img src="${empresaConfig.logo}" style="max-height:80px; margin-bottom:20px;">` : '';
+        
+        const montoEntero = Math.floor(p.monto);
+        const montoLetras = numeroALetras(montoEntero) + (p.monto % 1 !== 0 ? ` con ${Math.round((p.monto % 1) * 100)}/100` : '');
+        const totalEntero = Math.floor(p.total);
+        const totalLetras = numeroALetras(totalEntero) + (p.total % 1 !== 0 ? ` con ${Math.round((p.total % 1) * 100)}/100` : '');
+        
+        const plazoOriginal = p.plazoOriginal || (p.amortizacion ? p.amortizacion.length : 12);
+        const cuotasRestantes = p.amortizacion ? p.amortizacion.length : 0;
+        const totalPagado = p.total - p.saldo;
+        const saldoPendiente = p.saldo;
+        const fechaOtorgamiento = new Date(p.fecha).toLocaleDateString();
+        const frecuencia = p.tipoInteres === 'mensual' ? 'MENSUAL' : 'MENSUAL (convertida desde tasa anual)';
+        
+        const contratoHtml = `
+            <div style="font-family: 'Times New Roman', serif; max-width: 800px; margin: auto; padding: 30px; border: 1px solid #ccc;">
+                <div style="text-align: center;">${logoHtml}</div>
+                <h2 style="text-align: center;">CONTRATO DE PRÉSTAMO DE DINERO</h2>
+                <p style="text-align: center;"><strong>NRO OPERACIÓN: ${p.id.slice(-6)}</strong></p>
+                <p>En la ciudad de ${lugar}, a los ${fecha}, se celebra el presente contrato entre:</p>
+                <p><strong>EL ACREEDOR:</strong><br>
+                Empresa: ${escapeHtml(empresaConfig.nombre || currentUserDisplayName)}<br>
+                RUC: ${escapeHtml(empresaConfig.ruc || 'No registrado')}<br>
+                Dirección: ${escapeHtml(empresaConfig.direccion || 'No registrada')}</p>
+                <p><strong>EL DEUDOR (CLIENTE):</strong><br>
+                Nombre: ${escapeHtml(p.cliente)}<br>
+                Documento de Identidad (DNI): ${escapeHtml(cliente.cedula)}<br>
+                Teléfono: ${escapeHtml(cliente.telefono || 'No registrado')}<br>
+                Dirección: ${escapeHtml(cliente.direccion || 'No registrada')}</p>
+                
+                <h3>CLÁUSULAS DEL CONTRATO:</h3>
+                <p><strong>PRIMERA (DEL MONTO):</strong> EL ACREEDOR entrega a EL DEUDOR la suma de $${p.monto.toFixed(2)} (${montoLetras} dólares) en calidad de préstamo.</p>
+                <p><strong>SEGUNDA (DE LA DEVOLUCIÓN):</strong> EL DEUDOR se compromete a devolver la suma total de $${p.total.toFixed(2)} (${totalLetras} dólares), la cual incluye capital e intereses calculados a una tasa del ${p.interes}% ${p.tipoInteres === 'anual' ? 'anual' : 'mensual'}.</p>
+                <p><strong>TERCERA (PLAZO Y FORMA DE PAGO):</strong> El préstamo se otorgó por un plazo de <strong>${plazoOriginal} meses</strong> (fecha de otorgamiento: ${fechaOtorgamiento}). El pago se realizará en cuotas ${frecuencia} según el cronograma adjunto. A la fecha, restan <strong>${cuotasRestantes} cuotas</strong> por pagar, con un saldo pendiente de <strong>$${saldoPendiente.toFixed(2)}</strong>. El monto total pagado hasta la fecha es <strong>$${totalPagado.toFixed(2)}</strong>.</p>
+                <p><strong>CUARTA (GARANTÍA):</strong> El deudor garantiza el cumplimiento de esta obligación con todos sus bienes presentes y futuros.</p>
+                <p><strong>QUINTA (MORA):</strong> En caso de incumplimiento, se aplicarán intereses de mora del 5% sobre la cuota vencida.</p>
+                <p><strong>SEXTA (JURISDICCIÓN):</strong> Para cualquier controversia, las partes se someten a la jurisdicción de los tribunales de ${lugar}.</p>
+                <br><br>
+                <table style="width:100%; margin-top: 40px;">
+                    <tr><td style="text-align:center;">_________________________</td><td style="text-align:center;">_________________________</td></tr>
+                    <tr><td style="text-align:center;">${escapeHtml(p.cliente)}</td><td style="text-align:center;">${escapeHtml(empresaConfig.nombre || currentUserDisplayName)}</td></tr>
+                    <tr><td style="text-align:center;">DEUDOR</td><td style="text-align:center;">ACREEDOR</td></tr>
+                </table>
+            </div>`;
+        const div = document.createElement('div');
+        div.innerHTML = contratoHtml;
+        document.body.appendChild(div);
+        html2pdf().from(div).set({
+            margin: [0.5, 0.5, 0.5, 0.5],
+            filename: `contrato_${p.cliente}_${p.id.slice(-6)}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+        }).save().then(() => div.remove());
+    };
+
+    // ========== NUEVO PRÉSTAMO ==========
+    function renderNuevoPrestamo() {
+        const content = `<div class="content-panel"><div class="panel-header"><h2><i class="fas fa-hand-holding-usd"></i> Nuevo Préstamo</h2></div><div class="grid-2"><div class="form-card"><h3>Datos del Préstamo</h3><div class="form-group"><label>Cliente</label><input type="text" id="clientePrestamoNuevo" list="listaClientesNombres"></div><div class="form-group"><label>Monto</label><input type="number" id="montoPrestamo" step="0.01" value="1000"></div><div class="form-group"><label>Tipo Interés</label><select id="tipoInteresPrestamo"><option value="anual">Anual (%)</option><option value="mensual">Mensual (%)</option></select></div><div class="form-group"><label>Interés</label><input type="number" id="interesPrestamo" step="0.01" value="10"></div><div class="form-group"><label>Cuotas</label><input type="number" id="cuotasPrestamo" min="1" max="60" value="12"></div><div class="form-group"><label>Método</label><select id="metodoPrestamo"><option value="frances">Francés</option><option value="aleman">Alemán</option></select></div><button class="btn btn-success" onclick="registrarPrestamoNuevo()">Registrar</button></div><div class="form-card"><h3>Simulación</h3><div id="simulacionPrestamo"></div><div style="margin-top:15px;"><button class="btn btn-sm btn-success" onclick="exportarSimulacionExcel()">Excel</button> <button class="btn btn-sm btn-danger" onclick="exportarSimulacionPDF()">PDF</button></div></div></div></div>`;
+        document.getElementById("dynamicContent").innerHTML = content;
+        actualizarSimulacion();
+        ["montoPrestamo", "interesPrestamo", "cuotasPrestamo", "metodoPrestamo", "tipoInteresPrestamo"].forEach(id => { const el = document.getElementById(id); if (el) el.addEventListener("input", actualizarSimulacion); });
+    }
+
+    function actualizarSimulacion() {
+        const monto = parseFloat(document.getElementById("montoPrestamo")?.value);
+        const interes = parseFloat(document.getElementById("interesPrestamo")?.value);
+        const cuotas = parseInt(document.getElementById("cuotasPrestamo")?.value);
+        const metodo = document.getElementById("metodoPrestamo")?.value;
+        const tipo = document.getElementById("tipoInteresPrestamo")?.value;
+        if (isNaN(monto) || isNaN(interes) || isNaN(cuotas) || monto <= 0) return;
+        const amort = calcularAmortizacion(monto, interes, cuotas, metodo, tipo);
+        if (!amort.length) return;
+        const total = amort.reduce((s, c) => s + c.pago, 0);
+        document.getElementById("simulacionPrestamo").innerHTML = `<div><strong>Resumen</strong><br>Total a pagar: $${total.toFixed(2)}<br>Interés total: $${(total - monto).toFixed(2)}<br>Cuota ${metodo === 'frances' ? 'fija' : 'inicial'}: $${amort[0].pago.toFixed(2)}</div><div style="max-height:300px;overflow-y:auto;margin-top:10px;"><table style="width:100%;font-size:0.8rem;"><thead><tr><th>#</th><th>Pago</th><th>Interés</th><th>Capital</th><th>Saldo</th></tr></thead><tbody>${amort.map(c => `<tr><td>${c.cuota}</td><td>$${c.pago.toFixed(2)}</td><td>$${c.interes.toFixed(2)}</td><td>$${c.capital.toFixed(2)}</td><td>$${c.saldo.toFixed(2)}</td></tr>`).join('')}</tbody></table></div>`;
+        window.simulacionActual = { amort, metodo, tipo, monto, interes, cuotas };
+    }
+
+    window.exportarSimulacionExcel = function() { if (!window.simulacionActual) return; const datos = [["Cuota", "Pago", "Interés", "Capital", "Saldo"]]; window.simulacionActual.amort.forEach(c => datos.push([c.cuota, c.pago.toFixed(2), c.interes.toFixed(2), c.capital.toFixed(2), c.saldo.toFixed(2)])); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(datos), "Amortización"); XLSX.writeFile(wb, `simulacion.xlsx`); mostrarToast("Exportado"); };
+    window.exportarSimulacionPDF = function() { if (!window.simulacionActual) return; const cliente = document.getElementById("clientePrestamoNuevo").value.trim() || "Simulación"; const html = generarTablaAmortizacionHTML(window.simulacionActual.amort, cliente, window.simulacionActual.metodo, window.simulacionActual.monto, window.simulacionActual.interes, window.simulacionActual.tipo, currentUserDisplayName); const div = document.createElement('div'); div.innerHTML = html; document.body.appendChild(div); html2pdf().from(div).set({ margin: [0.5, 0.5, 0.5, 0.5], filename: `simulacion.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' } }).save().then(() => div.remove()); };
+    
+    window.registrarPrestamoNuevo = async function() {
+        const cliente = document.getElementById("clientePrestamoNuevo").value.trim();
+        const monto = parseFloat(document.getElementById("montoPrestamo").value);
+        const interes = parseFloat(document.getElementById("interesPrestamo").value);
+        const cuotas = parseInt(document.getElementById("cuotasPrestamo").value);
+        const metodo = document.getElementById("metodoPrestamo").value;
+        const tipo = document.getElementById("tipoInteresPrestamo").value;
+        if (!cliente || isNaN(monto) || monto <= 0) { mostrarToast("Complete datos", "error"); return; }
+        if (!todosLosClientes.some(c => c.nombre === cliente)) { mostrarToast("Cliente no existe", "error"); return; }
+        const amort = calcularAmortizacion(monto, interes, cuotas, metodo, tipo);
+        const total = amort.reduce((s, c) => s + c.pago, 0);
+        const id = Date.now().toString();
+        const fechaVencimiento = new Date();
+        fechaVencimiento.setMonth(fechaVencimiento.getMonth() + cuotas);
+        await set(ref(db, `prestamos/${id}`), { 
+            cliente, monto, interes, tipoInteres: tipo, total, saldo: total, 
+            fecha: new Date().toISOString(), fechaVencimiento: fechaVencimiento.toISOString(), 
+            metodoAmortizacion: metodo, amortizacion: amort, 
+            creadoPor: currentUserDisplayName, creadoPorUid: currentUserUid,
+            plazoOriginal: cuotas
+        });
+        await registrarAuditoria("Crear Préstamo", `Cliente: ${cliente} - $${monto}`);
+        mostrarToast("Préstamo registrado");
+        cambiarTab('prestamos');
+    };
+
+    // ========== PAGOS (pestaña tradicional) ==========
+    function renderPagos() {
+        const content = `<div class="content-panel"><div class="panel-header"><h2><i class="fas fa-money-bill-wave"></i> Pagos / Abonos</h2></div><div class="grid-2"><div class="form-card"><h3>Registrar Pago</h3><div class="form-group"><label>Cliente</label><input type="text" id="clientePagoSelect" list="listaClientesNombres" onchange="cargarPrestamosPago()"></div><div class="form-group"><label>Préstamo</label><select id="prestamoPagoSelect" onchange="mostrarDetallePago()"></select></div><div id="detallePagoInfo"></div><div class="form-group"><label>Monto</label><input type="number" id="montoPago" step="0.01"></div><div class="form-group"><label><input type="checkbox" id="abonoCapitalCheck"> Abono a capital</label></div><button class="btn btn-success" onclick="registrarPagoTradicional()">Registrar</button></div></div></div>`;
+        document.getElementById("dynamicContent").innerHTML = content;
+    }
+
+    window.cargarPrestamosPago = function() {
+        const cliente = document.getElementById("clientePagoSelect").value.trim();
+        const select = document.getElementById("prestamoPagoSelect");
         select.innerHTML = '<option value="">-- Seleccione --</option>';
         if (!cliente) return;
         const pendientes = todosLosPrestamos.filter(p => p.cliente === cliente && p.saldo > 0);
-        pendientes.forEach(p => { const opt = document.createElement("option"); opt.value = p.id; opt.textContent = `$${p.monto} | Saldo: $${p.saldo.toFixed(2)}`; select.appendChild(opt); });
+        pendientes.forEach(p => { const opt = document.createElement("option"); opt.value = p.id; opt.textContent = `$${p.monto} - Saldo: $${p.saldo.toFixed(2)}`; select.appendChild(opt); });
     };
-    window.mostrarDetallesPrestamo = function() {
-        const id = document.getElementById("prestamoSelect").value;
+    
+    window.mostrarDetallePago = function() {
+        const id = document.getElementById("prestamoPagoSelect").value;
         const p = todosLosPrestamos.find(p => p.id === id);
-        const div = document.getElementById("detallePrestamo");
+        const div = document.getElementById("detallePagoInfo");
         if (!p) { div.innerHTML = ""; return; }
-        const prox = p.amortizacion?.[0];
-        div.innerHTML = `<div class="info-highlight"><strong>Saldo actual:</strong> $${p.saldo.toFixed(2)}<br>${prox ? `Próxima cuota: $${prox.pago.toFixed(2)}` : 'Sin cuotas pendientes'}</div>`;
+        div.innerHTML = `<div class="form-card"><strong>Saldo actual:</strong> $${p.saldo.toFixed(2)}<br>${p.amortizacion?.[0] ? `Próxima cuota: $${p.amortizacion[0].pago.toFixed(2)}` : 'Sin cuotas'}</div>`;
     };
-    window.registrarPagoAvanzado = async function() {
-        const id = document.getElementById("prestamoSelect").value;
-        const monto = parseFloat(document.getElementById("pagoMonto").value);
-        const esAbono = document.getElementById("extraPaymentCheckbox").checked;
+    
+    window.registrarPagoTradicional = async function() {
+        const id = document.getElementById("prestamoPagoSelect").value;
+        const monto = parseFloat(document.getElementById("montoPago").value);
+        const esAbono = document.getElementById("abonoCapitalCheck").checked;
         if (!id || isNaN(monto) || monto <= 0) { mostrarToast("Seleccione préstamo y monto", "error"); return; }
         const prestamo = todosLosPrestamos.find(p => p.id === id);
         if (!prestamo || prestamo.saldo <= 0) { mostrarToast("Préstamo no válido", "error"); return; }
@@ -704,364 +1371,539 @@
             if (monto > nuevoSaldo) { mostrarToast("Abono excede saldo", "error"); return; }
             nuevoSaldo -= monto;
             if (nuevoSaldo <= 0) nuevaAmort = [];
-            else nuevaAmort = recalcularRestante(nuevoSaldo, nuevaAmort.length, prestamo.interes, prestamo.tipoInteres, prestamo.metodoAmortizacion);
-            historial.abonoCapital = monto;
+            else nuevaAmort = calcularAmortizacion(nuevoSaldo, prestamo.interes, nuevaAmort.length, prestamo.metodoAmortizacion, prestamo.tipoInteres);
         } else {
             const cuotaActual = nuevaAmort[0];
             if (!cuotaActual) { mostrarToast("No hay tabla", "error"); return; }
-            if (monto < cuotaActual.pago - 0.01) { mostrarToast(`Monto insuficiente para cuota ($${cuotaActual.pago.toFixed(2)})`, "error"); return; }
+            if (monto < cuotaActual.pago - 0.01) { mostrarToast(`Monto insuficiente (mínimo $${cuotaActual.pago.toFixed(2)})`, "error"); return; }
             let excedente = monto - cuotaActual.pago;
             nuevoSaldo -= cuotaActual.capital;
             if (excedente > 0) {
                 if (excedente > nuevoSaldo) excedente = nuevoSaldo;
                 nuevoSaldo -= excedente;
-                historial.abonoExtraAdicional = excedente;
             }
             const nuevasPeriodos = nuevaAmort.length - 1;
             if (nuevoSaldo <= 0) nuevaAmort = [];
-            else if (nuevasPeriodos > 0) nuevaAmort = recalcularRestante(nuevoSaldo, nuevasPeriodos, prestamo.interes, prestamo.tipoInteres, prestamo.metodoAmortizacion);
+            else if (nuevasPeriodos > 0) nuevaAmort = calcularAmortizacion(nuevoSaldo, prestamo.interes, nuevasPeriodos, prestamo.metodoAmortizacion, prestamo.tipoInteres);
             else nuevaAmort = [];
-            historial.pagoCuota = cuotaActual.pago;
         }
         if (nuevoSaldo < 0) nuevoSaldo = 0;
         try {
             await set(push(ref(db, `prestamos/${id}/historialPagos`)), historial);
-            await update(ref(db, `prestamos/${id}`), { saldo: nuevoSaldo, amortizacion: nuevaAmort, ultimoPago: monto, fechaUltimoPago: new Date().toISOString() });
+            await update(ref(db, `prestamos/${id}`), { saldo: nuevoSaldo, amortizacion: nuevaAmort });
+            await registrarAuditoria("Pago", `Préstamo ${id} - $${monto}`);
             mostrarToast(`Pago registrado. Nuevo saldo: $${nuevoSaldo.toFixed(2)}`);
-            document.getElementById("pagoMonto").value = "";
-            document.getElementById("extraPaymentCheckbox").checked = false;
-            cargarPrestamosCliente();
-            mostrarDetallesPrestamo();
-            if (document.querySelector('.form-section.active')?.id === 'tab-lista') renderizarLista();
-            actualizarEstadisticas();
-        } catch(e) { mostrarToast("Error: " + e.message, "error"); }
+            document.getElementById("montoPago").value = "";
+            document.getElementById("abonoCapitalCheck").checked = false;
+            cargarPrestamosPago();
+            mostrarDetallePago();
+            renderizarTablaPrestamos();
+        } catch (e) { mostrarToast("Error: " + e.message, "error"); }
     };
 
-    function renderizarLista() {
-        const search = document.getElementById("searchCliente")?.value.toLowerCase() || "";
-        const montoMin = parseFloat(document.getElementById("filtroMontoMin")?.value) || 0;
-        const montoMax = parseFloat(document.getElementById("filtroMontoMax")?.value) || Infinity;
-        const estadoFiltro = document.getElementById("filterEstado")?.value || "todos";
-        let filtrados = todosLosPrestamos.filter(p => p.cliente.toLowerCase().includes(search) && p.monto >= montoMin && p.monto <= montoMax);
-        if (estadoFiltro !== "todos") filtrados = filtrados.filter(p => estadoFiltro === "pagado" ? p.saldo <= 0 : p.saldo > 0);
-        const listaDiv = document.getElementById("lista");
-        if (!filtrados.length) { listaDiv.innerHTML = '<div class="empty-state">Sin préstamos</div>'; return; }
-        listaDiv.innerHTML = filtrados.map(p => {
-            const porcentaje = ((p.total - p.saldo) / p.total * 100).toFixed(1);
-            const estado = p.saldo <= 0 ? 'pagado' : 'pendiente';
-            const prox = p.amortizacion?.[0];
-            const proxInfo = prox ? `Próx cuota: $${prox.pago.toFixed(2)}` : 'Sin cuotas';
-            return `<div class="loan-card"><div class="loan-header"><span class="loan-client">👤 ${escapeHtml(p.cliente)}</span><div><span class="badge ${estado}">${estado === 'pagado' ? 'Pagado' : 'Pendiente'}</span><button onclick="verHistorial('${p.id}')" class="btn-sm">📜</button><button onclick="verAmortizacion('${p.id}')" class="btn-sm">📊</button><button onclick="eliminarPrestamo('${p.id}')" class="btn-sm btn-danger">🗑️</button></div></div><div class="loan-details"><div class="detail-item"><span class="detail-label">Monto</span><span class="detail-value">$${p.monto.toFixed(2)}</span></div><div class="detail-item"><span class="detail-label">Saldo</span><span class="detail-value saldo">$${p.saldo.toFixed(2)}</span></div><div class="detail-item"><span class="detail-label">${proxInfo}</span></div></div><div class="progress-bar"><div class="progress-fill" style="width:${porcentaje}%"></div></div></div>`;
-        }).join('');
+    // ========== CALCULADORA ==========
+    function renderCalculadora() {
+        const content = `<div class="content-panel"><div class="panel-header"><h2><i class="fas fa-calculator"></i> Calculadora de Préstamos</h2></div><div class="grid-2"><div class="form-card"><h3>Datos del Préstamo</h3><div class="form-group"><label>Monto</label><input type="number" id="calcMonto" step="0.01" value="1000"></div><div class="form-group"><label>Tipo Interés</label><select id="calcTipoInteres"><option value="anual">Anual (%)</option><option value="mensual">Mensual (%)</option></select></div><div class="form-group"><label>Interés</label><input type="number" id="calcInteres" step="0.01" value="10"></div><div class="form-group"><label>Cuotas</label><input type="number" id="calcCuotas" min="1" max="60" value="12"></div><div class="form-group"><label>Método</label><select id="calcMetodo"><option value="frances">Francés</option><option value="aleman">Alemán</option></select></div><button class="btn btn-primary" onclick="calcularSimulacionCalc()">Calcular</button></div><div class="form-card"><h3>Resultado</h3><div id="calcResultado"></div><div style="margin-top:15px;"><button class="btn btn-sm btn-success" onclick="exportarCalculadoraExcel()">Excel</button> <button class="btn btn-sm btn-danger" onclick="exportarCalculadoraPDF()">PDF</button></div></div></div></div>`;
+        document.getElementById("dynamicContent").innerHTML = content;
     }
-    window.filtrarPrestamos = function() { renderizarLista(); };
 
-    window.verHistorial = function(id) {
-        const p = todosLosPrestamos.find(p => p.id === id);
-        if (!p) return;
-        const hist = p.historialPagos ? Object.values(p.historialPagos) : [];
-        const contenido = document.getElementById("historialContenido");
-        if (hist.length === 0) contenido.innerHTML = "<p>No hay pagos registrados.</p>";
-        else contenido.innerHTML = hist.sort((a,b)=>new Date(b.fecha)-new Date(a.fecha)).map(h => `<div class="loan-card"><div>${new Date(h.fecha).toLocaleString()}</div><div>Monto: $${h.monto.toFixed(2)} | Tipo: ${h.tipo || 'pago'}</div><div>Saldo anterior: $${h.saldoAnterior?.toFixed(2)}</div></div>`).join('');
-        document.getElementById("modalHistorial").style.display = "block";
+    window.calcularSimulacionCalc = function() {
+        const monto = parseFloat(document.getElementById("calcMonto").value);
+        const interes = parseFloat(document.getElementById("calcInteres").value);
+        const cuotas = parseInt(document.getElementById("calcCuotas").value);
+        const metodo = document.getElementById("calcMetodo").value;
+        const tipo = document.getElementById("calcTipoInteres").value;
+        if (isNaN(monto) || isNaN(interes) || isNaN(cuotas) || monto <= 0) { mostrarToast("Datos inválidos", "error"); return; }
+        const amort = calcularAmortizacion(monto, interes, cuotas, metodo, tipo);
+        if (!amort.length) return;
+        const total = amort.reduce((s, c) => s + c.pago, 0);
+        let tabla = `<div id="tablaCalc"><strong>Resumen</strong><br>Total a pagar: $${total.toFixed(2)}<br>Interés total: $${(total - monto).toFixed(2)}<br>Cuota ${metodo === 'frances' ? 'fija' : 'inicial'}: $${amort[0].pago.toFixed(2)}<br><br><table style="width:100%;font-size:0.8rem;"><thead><tr><th>#</th><th>Pago</th><th>Interés</th><th>Capital</th><th>Saldo</th></tr></thead><tbody>${amort.map(c => `<tr><td>${c.cuota}</td><td>$${c.pago.toFixed(2)}</td><td>$${c.interes.toFixed(2)}</td><td>$${c.capital.toFixed(2)}</td><td>$${c.saldo.toFixed(2)}</td></tr>`).join('')}</tbody></table></div>`;
+        document.getElementById("calcResultado").innerHTML = tabla;
+        window.calcAmortActual = amort;
+        window.calcMetodoActual = metodo;
+        window.calcTipoActual = tipo;
+        window.calcMontoActual = monto;
+        window.calcInteresActual = interes;
+        window.calcCuotasActual = cuotas;
     };
 
-    window.verAmortizacion = function(id) {
-        const p = todosLosPrestamos.find(p => p.id === id);
-        if (!p || !p.amortizacion?.length) { document.getElementById("amortizacionContenido").innerHTML = "<p>No hay tabla disponible</p>"; document.getElementById("modalAmortizacion").style.display = "block"; return; }
-        let html = `<div class="scrollable-table"><table><thead><tr><th>Cuota</th><th>Pago</th><th>Interés</th><th>Capital</th><th>Saldo</th></tr></thead><tbody>`;
-        p.amortizacion.forEach(c => { html += `<tr><td>${c.cuota}</td><td>$${c.pago.toFixed(2)}</td><td>$${c.interes.toFixed(2)}</td><td>$${c.capital.toFixed(2)}</td><td>$${c.saldo.toFixed(2)}</td></tr>`; });
-        html += `</tbody></table></div>`;
-        document.getElementById("amortizacionContenido").innerHTML = html;
-        document.getElementById("modalAmortizacion").style.display = "block";
+    window.exportarCalculadoraExcel = function() {
+        if (!window.calcAmortActual) { mostrarToast("Primero calcule", "error"); return; }
+        const datos = [["Cuota","Pago","Interés","Capital","Saldo"]];
+        window.calcAmortActual.forEach(c => datos.push([c.cuota, c.pago.toFixed(2), c.interes.toFixed(2), c.capital.toFixed(2), c.saldo.toFixed(2)]));
+        const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(datos), "Amortización"); XLSX.writeFile(wb, `calculadora_amortizacion.xlsx`); mostrarToast("Exportado Excel");
+    };
+    window.exportarCalculadoraPDF = function() {
+        if (!window.calcAmortActual) { mostrarToast("Primero calcule", "error"); return; }
+        const html = generarTablaAmortizacionHTML(window.calcAmortActual, "Simulación", window.calcMetodoActual, window.calcMontoActual, window.calcInteresActual, window.calcTipoActual, currentUserDisplayName);
+        const div = document.createElement('div'); div.innerHTML = html; document.body.appendChild(div);
+        html2pdf().from(div).set({ margin: [0.5,0.5,0.5,0.5], filename: `calculadora_amortizacion.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' } }).save().then(() => div.remove());
     };
 
-    window.eliminarPrestamo = async function(id) {
-        if (confirm("¿Eliminar préstamo?")) { try { await remove(ref(db, `prestamos/${id}`)); mostrarToast("Préstamo eliminado"); } catch(e) { mostrarToast("Error: " + e.message, "error"); } }
+    // ========== AHORROS ==========
+    function renderAhorros() {
+        const content = `<div class="content-panel"><div class="panel-header"><h2><i class="fas fa-piggy-bank"></i> Ahorros</h2></div><div class="grid-2"><div class="form-card"><h3>Depositar Ahorro</h3><div class="form-group"><label>Cliente</label><input type="text" id="clienteAhorroDep" list="listaClientesNombres"></div><div class="form-group"><label>Monto</label><input type="number" id="montoAhorroDep" step="0.01"></div><div class="form-group"><label>Interés Mensual (%)</label><input type="number" id="interesAhorroDep" step="0.1" value="0.5"></div><button class="btn btn-success" onclick="depositarAhorro()">Depositar</button></div><div class="form-card"><h3>Retirar Ahorro</h3><div class="form-group"><label>Cliente</label><input type="text" id="clienteAhorroRet" list="listaClientesNombres" onchange="cargarSaldoAhorro()"></div><div class="form-group"><label>Saldo disponible</label><input type="text" id="saldoAhorroMostrar" readonly disabled></div><div class="form-group"><label>Monto a retirar</label><input type="number" id="montoAhorroRet" step="0.01"></div><button class="btn btn-warning" onclick="retirarAhorro()">Retirar</button></div></div><div class="filter-bar"><input type="text" id="searchAhorros" placeholder="Buscar cliente..." onkeyup="filtrarAhorros()"></div><div id="ahorrosLista"></div></div>`;
+        document.getElementById("dynamicContent").innerHTML = content;
+        renderizarAhorrosLista();
+    }
+
+    function renderizarAhorrosLista() {
+        const search = document.getElementById("searchAhorros")?.value.toLowerCase() || "";
+        const filtrados = todosLosAhorros.filter(a => a.cliente.toLowerCase().includes(search));
+        const lista = document.getElementById("ahorrosLista");
+        if (!filtrados.length) { lista.innerHTML = '<div class="empty-state">No hay ahorros</div>'; return; }
+        lista.innerHTML = filtrados.map(a => `<div class="form-card"><div><strong>${escapeHtml(a.cliente)}</strong> <button class="btn btn-sm btn-danger" onclick="eliminarAhorro('${a.id}')" style="float:right;"><i class="fas fa-trash"></i></button></div><div>Saldo: $${a.saldo.toFixed(2)}</div><div>Interés: ${a.interesMensual || 0.5}% mensual</div><div>Último movimiento: ${a.ultimoMovimiento ? new Date(a.ultimoMovimiento).toLocaleDateString() : 'N/A'}</div></div>`).join('');
+    }
+
+    window.depositarAhorro = async function() {
+        const cliente = document.getElementById("clienteAhorroDep").value.trim();
+        const monto = parseFloat(document.getElementById("montoAhorroDep").value);
+        const interes = parseFloat(document.getElementById("interesAhorroDep").value);
+        if (!cliente || isNaN(monto) || monto <= 0) { mostrarToast("Datos inválidos", "error"); return; }
+        const ahorroExistente = todosLosAhorros.find(a => a.cliente === cliente);
+        try {
+            if (ahorroExistente) {
+                await update(ref(db, `ahorros/${ahorroExistente.id}`), { saldo: ahorroExistente.saldo + monto, ultimoMovimiento: new Date().toISOString() });
+            } else {
+                await set(push(ref(db, 'ahorros')), { cliente, saldo: monto, interesMensual: interes, fechaApertura: new Date().toISOString(), ultimoMovimiento: new Date().toISOString() });
+            }
+            await registrarAuditoria("Depositar Ahorro", `Cliente: ${cliente} - $${monto}`);
+            mostrarToast("Depósito registrado");
+            document.getElementById("clienteAhorroDep").value = "";
+            document.getElementById("montoAhorroDep").value = "";
+            renderizarAhorrosLista();
+        } catch (e) { mostrarToast("Error: " + e.message, "error"); }
     };
 
-    function actualizarEstadisticas() {
-        let totalPres = 0, totalPag = 0, porVencer = 0, vencidos = 0, hoy = new Date();
+    window.cargarSaldoAhorro = function() {
+        const cliente = document.getElementById("clienteAhorroRet").value.trim();
+        const ahorro = todosLosAhorros.find(a => a.cliente === cliente);
+        document.getElementById("saldoAhorroMostrar").value = ahorro ? `$${ahorro.saldo.toFixed(2)}` : "$0.00";
+    };
+
+    window.retirarAhorro = async function() {
+        const cliente = document.getElementById("clienteAhorroRet").value.trim();
+        const monto = parseFloat(document.getElementById("montoAhorroRet").value);
+        const ahorro = todosLosAhorros.find(a => a.cliente === cliente);
+        if (!ahorro || ahorro.saldo < monto) { mostrarToast("Saldo insuficiente", "error"); return; }
+        await update(ref(db, `ahorros/${ahorro.id}`), { saldo: ahorro.saldo - monto, ultimoMovimiento: new Date().toISOString() });
+        await registrarAuditoria("Retirar Ahorro", `Cliente: ${cliente} - $${monto}`);
+        mostrarToast("Retiro registrado");
+        document.getElementById("clienteAhorroRet").value = "";
+        document.getElementById("montoAhorroRet").value = "";
+        renderizarAhorrosLista();
+    };
+    
+    window.eliminarAhorro = async function(id) {
+        if (confirm("¿Eliminar este registro de ahorro?")) {
+            await remove(ref(db, `ahorros/${id}`));
+            mostrarToast("Ahorro eliminado");
+            renderizarAhorrosLista();
+        }
+    };
+    
+    window.filtrarAhorros = () => renderizarAhorrosLista();
+
+    // ========== EMPEÑOS ==========
+    function renderEmpenos() {
+        const content = `<div class="content-panel"><div class="panel-header"><h2><i class="fas fa-gem"></i> Empeños</h2></div><div class="grid-2"><div class="form-card"><h3>Nuevo Empeño</h3><div class="form-group"><label>Cliente</label><input type="text" id="clienteEmpeno" list="listaClientesNombres"></div><div class="form-group"><label>Prenda</label><input type="text" id="prendaEmpeno"></div><div class="form-group"><label>Valor Avalúo</label><input type="number" id="valorAvaluo" step="0.01"></div><div class="form-group"><label>Monto Prestado</label><input type="number" id="montoEmpeno" step="0.01"></div><div class="form-group"><label>Interés Mensual (%)</label><input type="number" id="interesEmpeno" step="0.1" value="5"></div><div class="form-group"><label>Plazo (días)</label><input type="number" id="plazoEmpeno" value="30"></div><button class="btn btn-success" onclick="registrarEmpeno()">Registrar</button></div><div class="form-card"><h3>Pagar Empeño</h3><div class="form-group"><label>Cliente</label><input type="text" id="clientePagoEmpeno" list="listaClientesNombres" onchange="cargarEmpenosCliente()"></div><div class="form-group"><label>Empeño</label><select id="empenoSelect" onchange="mostrarDetalleEmpeno()"></select></div><div id="detalleEmpenoInfo"></div><button class="btn btn-success" onclick="pagarEmpeno()">Pagar Empeño</button></div></div><div class="filter-bar"><input type="text" id="searchEmpenos" placeholder="Buscar..." onkeyup="filtrarEmpenos()"></div><div id="empenosLista"></div></div>`;
+        document.getElementById("dynamicContent").innerHTML = content;
+        renderizarEmpenosLista();
+    }
+
+    function renderizarEmpenosLista() {
+        const search = document.getElementById("searchEmpenos")?.value.toLowerCase() || "";
+        const filtrados = todosLosEmpenos.filter(e => e.cliente.toLowerCase().includes(search));
+        const lista = document.getElementById("empenosLista");
+        if (!filtrados.length) { lista.innerHTML = '<div class="empty-state">No hay empeños</div>'; return; }
+        lista.innerHTML = filtrados.map(e => `<div class="form-card"><div><strong>${escapeHtml(e.prenda)} - ${escapeHtml(e.cliente)}</strong> <span class="badge ${e.estado === 'activo' ? 'badge-activo' : 'badge-pagado'}">${e.estado === 'activo' ? 'Activo' : 'Pagado'}</span> <button class="btn btn-sm btn-danger" onclick="eliminarEmpeno('${e.id}')" style="float:right;"><i class="fas fa-trash"></i></button></div><div>Monto: $${e.monto.toFixed(2)} | Total a pagar: $${e.totalPagar.toFixed(2)} | Vence: ${new Date(e.fechaVencimiento).toLocaleDateString()}</div></div>`).join('');
+    }
+
+    window.registrarEmpeno = async function() {
+        const cliente = document.getElementById("clienteEmpeno").value.trim();
+        const prenda = document.getElementById("prendaEmpeno").value.trim();
+        const valorAvaluo = parseFloat(document.getElementById("valorAvaluo").value);
+        const monto = parseFloat(document.getElementById("montoEmpeno").value);
+        const interes = parseFloat(document.getElementById("interesEmpeno").value);
+        const plazo = parseInt(document.getElementById("plazoEmpeno").value);
+        if (!cliente || !prenda || isNaN(monto)) { mostrarToast("Complete todos los campos", "error"); return; }
+        const fechaVencimiento = new Date(); fechaVencimiento.setDate(fechaVencimiento.getDate() + plazo);
+        const interesTotal = monto * (interes / 100) * (plazo / 30);
+        const totalPagar = monto + interesTotal;
+        await set(push(ref(db, 'empenos')), { cliente, prenda, valorAvaluo, monto, interes, plazo, fecha: new Date().toISOString(), fechaVencimiento: fechaVencimiento.toISOString(), totalPagar, estado: "activo" });
+        await registrarAuditoria("Registrar Empeño", `Cliente: ${cliente} - Prenda: ${prenda} - $${monto}`);
+        mostrarToast("Empeño registrado");
+        renderizarEmpenosLista();
+    };
+    window.cargarEmpenosCliente = function() {
+        const cliente = document.getElementById("clientePagoEmpeno").value.trim();
+        const select = document.getElementById("empenoSelect");
+        select.innerHTML = '<option value="">-- Seleccione --</option>';
+        const activos = todosLosEmpenos.filter(e => e.cliente === cliente && e.estado === "activo");
+        activos.forEach(e => { const opt = document.createElement("option"); opt.value = e.id; opt.textContent = `${e.prenda} - $${e.totalPagar.toFixed(2)}`; select.appendChild(opt); });
+    };
+    window.mostrarDetalleEmpeno = function() {
+        const id = document.getElementById("empenoSelect").value;
+        const e = todosLosEmpenos.find(e => e.id === id);
+        const div = document.getElementById("detalleEmpenoInfo");
+        if (!e) { div.innerHTML = ""; return; }
+        div.innerHTML = `<div class="form-card"><strong>Prenda:</strong> ${e.prenda}<br><strong>Monto:</strong> $${e.monto.toFixed(2)}<br><strong>Total a pagar:</strong> $${e.totalPagar.toFixed(2)}<br><strong>Vence:</strong> ${new Date(e.fechaVencimiento).toLocaleDateString()}</div>`;
+    };
+    window.pagarEmpeno = async function() {
+        const id = document.getElementById("empenoSelect").value;
+        if (!id) { mostrarToast("Seleccione un empeño", "error"); return; }
+        await update(ref(db, `empenos/${id}`), { estado: "pagado", fechaPago: new Date().toISOString() });
+        await registrarAuditoria("Pagar Empeño", `ID: ${id}`);
+        mostrarToast("Empeño pagado");
+        cargarEmpenosCliente();
+        renderizarEmpenosLista();
+    };
+    window.eliminarEmpeno = async function(id) {
+        if (confirm("¿Eliminar este empeño?")) {
+            await remove(ref(db, `empenos/${id}`));
+            mostrarToast("Empeño eliminado");
+            renderizarEmpenosLista();
+        }
+    };
+    window.filtrarEmpenos = () => renderizarEmpenosLista();
+
+    // ========== GASTOS ==========
+    function renderGastos() {
+        const content = `<div class="content-panel"><div class="panel-header"><h2><i class="fas fa-receipt"></i> Gastos</h2></div><div class="grid-2"><div class="form-card"><h3>Registrar Gasto</h3><div class="form-group"><label>Concepto</label><input type="text" id="conceptoGasto"></div><div class="form-group"><label>Monto</label><input type="number" id="montoGasto" step="0.01"></div><div class="form-group"><label>Categoría</label><select id="categoriaGasto"><option>Servicios</option><option>Personal</option><option>Publicidad</option><option>Mantenimiento</option><option>Otros</option></select></div><button class="btn btn-success" onclick="registrarGasto()">Registrar</button></div></div><div id="gastosLista"></div></div>`;
+        document.getElementById("dynamicContent").innerHTML = content;
+        renderizarGastosLista();
+    }
+
+    function renderizarGastosLista() {
+        const lista = document.getElementById("gastosLista");
+        if (!todosLosGastos.length) { lista.innerHTML = '<div class="empty-state">No hay gastos</div>'; return; }
+        lista.innerHTML = todosLosGastos.sort((a, b) => new Date(b.fecha) - new Date(a.fecha)).slice(0, 50).map(g => `<div class="form-card"><div><strong>${escapeHtml(g.concepto)}</strong> <span class="badge">${escapeHtml(g.categoria)}</span> <button class="btn btn-sm btn-danger" onclick="eliminarGasto('${g.id}')" style="float:right;"><i class="fas fa-trash"></i></button></div><div>$${g.monto.toFixed(2)} - ${new Date(g.fecha).toLocaleDateString()}</div></div>`).join('');
+    }
+
+    window.registrarGasto = async function() {
+        const concepto = document.getElementById("conceptoGasto").value.trim();
+        const monto = parseFloat(document.getElementById("montoGasto").value);
+        const categoria = document.getElementById("categoriaGasto").value;
+        if (!concepto || isNaN(monto)) { mostrarToast("Datos inválidos", "error"); return; }
+        await set(push(ref(db, 'gastos')), { concepto, monto, categoria, fecha: new Date().toISOString() });
+        await registrarAuditoria("Registrar Gasto", `${categoria}: ${concepto} - $${monto}`);
+        mostrarToast("Gasto registrado");
+        document.getElementById("conceptoGasto").value = "";
+        document.getElementById("montoGasto").value = "";
+        renderizarGastosLista();
+    };
+    
+    window.eliminarGasto = async function(id) {
+        if (confirm("¿Eliminar este gasto?")) {
+            await remove(ref(db, `gastos/${id}`));
+            mostrarToast("Gasto eliminado");
+            renderizarGastosLista();
+        }
+    };
+
+    // ========== CORTE DE CAJA ==========
+    function renderCorteCaja() {
+        const content = `<div class="content-panel"><div class="panel-header"><h2><i class="fas fa-cash-register"></i> Corte de Caja</h2></div><div class="grid-2"><div class="form-card"><h3>Generar Corte</h3><div class="form-group"><label>Fecha</label><input type="date" id="fechaCorte" value="${new Date().toISOString().split('T')[0]}"></div><button class="btn btn-primary" onclick="generarCorte()">Generar Corte</button><div id="corteResultado" style="margin-top:15px;"></div></div></div><div id="cortesLista"></div></div>`;
+        document.getElementById("dynamicContent").innerHTML = content;
+        renderizarCortesLista();
+    }
+
+    function renderizarCortesLista() {
+        const lista = document.getElementById("cortesLista");
+        if (!todosLosCortes.length) { lista.innerHTML = '<div class="empty-state">No hay cortes</div>'; return; }
+        lista.innerHTML = todosLosCortes.sort((a, b) => new Date(b.fecha) - new Date(a.fecha)).map(c => `<div class="form-card"><div><strong>Fecha: ${c.fecha}</strong> <button class="btn btn-sm btn-danger" onclick="eliminarCorte('${c.id}')" style="float:right;"><i class="fas fa-trash"></i></button></div><div>Ingresos: $${c.ingresos.toFixed(2)} | Gastos: $${c.gastos.toFixed(2)} | Saldo: $${c.saldoFinal.toFixed(2)}</div></div>`).join('');
+    }
+
+    window.generarCorte = async function() {
+        const fecha = document.getElementById("fechaCorte").value;
+        if (!fecha) { mostrarToast("Seleccione fecha", "error"); return; }
+        const existe = todosLosCortes.some(c => c.fecha === fecha);
+        if (existe) { mostrarToast("Ya existe un corte para esta fecha", "error"); return; }
+        
+        let ingresos = 0;
         todosLosPrestamos.forEach(p => {
-            totalPres += p.total;
-            totalPag += p.total - p.saldo;
-            if (p.saldo > 0 && p.fechaVencimiento) {
-                const dias = Math.ceil((new Date(p.fechaVencimiento) - hoy) / 86400000);
-                if (dias < 0) vencidos++;
-                else if (dias <= 7) porVencer++;
+            if (p.historialPagos) {
+                Object.values(p.historialPagos).forEach(h => {
+                    if (new Date(h.fecha).toISOString().split('T')[0] === fecha) ingresos += h.monto;
+                });
             }
         });
-        document.getElementById("totalPrestado").textContent = `$${totalPres.toFixed(2)}`;
-        document.getElementById("totalPagado").textContent = `$${totalPag.toFixed(2)}`;
-        document.getElementById("saldoPendiente").textContent = `$${(totalPres - totalPag).toFixed(2)}`;
-        document.getElementById("porVencer").textContent = porVencer;
-        document.getElementById("vencidos").textContent = vencidos;
+        const gastosDia = todosLosGastos.filter(g => new Date(g.fecha).toISOString().split('T')[0] === fecha);
+        const totalGastos = gastosDia.reduce((sum, g) => sum + g.monto, 0);
+        const saldoFinal = ingresos - totalGastos;
+        await set(push(ref(db, 'cortesCaja')), { fecha, ingresos, gastos: totalGastos, saldoFinal, fechaGeneracion: new Date().toISOString() });
+        await registrarAuditoria("Generar Corte", `Fecha: ${fecha} - Saldo: $${saldoFinal}`);
+        document.getElementById("corteResultado").innerHTML = `<div class="form-card"><strong>Resumen ${fecha}</strong><br>Ingresos: $${ingresos.toFixed(2)}<br>Gastos: $${totalGastos.toFixed(2)}<br><strong>Saldo final: $${saldoFinal.toFixed(2)}</strong></div>`;
+        mostrarToast("Corte generado");
+        renderizarCortesLista();
+    };
+    
+    window.eliminarCorte = async function(id) {
+        if (confirm("¿Eliminar este corte?")) {
+            await remove(ref(db, `cortesCaja/${id}`));
+            mostrarToast("Corte eliminado");
+            renderizarCortesLista();
+        }
+    };
+
+    // ========== AUDITORÍA ==========
+    function renderAuditoria() {
+        const content = `<div class="content-panel"><div class="panel-header"><h2><i class="fas fa-history"></i> Auditoría</h2></div><div class="filter-bar"><input type="text" id="searchAuditoria" placeholder="Buscar acción..." onkeyup="filtrarAuditoria()"></div><div id="auditoriaLista"></div></div>`;
+        document.getElementById("dynamicContent").innerHTML = content;
+        renderizarAuditoriaLista();
     }
 
-    async function actualizarGraficos() {
-        const pagosPorMes = {};
-        const prestamosPorCliente = {};
-        todosLosPrestamos.forEach(p => {
-            const mes = new Date(p.fecha).toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
-            pagosPorMes[mes] = (pagosPorMes[mes] || 0) + (p.total - p.saldo);
-            prestamosPorCliente[p.cliente] = (prestamosPorCliente[p.cliente] || 0) + p.total;
-        });
-        const ctxPagos = document.getElementById('chartPagos')?.getContext('2d');
-        const ctxClientes = document.getElementById('chartClientes')?.getContext('2d');
-        if (ctxPagos) {
-            if (chartPagos) chartPagos.destroy();
-            chartPagos = new Chart(ctxPagos, { type: 'line', data: { labels: Object.keys(pagosPorMes), datasets: [{ label: 'Pagos realizados', data: Object.values(pagosPorMes), borderColor: '#48bb78', tension: 0.4 }] }, options: { responsive: true } });
-        }
-        if (ctxClientes) {
-            if (chartClientes) chartClientes.destroy();
-            chartClientes = new Chart(ctxClientes, { type: 'bar', data: { labels: Object.keys(prestamosPorCliente), datasets: [{ label: 'Total prestado', data: Object.values(prestamosPorCliente), backgroundColor: '#667eea' }] }, options: { responsive: true } });
-        }
+    function renderizarAuditoriaLista() {
+        const search = document.getElementById("searchAuditoria")?.value.toLowerCase() || "";
+        const filtrados = todosLosAuditoria.filter(a => a.accion.toLowerCase().includes(search) || (a.detalles && a.detalles.toLowerCase().includes(search)));
+        const lista = document.getElementById("auditoriaLista");
+        if (!filtrados.length) { lista.innerHTML = '<div class="empty-state">No hay registros</div>'; return; }
+        lista.innerHTML = filtrados.map(a => `<div class="form-card"><div><strong>${escapeHtml(a.accion)}</strong> <small>${new Date(a.fecha).toLocaleString()}</small></div><div>${escapeHtml(a.detalles || '')}</div><div><small>Usuario: ${escapeHtml(a.usuarioNombre || a.usuario)}</small></div></div>`).join('');
+    }
+    window.filtrarAuditoria = () => renderizarAuditoriaLista();
+
+    // ========== REPORTES EXCEL ==========
+    function renderReportes() {
+        const content = `<div class="content-panel"><div class="panel-header"><h2><i class="fas fa-file-excel"></i> Reportes Excel</h2></div><div class="form-card"><div class="form-group"><label>Tipo de Reporte</label><select id="tipoReporte"><option value="prestamos">Préstamos</option><option value="clientes">Clientes</option><option value="ahorros">Ahorros</option><option value="empenos">Empeños</option><option value="gastos">Gastos</option><option value="cortes">Cortes de Caja</option></select></div><div class="form-group"><label>Fecha Inicio</label><input type="date" id="reporteFechaInicio"></div><div class="form-group"><label>Fecha Fin</label><input type="date" id="reporteFechaFin"></div><button class="btn btn-success" onclick="generarReporteExcel()">Exportar a Excel</button></div></div>`;
+        document.getElementById("dynamicContent").innerHTML = content;
     }
 
-    window.exportarExcel = function() {
-        const datos = [["Cliente", "Monto", "Total a pagar", "Saldo", "Estado", "Método", "Fecha", "Vencimiento"]];
-        todosLosPrestamos.forEach(p => {
-            const estado = p.saldo <= 0 ? "Pagado" : "Pendiente";
-            const fecha = new Date(p.fecha).toLocaleDateString();
-            const venc = p.fechaVencimiento ? new Date(p.fechaVencimiento).toLocaleDateString() : "";
-            datos.push([p.cliente, p.monto, p.total, p.saldo, estado, p.metodoAmortizacion === 'frances' ? 'Francés' : 'Alemán', fecha, venc]);
-        });
+    window.generarReporteExcel = function() {
+        const tipo = document.getElementById("tipoReporte").value;
+        const fechaInicio = document.getElementById("reporteFechaInicio").value;
+        const fechaFin = document.getElementById("reporteFechaFin").value;
+        let datos = [];
+        const filtrarPorFecha = (item) => {
+            if (!fechaInicio && !fechaFin) return true;
+            const fechaItem = new Date(item.fecha).toISOString().split('T')[0];
+            if (fechaInicio && fechaItem < fechaInicio) return false;
+            if (fechaFin && fechaItem > fechaFin) return false;
+            return true;
+        };
+        switch (tipo) {
+            case 'prestamos':
+                datos = [["ID","Cliente","Cédula","Monto","Total","Saldo","Estado","Fecha","Registrado por"]];
+                todosLosPrestamos.filter(filtrarPorFecha).forEach(p => {
+                    const c = todosLosClientes.find(c => c.nombre === p.cliente);
+                    datos.push([p.id, p.cliente, c?.cedula||'', p.monto, p.total, p.saldo, p.saldo<=0?"Pagado":"Pendiente", new Date(p.fecha).toLocaleDateString(), p.creadoPor||'N/A']);
+                });
+                break;
+            case 'clientes':
+                datos = [["Nombre","Cédula","Teléfono","Dirección"]];
+                todosLosClientes.forEach(c => datos.push([c.nombre, c.cedula, c.telefono||'', c.direccion||'']));
+                break;
+            case 'ahorros':
+                datos = [["Cliente","Saldo","Interés %","Fecha Apertura"]];
+                todosLosAhorros.filter(filtrarPorFecha).forEach(a => datos.push([a.cliente, a.saldo, a.interesMensual || 0.5, new Date(a.fechaApertura).toLocaleDateString()]));
+                break;
+            case 'empenos':
+                datos = [["Cliente","Prenda","Monto","Total a pagar","Estado","Vencimiento"]];
+                todosLosEmpenos.filter(filtrarPorFecha).forEach(e => datos.push([e.cliente, e.prenda, e.monto, e.totalPagar, e.estado, new Date(e.fechaVencimiento).toLocaleDateString()]));
+                break;
+            case 'gastos':
+                datos = [["Concepto","Categoría","Monto","Fecha"]];
+                todosLosGastos.filter(filtrarPorFecha).forEach(g => datos.push([g.concepto, g.categoria, g.monto, new Date(g.fecha).toLocaleDateString()]));
+                break;
+            case 'cortes':
+                datos = [["Fecha","Ingresos","Gastos","Saldo Final"]];
+                todosLosCortes.filter(filtrarPorFecha).forEach(c => datos.push([c.fecha, c.ingresos, c.gastos, c.saldoFinal]));
+                break;
+        }
         const wb = XLSX.utils.book_new();
         const ws = XLSX.utils.aoa_to_sheet(datos);
-        XLSX.utils.book_append_sheet(wb, ws, "Préstamos");
-        XLSX.writeFile(wb, `prestamos_${new Date().toISOString().slice(0,10)}.xlsx`);
-        mostrarToast("Exportado a Excel");
+        XLSX.utils.book_append_sheet(wb, ws, tipo);
+        XLSX.writeFile(wb, `${tipo}_${new Date().toISOString().slice(0,10)}.xlsx`);
+        mostrarToast(`Reporte de ${tipo} exportado`);
     };
 
-    window.imprimirLista = function() { window.print(); };
-    window.generarReporte = function() {
-        const inicio = document.getElementById("fechaInicio").value;
-        const fin = document.getElementById("fechaFin").value;
-        if (!inicio || !fin) { mostrarToast("Seleccione rango de fechas", "error"); return; }
-        const fechaInicio = new Date(inicio);
-        const fechaFin = new Date(fin);
-        const filtrados = todosLosPrestamos.filter(p => new Date(p.fecha) >= fechaInicio && new Date(p.fecha) <= fechaFin);
-        let total = 0, pagado = 0;
-        filtrados.forEach(p => { total += p.total; pagado += p.total - p.saldo; });
-        document.getElementById("reporteResultado").innerHTML = `<div class="loan-card"><h3>Reporte ${inicio} al ${fin}</h3><div>Total prestado: $${total.toFixed(2)}</div><div>Total pagado: $${pagado.toFixed(2)}</div><div>Saldo: $${(total-pagado).toFixed(2)}</div><div>Préstamos: ${filtrados.length}</div></div>`;
-    };
-
-    window.cambiarTab = function(tab) {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
-        const tabBtn = Array.from(document.querySelectorAll('.tab')).find(btn => btn.getAttribute('data-tab') === tab);
-        if (tabBtn) tabBtn.classList.add('active');
-        document.getElementById(`tab-${tab}`)?.classList.add('active');
-        if (tab === 'lista') renderizarLista();
-        if (tab === 'clientes') renderizarClientes();
-        if (tab === 'pago') { cargarPrestamosCliente(); mostrarDetallesPrestamo(); }
-        if (tab === 'graficos') actualizarGraficos();
-        if (tab === 'perfil') cargarPerfilEmpresa();
-        if (tab === 'usuarios' && currentUserRole === 'admin') cargarUsuarios();
-        if (tab === 'prestamo') actualizarResumenYTabla(); // Forzar actualización al abrir la pestaña
-    };
-
-    // Perfil de usuario (nombre a mostrar)
-    async function cargarPerfilUsuario() {
-        if (!currentUserUid) return;
-        const snap = await get(ref(db, `users/${currentUserUid}`));
-        const userData = snap.val();
-        if (userData && userData.displayName) {
-            document.getElementById("userDisplayNameInput").value = userData.displayName;
-            document.getElementById("userDisplayName").innerText = userData.displayName;
-            currentUserDisplayName = userData.displayName;
-        } else {
-            document.getElementById("userDisplayNameInput").value = "";
-            const email = auth.currentUser?.email || "";
-            document.getElementById("userDisplayName").innerText = email.split('@')[0];
-            currentUserDisplayName = email.split('@')[0];
-        }
+    // ========== CONFIGURACIÓN ==========
+    function renderConfiguracion() {
+        const content = `<div class="content-panel"><div class="panel-header"><h2><i class="fas fa-cog"></i> Configuración</h2></div><div class="grid-2"><div class="form-card"><h3>Datos de la Empresa</h3><div class="form-group"><label>Nombre</label><input type="text" id="empresaNombreConfig" value="${escapeHtml(empresaConfig.nombre)}"></div><div class="form-group"><label>RUC</label><input type="text" id="empresaRUCConfig" value="${escapeHtml(empresaConfig.ruc || '')}" placeholder="RUC de la empresa"></div><div class="form-group"><label>Dirección</label><input type="text" id="empresaDireccionConfig" value="${escapeHtml(empresaConfig.direccion || '')}" placeholder="Dirección"></div><div class="form-group"><label>Teléfono</label><input type="text" id="empresaTelefonoConfig" value="${escapeHtml(empresaConfig.telefono || '')}"></div><div class="form-group"><label>Logo (URL o subir imagen)</label><input type="text" id="logoUrlConfig" value="${escapeHtml(empresaConfig.logo || '')}" placeholder="URL de imagen"><input type="file" id="logoFileConfig" accept="image/*" onchange="previewLogoConfig(event)"><div id="logoPreviewConfig"></div></div><button class="btn btn-primary" onclick="guardarConfiguracionEmpresa()">Guardar</button></div><div class="form-card"><h3>Perfil de Usuario</h3><div class="form-group"><label>Nombre para mostrar</label><input type="text" id="userDisplayNameConfig" value="${escapeHtml(currentUserDisplayName)}"></div><button class="btn btn-primary" onclick="guardarNombreUsuario()">Guardar</button><div class="form-group"><label>Cambiar Contraseña</label><input type="password" id="currentPass" placeholder="Actual"><input type="password" id="newPass" placeholder="Nueva"><input type="password" id="confirmPass" placeholder="Confirmar"><button class="btn btn-warning" onclick="cambiarPassword()">Cambiar</button></div></div></div></div>`;
+        document.getElementById("dynamicContent").innerHTML = content;
+        if (empresaConfig.logo) document.getElementById("logoPreviewConfig").innerHTML = `<img src="${empresaConfig.logo}" style="max-width:150px; margin-top:10px;">`;
     }
-
-    window.guardarPerfilUsuario = async function() {
-        if (!currentUserUid) return;
-        const newName = document.getElementById("userDisplayNameInput").value.trim();
-        if (!newName) { mostrarToast("El nombre no puede estar vacío", "error"); return; }
-        try {
-            await update(ref(db, `users/${currentUserUid}`), { displayName: newName });
-            document.getElementById("userDisplayName").innerText = newName;
-            currentUserDisplayName = newName;
-            mostrarToast("Nombre actualizado");
-        } catch(e) { mostrarToast("Error: " + e.message, "error"); }
-    };
-
-    // Perfil empresa con logo
-    window.previewLogo = function(event) {
-        const file = event.target.files[0];
+    
+    window.previewLogoConfig = function(e) {
+        const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
-            reader.onload = function(e) {
-                const previewDiv = document.getElementById("logoPreviewContainer");
-                previewDiv.innerHTML = `<img src="${e.target.result}" class="logo-preview" alt="Vista previa">`;
-                document.getElementById("logoUrl").value = e.target.result;
+            reader.onload = ev => {
+                document.getElementById("logoUrlConfig").value = ev.target.result;
+                document.getElementById("logoPreviewConfig").innerHTML = `<img src="${ev.target.result}" style="max-width:150px; margin-top:10px;">`;
             };
             reader.readAsDataURL(file);
         }
     };
-
-    async function cargarPerfilEmpresa() {
-        const snap = await get(ref(db, 'config/empresa'));
-        const data = snap.val();
-        if (data) {
-            document.getElementById("empresaNombreInput").value = data.nombre || "";
-            document.getElementById("empresaTelefonoInput").value = data.telefono || "";
-            document.getElementById("logoUrl").value = data.logo || "";
-            document.getElementById("empresaNombre").innerText = data.nombre || "Sistema de Préstamos";
-            document.getElementById("empresaTelefono").innerText = data.telefono ? `| ${data.telefono}` : "";
-            if (data.logo) {
-                const logoImg = document.getElementById("empresaLogo");
-                logoImg.src = data.logo;
-                logoImg.style.display = "inline-block";
-            } else {
-                document.getElementById("empresaLogo").style.display = "none";
-            }
-            if (data.logo) {
-                document.getElementById("logoPreviewContainer").innerHTML = `<img src="${data.logo}" class="logo-preview" alt="Logo actual">`;
-            }
-        } else {
-            document.getElementById("empresaLogo").style.display = "none";
-        }
-    }
-
-    window.guardarPerfilEmpresa = async function() {
-        const nombre = document.getElementById("empresaNombreInput").value.trim();
-        const telefono = document.getElementById("empresaTelefonoInput").value.trim();
-        let logo = document.getElementById("logoUrl").value.trim();
+    
+    window.guardarConfiguracionEmpresa = async function() {
+        const nombre = document.getElementById("empresaNombreConfig").value.trim();
+        const ruc = document.getElementById("empresaRUCConfig").value.trim();
+        const direccion = document.getElementById("empresaDireccionConfig").value.trim();
+        const telefono = document.getElementById("empresaTelefonoConfig").value.trim();
+        const logo = document.getElementById("logoUrlConfig").value.trim();
         if (!nombre) { mostrarToast("Nombre requerido", "error"); return; }
-        const updateData = { nombre, telefono };
-        if (logo) updateData.logo = logo;
-        await set(ref(db, 'config/empresa'), updateData);
-        document.getElementById("empresaNombre").innerText = nombre;
-        document.getElementById("empresaTelefono").innerText = telefono ? `| ${telefono}` : "";
+        const data = { nombre, ruc, direccion, telefono, logo };
+        await set(ref(db, 'config/empresa'), data);
+        empresaConfig = data;
+        document.getElementById("empresaNombreSidebar").innerText = nombre;
         if (logo) {
-            const logoImg = document.getElementById("empresaLogo");
-            logoImg.src = logo;
-            logoImg.style.display = "inline-block";
+            document.getElementById("sidebarLogo").src = logo;
+            document.getElementById("sidebarLogo").style.display = "inline-block";
         } else {
-            document.getElementById("empresaLogo").style.display = "none";
+            document.getElementById("sidebarLogo").style.display = "none";
         }
-        mostrarToast("Datos guardados");
+        mostrarToast("Configuración guardada");
     };
-
-    // Cambiar contraseña
-    window.cambiarContrasena = async function() {
-        const current = document.getElementById("currentPassword").value;
-        const newPass = document.getElementById("newPassword").value;
-        const confirm = document.getElementById("confirmPassword").value;
-        if (!current || !newPass || !confirm) { mostrarToast("Complete todos los campos", "error"); return; }
-        if (newPass !== confirm) { mostrarToast("Las contraseñas nuevas no coinciden", "error"); return; }
-        if (newPass.length < 6) { mostrarToast("Mínimo 6 caracteres", "error"); return; }
+    
+    window.guardarNombreUsuario = async function() {
+        const newName = document.getElementById("userDisplayNameConfig").value.trim();
+        if (!newName) return;
+        await update(ref(db, `users/${currentUserUid}`), { displayName: newName });
+        currentUserDisplayName = newName;
+        document.getElementById("userDisplayNameHeader").innerText = newName;
+        document.getElementById("userAvatar").innerText = newName.charAt(0).toUpperCase();
+        mostrarToast("Nombre actualizado");
+    };
+    
+    window.cambiarPassword = async function() {
+        const current = document.getElementById("currentPass").value;
+        const newPass = document.getElementById("newPass").value;
+        const confirm = document.getElementById("confirmPass").value;
+        if (!current || !newPass) { mostrarToast("Complete campos", "error"); return; }
+        if (newPass !== confirm) { mostrarToast("Contraseñas no coinciden", "error"); return; }
         const user = auth.currentUser;
-        if (!user) return;
         const credential = EmailAuthProvider.credential(user.email, current);
         try {
             await reauthenticateWithCredential(user, credential);
             await updatePassword(user, newPass);
             mostrarToast("Contraseña cambiada");
-            document.getElementById("currentPassword").value = "";
-            document.getElementById("newPassword").value = "";
-            document.getElementById("confirmPassword").value = "";
-        } catch(e) { mostrarToast("Error: " + e.message, "error"); }
+            document.getElementById("currentPass").value = "";
+            document.getElementById("newPass").value = "";
+            document.getElementById("confirmPass").value = "";
+        } catch (e) { mostrarToast("Error: " + e.message, "error"); }
     };
-
-    // Gestión de usuarios (admin)
-    async function cargarUsuarios() {
-        if (currentUserRole !== 'admin') return;
+    
+    // ========== USUARIOS ==========
+    async function renderUsuarios() {
         const snapshot = await get(ref(db, 'users'));
         const users = snapshot.val();
-        const listDiv = document.getElementById("listaUsuarios");
-        if (!users) { listDiv.innerHTML = '<div class="empty-state">No hay usuarios registrados</div>'; return; }
-        const userList = Object.entries(users).map(([uid, u]) => ({ uid, ...u }));
-        listDiv.innerHTML = userList.map(u => `<div class="user-card"><div class="user-header"><span class="user-email">📧 ${escapeHtml(u.email)}</span><span class="badge ${u.isAdmin ? 'admin' : 'user'}">${u.isAdmin ? 'Administrador' : 'Usuario normal'}</span></div><div class="user-details"><div class="detail-item"><span class="detail-label">Nombre</span><span class="detail-value">${escapeHtml(u.displayName || u.email.split('@')[0])}</span></div><div class="detail-item"><span class="detail-label">Creado</span><span class="detail-value">${new Date(u.createdAt).toLocaleDateString()}</span></div>${u.uid !== auth.currentUser?.uid ? `<button onclick="eliminarUsuario('${u.uid}')" class="btn-sm btn-danger">Eliminar</button>` : ''}</div></div>`).join('');
+        const userList = users ? Object.entries(users).map(([uid, u]) => ({ uid, ...u })) : [];
+        const content = `<div class="content-panel"><div class="panel-header"><h2><i class="fas fa-user-shield"></i> Usuarios</h2></div><div class="form-card"><h3>Crear Nuevo Usuario</h3><div class="form-group"><label>Email</label><input type="email" id="newUserEmail"></div><div class="form-group"><label>Contraseña</label><input type="password" id="newUserPassword"></div><div class="form-group"><label>Rol</label><select id="newUserRole"><option value="user">Usuario Normal</option><option value="admin">Administrador</option></select></div><button class="btn btn-success" onclick="crearUsuarioAdmin()"><i class="fas fa-plus"></i> Crear Usuario</button></div><div id="usuariosLista"></div></div>`;
+        document.getElementById("dynamicContent").innerHTML = content;
+        const listaDiv = document.getElementById("usuariosLista");
+        if (userList.length === 0) { listaDiv.innerHTML = '<div class="empty-state">No hay usuarios</div>'; return; }
+        listaDiv.innerHTML = userList.map(u => `
+            <div class="form-card">
+                <div><strong>${escapeHtml(u.email)}</strong> <span class="badge ${u.isAdmin ? 'badge-activo' : ''}">${u.isAdmin ? 'Admin' : 'Usuario'}</span></div>
+                <div>Nombre: ${escapeHtml(u.displayName || u.email.split('@')[0])}</div>
+                <div>Creado: ${new Date(u.createdAt).toLocaleDateString()}</div>
+                ${u.uid !== currentUserUid ? `<button class="btn btn-sm btn-danger" onclick="eliminarUsuarioAdmin('${u.uid}')">Eliminar</button>` : ''}
+            </div>`).join('');
     }
 
-    window.crearUsuario = async function() {
-        if (currentUserRole !== 'admin') { mostrarToast("No autorizado", "error"); return; }
+    window.crearUsuarioAdmin = async function() {
         const email = document.getElementById("newUserEmail").value.trim();
         const password = document.getElementById("newUserPassword").value;
         const role = document.getElementById("newUserRole").value;
-        if (!email || !password) { mostrarToast("Email y contraseña requeridos", "error"); return; }
+        if (!email || !password) { mostrarToast("Complete los campos", "error"); return; }
         if (password.length < 6) { mostrarToast("Contraseña mínima 6 caracteres", "error"); return; }
         try {
             const userCred = await createUserWithEmailAndPassword(auth, email, password);
             await set(ref(db, `users/${userCred.user.uid}`), { email, isAdmin: (role === 'admin'), createdAt: new Date().toISOString(), displayName: email.split('@')[0] });
-            mostrarToast(`Usuario ${email} creado como ${role === 'admin' ? 'administrador' : 'usuario normal'}`);
-            document.getElementById("newUserEmail").value = "";
-            document.getElementById("newUserPassword").value = "";
-            if (currentUserRole === 'admin') cargarUsuarios();
+            await registrarAuditoria("Crear Usuario", `Email: ${email} - Rol: ${role}`);
+            mostrarToast("Usuario creado");
+            renderUsuarios();
         } catch(e) { mostrarToast("Error: " + e.message, "error"); }
     };
 
-    window.eliminarUsuario = async function(uid) {
-        if (currentUserRole !== 'admin') return;
-        if (!confirm("¿Eliminar este usuario permanentemente?")) return;
-        try {
+    window.eliminarUsuarioAdmin = async function(uid) {
+        if (confirm("¿Eliminar este usuario?")) {
             await remove(ref(db, `users/${uid}`));
-            mostrarToast("Usuario eliminado de la base de datos. También debe eliminarse de Authentication en Firebase Console si se desea.", "warning");
-            cargarUsuarios();
-        } catch(e) { mostrarToast("Error: " + e.message, "error"); }
+            mostrarToast("Usuario eliminado");
+            renderUsuarios();
+        }
     };
 
-    // Autenticación y UI dinámica
-    function actualizarUIporRol(role) {
-        const tabsContainer = document.getElementById("tabsContainer");
-        const tabs = [
-            { id: "cliente", label: "👤 Cliente" },
-            { id: "prestamo", label: "📝 Nuevo Préstamo" },
-            { id: "pago", label: "💵 Pago / Abono" },
-            { id: "lista", label: "📊 Préstamos" },
-            { id: "clientes", label: "👥 Clientes" },
-            { id: "graficos", label: "📈 Gráficos" },
-            { id: "reportes", label: "📄 Reportes" },
-            { id: "perfil", label: "⚙️ Perfil" }
-        ];
-        if (role === 'admin') tabs.push({ id: "usuarios", label: "👥 Usuarios" });
-        tabsContainer.innerHTML = tabs.map(t => `<button class="tab ${t.id === 'cliente' ? 'active' : ''}" data-tab="${t.id}" onclick="cambiarTab('${t.id}')">${t.label}</button>`).join('');
-        document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
-        document.getElementById("tab-cliente")?.classList.add('active');
-    }
-
+    // ========== NAVEGACIÓN GLOBAL ==========
+    window.cambiarTab = function(tab) {
+        currentTab = tab;
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        document.querySelector(`.nav-item[data-tab="${tab}"]`)?.classList.add('active');
+        if (tab === 'dashboard') renderDashboard();
+        else if (tab === 'clientes') renderClientes();
+        else if (tab === 'prestamos') renderPrestamos();
+        else if (tab === 'pagos') renderPagos();
+        else if (tab === 'calculadora') renderCalculadora();
+        else if (tab === 'ahorros') renderAhorros();
+        else if (tab === 'empenos') renderEmpenos();
+        else if (tab === 'gastos') renderGastos();
+        else if (tab === 'corteCaja') renderCorteCaja();
+        else if (tab === 'auditoria') renderAuditoria();
+        else if (tab === 'reportes') renderReportes();
+        else if (tab === 'configuracion') renderConfiguracion();
+        else if (tab === 'nuevoPrestamo') renderNuevoPrestamo();
+        else if (tab === 'usuarios' && currentUserRole === 'admin') renderUsuarios();
+        else renderDashboard();
+    };
+    
+    window.buscarGlobal = function() {
+        const search = document.getElementById("globalSearch").value.toLowerCase();
+        if (search.length > 0) { cambiarTab('prestamos'); setTimeout(() => { document.getElementById("searchPrestamoInput").value = search; filtrarPrestamos(); }, 100); }
+    };
+    
+    window.verHistorialPrestamo = function(id) {
+        const p = todosLosPrestamos.find(p => p.id === id);
+        if (!p) return;
+        const hist = p.historialPagos ? Object.values(p.historialPagos) : [];
+        document.getElementById("historialContenido").innerHTML = hist.length ? hist.sort((a, b) => new Date(b.fecha) - new Date(a.fecha)).map(h => `<div class="form-card"><div>${new Date(h.fecha).toLocaleString()}</div><div>Monto: $${h.monto.toFixed(2)} | Tipo: ${h.tipo || 'pago'}</div><div>Saldo anterior: $${h.saldoAnterior?.toFixed(2)}</div></div>`).join('') : "<p>No hay pagos</p>";
+        document.getElementById("modalHistorial").style.display = "flex";
+    };
+    
+    window.cerrarModal = function() {
+        document.getElementById("modalHistorial").style.display = "none";
+        document.getElementById("modalAmortizacion").style.display = "none";
+        document.getElementById("modalPago").style.display = "none";
+    };
+    
+    window.toggleTheme = function() { document.body.classList.toggle('dark-mode'); };
+    
+    window.logout = async function() { 
+        await signOut(auth); 
+        document.getElementById("loginOverlay").style.display = "flex"; 
+        mostrarToast("Sesión cerrada"); 
+    };
+    
     window.login = async function() {
         const email = document.getElementById("loginEmail").value.trim();
         const password = document.getElementById("loginPassword").value;
-        if (!email || !password) { mostrarToast("Email y contraseña requeridos", "error"); return; }
+        if (!email || !password) { mostrarToast("Ingrese email y contraseña", "error"); return; }
         try {
             await signInWithEmailAndPassword(auth, email, password);
-            document.getElementById("loginOverlay").style.display = "none";
-            document.getElementById("mainApp").style.display = "block";
-            mostrarToast("Sesión iniciada");
-            iniciarObservadores();
-            cargarPerfilEmpresa();
-            // El perfil de usuario se carga en onAuthStateChanged
-        } catch(e) { mostrarToast("Error: " + e.message, "error"); }
+        } catch (e) {
+            console.error("Error de login:", e);
+            let errorMsg = "Error al iniciar sesión: ";
+            if (e.code === 'auth/user-not-found') errorMsg += "Usuario no encontrado";
+            else if (e.code === 'auth/wrong-password') errorMsg += "Contraseña incorrecta";
+            else if (e.code === 'auth/invalid-email') errorMsg += "Email inválido";
+            else if (e.code === 'auth/network-request-failed') errorMsg += "Error de conexión. Verifica tu internet.";
+            else errorMsg += e.message;
+            mostrarToast(errorMsg, "error");
+        }
     };
-
-    window.logout = async function() {
-        await signOut(auth);
-        document.getElementById("loginOverlay").style.display = "flex";
-        document.getElementById("mainApp").style.display = "none";
-        mostrarToast("Sesión cerrada");
-        if (prestamosUnsubscribe) prestamosUnsubscribe();
-        if (clientesUnsubscribe) clientesUnsubscribe();
-    };
-
-    // Verificar si hay usuarios en la BD para mostrar botón de primer admin
+    
     async function checkFirstUser() {
-        const snapshot = await get(ref(db, 'users'));
-        const usersExist = snapshot.exists();
-        const container = document.getElementById("firstUserContainer");
-        if (!usersExist) {
-            container.innerHTML = `<button onclick="crearPrimerAdmin()" class="btn-warning">🔐 Crear cuenta de administrador (primer usuario)</button>`;
-        } else {
-            container.innerHTML = "";
+        try {
+            const snap = await get(ref(db, 'users'));
+            if (!snap.exists()) {
+                document.getElementById("firstUserContainer").innerHTML = `<button class="btn btn-warning" onclick="crearPrimerAdmin()">Crear cuenta administrador</button>`;
+            } else {
+                document.getElementById("firstUserContainer").innerHTML = "";
+            }
+        } catch (e) {
+            document.getElementById("firstUserContainer").innerHTML = `<button class="btn btn-warning" onclick="crearPrimerAdmin()">Crear cuenta administrador</button>`;
         }
     }
-
+    
     window.crearPrimerAdmin = async function() {
         const email = prompt("Email del administrador:");
         if (!email) return;
@@ -1070,61 +1912,43 @@
         try {
             const userCred = await createUserWithEmailAndPassword(auth, email, password);
             await set(ref(db, `users/${userCred.user.uid}`), { email, isAdmin: true, createdAt: new Date().toISOString(), displayName: email.split('@')[0] });
-            mostrarToast("Administrador creado. Inicie sesión.");
-            await checkFirstUser();
-        } catch(e) { mostrarToast("Error: " + e.message, "error"); }
+            mostrarToast("Administrador creado. Iniciando sesión...");
+        } catch (e) {
+            mostrarToast("Error: " + e.message, "error");
+        }
     };
-
-    // Estado de autenticación
+    
+    function iniciarObservadores() {
+        onValue(ref(db, 'prestamos'), (snap) => { todosLosPrestamos = snap.val() ? Object.entries(snap.val()).map(([id, p]) => ({ id, ...p })) : []; if (currentTab === 'prestamos') renderizarTablaPrestamos(); if (currentTab === 'dashboard') renderDashboard(); });
+        onValue(ref(db, 'clientes'), (snap) => { todosLosClientes = snap.val() ? Object.entries(snap.val()).map(([id, c]) => ({ id, ...c })) : []; actualizarDatalist(); if (currentTab === 'clientes') renderizarClientesLista(); if (currentTab === 'dashboard') renderDashboard(); });
+        onValue(ref(db, 'ahorros'), (snap) => { todosLosAhorros = snap.val() ? Object.entries(snap.val()).map(([id, a]) => ({ id, ...a })) : []; if (currentTab === 'ahorros') renderizarAhorrosLista(); if (currentTab === 'dashboard') renderDashboard(); });
+        onValue(ref(db, 'empenos'), (snap) => { todosLosEmpenos = snap.val() ? Object.entries(snap.val()).map(([id, e]) => ({ id, ...e })) : []; if (currentTab === 'empenos') renderizarEmpenosLista(); if (currentTab === 'dashboard') renderDashboard(); });
+        onValue(ref(db, 'gastos'), (snap) => { todosLosGastos = snap.val() ? Object.entries(snap.val()).map(([id, g]) => ({ id, ...g })) : []; if (currentTab === 'gastos') renderizarGastosLista(); });
+        onValue(ref(db, 'cortesCaja'), (snap) => { todosLosCortes = snap.val() ? Object.entries(snap.val()).map(([id, c]) => ({ id, ...c })) : []; if (currentTab === 'corteCaja') renderizarCortesLista(); });
+        onValue(ref(db, 'auditoria'), (snap) => { todosLosAuditoria = snap.val() ? Object.entries(snap.val()).map(([id, a]) => ({ id, ...a })).reverse() : []; if (currentTab === 'auditoria') renderizarAuditoriaLista(); });
+    }
+    
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             currentUserUid = user.uid;
             const snap = await get(ref(db, `users/${user.uid}`));
             const userData = snap.val();
-            if (!userData) {
-                await set(ref(db, `users/${user.uid}`), { email: user.email, isAdmin: false, createdAt: new Date().toISOString(), displayName: user.email.split('@')[0] });
-                currentUserRole = false;
-            } else {
-                currentUserRole = userData.isAdmin ? 'admin' : 'user';
-                if (!userData.displayName) {
-                    await update(ref(db, `users/${user.uid}`), { displayName: user.email.split('@')[0] });
-                }
-            }
-            actualizarUIporRol(currentUserRole);
+            currentUserRole = userData?.isAdmin ? 'admin' : 'user';
+            currentUserDisplayName = userData?.displayName || user.email.split('@')[0];
+            document.getElementById("userDisplayNameHeader").innerText = currentUserDisplayName;
+            document.getElementById("userAvatar").innerText = currentUserDisplayName.charAt(0).toUpperCase();
+            if (currentUserRole === 'admin') document.getElementById("usuariosNavItem").style.display = "flex";
             document.getElementById("loginOverlay").style.display = "none";
-            document.getElementById("mainApp").style.display = "block";
+            await cargarEmpresaConfig();
             iniciarObservadores();
-            cargarPerfilEmpresa();
-            cargarPerfilUsuario();
-            document.getElementById("userEmailInput").value = user.email;
-            if (currentUserRole === 'admin') cargarUsuarios();
+            cambiarTab('dashboard');
         } else {
             document.getElementById("loginOverlay").style.display = "flex";
-            document.getElementById("mainApp").style.display = "none";
             checkFirstUser();
-            currentUserRole = null;
-            currentUserUid = null;
         }
     });
-
-    // Vincular eventos de los campos del préstamo para actualizar en tiempo real
-    const camposPrestamo = ["monto", "interes", "numCuotas", "metodoAmortizacion", "tipoInteres"];
-    camposPrestamo.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.addEventListener("input", actualizarResumenYTabla);
-        if (el && id !== "tipoInteres" && id !== "metodoAmortizacion") el.addEventListener("change", actualizarResumenYTabla);
-    });
-
-    window.toggleTheme = function() {
-        document.body.classList.toggle('dark-mode');
-        localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
-        document.querySelector('.theme-toggle').textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
-    };
-    if (localStorage.getItem('darkMode') === 'true') { document.body.classList.add('dark-mode'); document.querySelector('.theme-toggle').textContent = '☀️'; }
-    window.cerrarModal = function() {
-        document.getElementById("modalHistorial").style.display = "none";
-        document.getElementById("modalAmortizacion").style.display = "none";
-    };
+    
+    document.querySelectorAll('.nav-item').forEach(item => { item.addEventListener('click', () => cambiarTab(item.getAttribute('data-tab'))); });
 </script>
 </body>
 </html>
